@@ -1,7 +1,30 @@
 var searchData=
 [
+  ['fbfe_5fadvancesamplestate',['FBFE_AdvanceSampleState',['../filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fbindinternalbuffers',['FBFE_BindInternalBuffers',['../filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fclearinternalbuffers',['FBFE_ClearInternalBuffers',['../filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fgetarout0base',['FBFE_GetAROUT0Base',['../filterbank__feature__extract_8c.html#a4c721bd4b13f51c5168de523d6293320',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fgetctl1value',['FBFE_GetCTL1Value',['../filterbank__feature__extract_8c.html#a42dae8a4c8348ade59a19a402c86b876',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fgetmmr0value',['FBFE_GetMMR0Value',['../filterbank__feature__extract_8c.html#a452a5db677b156d57beddb31f18d1c55',1,'filterbank_feature_extract.c']]],
   ['fbfe_5finit',['FBFE_Init',['../filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c',1,'FBFE_Init(FBFE_Ctx *ctx, const FBFE_Config *cfg, uint8_t *final_features, size_t final_features_bytes):&#160;filterbank_feature_extract.c'],['../filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c',1,'FBFE_Init(FBFE_Ctx *ctx, const FBFE_Config *cfg, uint8_t *final_features, size_t final_features_bytes):&#160;filterbank_feature_extract.c']]],
-  ['fbfe_5fpushsample',['FBFE_PushSample',['../filterbank__feature__extract_8c.html#ae14b90d0f7762297ea475985f60019d9',1,'FBFE_PushSample(FBFE_Ctx *ctx, uint16_t sample):&#160;filterbank_feature_extract.c'],['../filterbank__feature__extract_8h.html#ae14b90d0f7762297ea475985f60019d9',1,'FBFE_PushSample(FBFE_Ctx *ctx, uint16_t sample):&#160;filterbank_feature_extract.c']]],
+  ['fbfe_5finitargsarevalid',['FBFE_InitArgsAreValid',['../filterbank__feature__extract_8c.html#ac2abfc0068ef70e2d208ca8b5a79f488',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5finitblockmaxvalues',['FBFE_InitBlockMaxValues',['../filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fisready',['FBFE_IsReady',['../filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5floadinstructions',['FBFE_LoadInstructions',['../filterbank__feature__extract_8c.html#a0606db02a3cbe7ec4e7ccc0a999900f5',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5floadmmr',['FBFE_LoadMMR',['../filterbank__feature__extract_8c.html#a21fd0baaa051c8c26fbb947b5048917f',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5floadparamsforblock',['FBFE_LoadParamsForBlock',['../filterbank__feature__extract_8c.html#a2b00f18cee2704762a4dc3f00f11b50d',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fpackfoursamplesintoframebuffer',['FBFE_PackFourSamplesIntoFrameBuffer',['../filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fpostprocessblock',['FBFE_PostprocessBlock',['../filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fpostprocessonechannel',['FBFE_PostprocessOneChannel',['../filterbank__feature__extract_8c.html#a58fa67056ffc456361697b162cbb2d35',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fprogramcommonnpustate',['FBFE_ProgramCommonNpuState',['../filterbank__feature__extract_8c.html#acb819c4fff3a508731f296f903d81f34',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fpushsample',['FBFE_PushSample',['../filterbank__feature__extract_8c.html#ab0c690f846a85bceee4fb5fe97877ff0',1,'FBFE_PushSample(FBFE_Ctx *ctx, int16_t sample):&#160;filterbank_feature_extract.c'],['../filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0',1,'FBFE_PushSample(FBFE_Ctx *ctx, int16_t sample):&#160;filterbank_feature_extract.c']]],
+  ['fbfe_5freadpassoutput',['FBFE_ReadPassOutput',['../filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5freadsigneddreg19',['FBFE_ReadSignedDREG19',['../filterbank__feature__extract_8c.html#a45dccb58bcd09c42469e3b119b5f96a0',1,'filterbank_feature_extract.c']]],
   ['fbfe_5frunoneframe',['FBFE_RunOneFrame',['../filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b',1,'FBFE_RunOneFrame(FBFE_Ctx *ctx):&#160;filterbank_feature_extract.c'],['../filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b',1,'FBFE_RunOneFrame(FBFE_Ctx *ctx):&#160;filterbank_feature_extract.c']]],
-  ['fbfe_5fshiftnninputwindow',['FBFE_ShiftNNInputWindow',['../filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6',1,'filterbank_feature_extract.c']]]
+  ['fbfe_5fruntiniepass',['FBFE_RunTiniePass',['../filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fscalesamplebybranchbits',['FBFE_ScaleSampleByBranchBits',['../filterbank__feature__extract_8c.html#ad32587576d0c79d08b65d386a3e2cb11',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fshiftnninputwindow',['FBFE_ShiftNNInputWindow',['../filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fstoresamplebytes',['FBFE_StoreSampleBytes',['../filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fupdateinputbufferatframeend',['FBFE_UpdateInputBufferAtFrameEnd',['../filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181',1,'filterbank_feature_extract.c']]],
+  ['fbfe_5fupdatemaxvaluesforstride',['FBFE_UpdateMaxValuesForStride',['../filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960',1,'filterbank_feature_extract.c']]]
 ];

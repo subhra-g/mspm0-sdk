@@ -1,10 +1,9 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "MSPM0G350X" --part "Default" --package "LQFP-64(PM)" --product "mspm0_sdk@2.02.00.06"
- * @v2CliArgs --device "MSPM0G3507" --package "LQFP-64(PM)" --product "mspm0_sdk@2.02.00.06"
- * @versions {"tool":"1.21.0+3721"}
  */
+//@cliArgs --device "MSPM0G350X" --package "LQFP-64(PM)" --part "Default"
+//@v2CliArgs --device "MSPM0G3507" --package "LQFP-64(PM)"
 // @cliArgs --board /ti/boards/LP_MSPM0G3507 --rtos nortos
 
 /**
@@ -50,18 +49,5 @@ UART1.enabledInterrupts        = ["BREAK_ERROR","OVERRUN_ERROR","RX","RX_TIMEOUT
 UART1.rxTimeoutValue           = 15;
 UART1.peripheral.rxPin.$assign = "PA11";
 UART1.peripheral.txPin.$assign = "PA10";
-UART1.txPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
 UART1.txPinConfig.enableConfig = true;
 UART1.txPinConfig.hiZ          = "ENABLE";
-UART1.rxPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric1";
-
-/**
- * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
- * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
- * re-solve from scratch.
- */
-Board.peripheral.$suggestSolution          = "DEBUGSS";
-Board.peripheral.swclkPin.$suggestSolution = "PA20";
-Board.peripheral.swdioPin.$suggestSolution = "PA19";
-SYSCTL.peripheral.$suggestSolution         = "SYSCTL";
-UART1.peripheral.$suggestSolution          = "UART0";

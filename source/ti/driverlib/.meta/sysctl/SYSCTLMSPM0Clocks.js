@@ -158,6 +158,34 @@ const ClockSignals = {
         "ROSC",
         ... commonClockSignals,
     ],
+    "MSPM0GX70X_GX73X": [
+        "MFPCLK",
+        "ADCCLK_1",
+        "CANCLK",
+        "RTCCLK",
+        "HFCLK",
+        "HFXT",
+        "LFXT",
+        "HSCLK",
+        "SYSPLL",
+        "UDIV",
+        "ROSC",
+        ... commonClockSignals,
+    ],
+    "MSPM0H821X": [
+        "MFPCLK",
+        "ADCCLK_1",
+        "CANCLK",
+        "RTCCLK",
+        "HFCLK",
+        "HFXT",
+        "LFXT",
+        "HSCLK",
+        "SYSPLL",
+        "UDIV",
+        "ROSC",
+        ... commonClockSignals,
+    ],
     "MSPM0G122X": [
         "MFPCLK",
         "ADCCLK_1",
@@ -1462,7 +1490,7 @@ const clkFreqSuperset = {
     "HFCLK": [
         { name: "HFCLK_FreqOut", displayName: "HFCLK", default: 0, hidden: true, readOnly: true,
             getValue: (inst) => {
-                if(inst.clockTreeEn && (Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0H321X())){
+                if(inst.clockTreeEn && ClockSignals[index].includes("HFCLK") && !Common.isDeviceFamily_PARENT_MSPM0C110X()){
                     return system.clockTree["net_hfclk"].in * 1000000;
                 }
                 if(inst.clockTreeEn && Common.isDeviceFamily_PARENT_MSPM0C110X()){

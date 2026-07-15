@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['max_5fvalues',['max_values',['../struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2',1,'FBFE_Ctx']]],
-  ['maxpool_5foutputs',['maxpool_outputs',['../struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de',1,'FBFE_Ctx']]],
-  ['ms_5fbytes',['ms_bytes',['../struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed',1,'FBFE_Ctx']]],
-  ['ms_5fmask',['ms_mask',['../struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac',1,'FBFE_Config']]],
-  ['ms_5fshift',['ms_shift',['../struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e',1,'FBFE_Config']]],
-  ['msb_5ftemp',['msb_temp',['../struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315',1,'FBFE_Ctx']]]
+  ['len',['len',['../struct_buffer_info.html#a0d41fe464e9eb7cd5bcf0460c54b85fa',1,'BufferInfo']]],
+  ['ls_5fbytes',['ls_bytes',['../struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85',1,'FBFE_Ctx']]],
+  ['ls_5fmask',['ls_mask',['../struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43',1,'FBFE_Config']]],
+  ['lsb_5ftemp',['lsb_temp',['../struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973',1,'FBFE_Ctx']]]
 ];

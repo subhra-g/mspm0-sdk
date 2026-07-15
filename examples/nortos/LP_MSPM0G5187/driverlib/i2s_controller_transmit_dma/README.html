@@ -49,9 +49,57 @@
 </tr>
 </thead>
 <tbody>
+<tr class="odd">
+<td>SYSCTL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>I2S0</td>
+<td>Data Pin 0</td>
+<td>PA13</td>
+<td>J3_29</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>I2S0</td>
+<td>Data Pin 1</td>
+<td>PB13</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>I2S0</td>
+<td>BCLK Pin</td>
+<td>PA9</td>
+<td>J1_9</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>I2S0</td>
+<td>WCLK Pin</td>
+<td>PB10</td>
+<td>J2_37</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>BOARD</td>
+<td>Debug Clock</td>
+<td>PA20</td>
+<td>J101_16</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>BOARD</td>
+<td>Debug Data In Out</td>
+<td>PA19</td>
+<td>J101_14</td>
+<td></td>
+</tr>
 </tbody>
 </table>
-<p>TODO</p>
 <h3 id="device-migration-recommendations">Device Migration Recommendations</h3>
 <p>This project was developed for a superset device included in the MSPM0 LaunchPad. Please visit the <a href="https://software-dl.ti.com/msp430/esd/MSPM0-SDK/latest/docs/english/tools/ccs_ide_guide/doc_guide/doc_guide-srcs/ccs_ide_guide.html#sysconfig-project-migration">CCS User’s Guide</a> for information about migrating to other MSPM0 devices.</p>
 <h3 id="low-power-recommendations">Low-Power Recommendations</h3>
@@ -59,9 +107,8 @@
 <p>SysConfig allows developers to easily configure unused pins by selecting <strong>Board</strong>→<strong>Configure Unused Pins</strong>.</p>
 <p>For more information about jumper configuration to achieve low-power using the MSPM0 LaunchPad, please visit the LP-MSPM0G5187 User’s Guide.</p>
 <h2 id="example-usage">Example Usage</h2>
-<p>TODO: The Example Usage section is a rough draft intended only for developers. It will go over connecting the LaunchPad to the TAS5805EVM and how to use the TAS5805EVM configuration GUI, also known as PurePath Console 3. Again:</p>
-<p>FOR INTERNAL TEAM USE ONLY!!</p>
-<p>See this Confluence page: <a href="https://confluence.itg.ti.com/display/MSPsw/Using+TAS5805EVM+for+A1_USB+I2S+Audio" class="uri">https://confluence.itg.ti.com/display/MSPsw/Using+TAS5805EVM+for+A1_USB+I2S+Audio</a></p>
+<p>Connect the MPSM0 to an audio amplifier board, following the specific instructions for your board.</p>
+<p>Run the example. It will play a continuous tone via I2S from the speaker.</p>
 <!-- Close div from before_body_template.html -->
 </div>
 <footer id="tiFooter">

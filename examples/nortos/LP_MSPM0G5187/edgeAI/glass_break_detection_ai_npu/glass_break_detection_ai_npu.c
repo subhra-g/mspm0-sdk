@@ -31,7 +31,6 @@
  */
 
 #include "ti_msp_dl_config.h"
-#include "model_AUTOGEN.h"
 #include "constants.h"
 #include "filterbank_feature_extract.h"
 #include "glass_break_detection_testvector.h"  
@@ -73,6 +72,7 @@ int main(void)
         .ls_mask  = LS_MASK,
         .ms_mask  = MS_MASK,
         .ms_shift = MS_SHIFT,
+        .branch_bits = MODEL_BRANCHED_BITS,
     };
 
     FBFE_Init(&fe, &cfg, final_features, sizeof(final_features));

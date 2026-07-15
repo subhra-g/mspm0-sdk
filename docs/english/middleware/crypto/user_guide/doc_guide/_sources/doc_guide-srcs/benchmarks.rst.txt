@@ -1,0 +1,13 @@
+################################################################################
+Benchmarks
+################################################################################
+
+Benchmarks for typical algorithm performance and memory size are provided as a 
+guide during integration.
+
+.. toctree::
+   :maxdepth: 1
+
+   benchmarks_performance_mspm0g3519
+   benchmarks_performance_mspm33c321a
+   benchmarks_memory

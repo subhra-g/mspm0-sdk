@@ -1897,7 +1897,9 @@ function createAdvancedBCRConfigString(inst)
         Common.isDeviceFamily_PARENT_MSPM0L210X() ||
         Common.isDeviceFamily_PARENT_MSPM0G511X() ||
         Common.isDeviceFamily_PARENT_MSPM0G518X() ||
-        Common.isDeviceFamily_PARENT_MSPM0GX218_GX207())
+        Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
+        Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() ||
+        Common.isDeviceFamily_PARENT_MSPM0C511X())
     {
     /* Reserved, 32-bits (bc_reserved_1 or bc_reserved_2 for H321x) */
         bcrConfigStr +=  "FFFFFFFF"
@@ -1994,11 +1996,8 @@ function createAdvancedBCRConfigString(inst)
     bcrConfigStr += (inst.bslMode) ? "AABB" : "FFFF";
     bcrConfigStr += (inst.fastBootMode) ? "AABB" : "FFFF";
 
-    /* H321x does not have flash bank swap. Has 16-bit bc_reserved_0 instead */
-    if (Common.isDeviceFamily_PARENT_MSPM0H321X() ||
-        Common.isDeviceFamily_PARENT_MSPM0C1105_C1106()||
-        Common.isDeviceFamily_PARENT_MSPM0L211X_L112X() ||
-        Common.isDeviceFamily_PARENT_MSPM0L210X())
+    /* CRC 16 devices have bc_reserved 0 instead of flashBankSwap */
+    if (deviceOptions.CRC_BITS == 16)
     {
         bcrConfigStr += "FFFF";
     }
@@ -2123,7 +2122,9 @@ function createROMBSLString(inst)
         !Common.isDeviceFamily_PARENT_MSPM0L111X() &&
         !Common.isDeviceFamily_PARENT_MSPM0G511X() &&
         !Common.isDeviceFamily_PARENT_MSPM0G518X() &&
-        !Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()){
+        !Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() &&
+        !Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() &&
+        !Common.isDeviceFamily_PARENT_MSPM0C511X()){
         /* Reserved, 16-bits */
         bslConfigStr += "FFFF";
     }
@@ -2135,7 +2136,9 @@ function createROMBSLString(inst)
         Common.isDeviceFamily_PARENT_MSPM0L111X() ||
         Common.isDeviceFamily_PARENT_MSPM0G511X() ||
         Common.isDeviceFamily_PARENT_MSPM0G518X() ||
-        Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()){
+        Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
+        Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() ||
+        Common.isDeviceFamily_PARENT_MSPM0C511X()){
         bslConfigStr += inst.uartBaudDefault;
     }
 
@@ -2378,12 +2381,12 @@ if (deviceOptions.SUPPORT_ROM_BSL == true)
     if(Common.isUnicommUART()){
         uartTXPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/^UC\d.[T]X$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/^UC\d+.[T]X$/)),
         }));
     }else{
         uartTXPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UART\d.[T]X$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UART\d+.[T]X$/)),
         }));
     }
     uartTXPinData = _.filter(uartTXPinData, (pin) => pin.muxOptions.length);
@@ -2392,12 +2395,12 @@ if (deviceOptions.SUPPORT_ROM_BSL == true)
     if(Common.isUnicommUART()){
         uartRXPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/^UC\d.[R]X$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/^UC\d+.[R]X$/)),
         }));
     }else{
         uartRXPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UART\d.[R]X$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UART\d+.[R]X$/)),
         }));
     }
     uartRXPinData = _.filter(uartRXPinData, (pin) => pin.muxOptions.length);
@@ -2406,12 +2409,12 @@ if (deviceOptions.SUPPORT_ROM_BSL == true)
     if(Common.isUnicommI2C()){
         i2cSCLPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UC\d.SCL$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UC\d+.SCL$/)),
         }));
     }else{
         i2cSCLPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/I2C\d.SCL$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/I2C\d+.SCL$/)),
         }));
     }
     i2cSCLPinData = _.filter(i2cSCLPinData, (pin) => pin.muxOptions.length);
@@ -2420,12 +2423,12 @@ if (deviceOptions.SUPPORT_ROM_BSL == true)
     if(Common.isUnicommI2C()){
         i2cSDAPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UC\d.SDA$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/UC\d+.SDA$/)),
         }));
     }else{
         i2cSDAPinData = validDeviceDataPins.map((obj) => ({
             ...obj,
-            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/I2C\d.SDA$/)),
+            muxOptions: obj.mux.muxSetting.filter((muxOption) => muxOption.peripheralPin.name.match(/I2C\d+.SDA$/)),
         }));
     }
 

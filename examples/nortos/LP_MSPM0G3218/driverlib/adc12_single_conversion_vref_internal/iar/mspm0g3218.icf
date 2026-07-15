@@ -210,3 +210,5 @@ place in NON_MAIN_BCR_region  { section .BCRConfig };
 
 place in NON_MAIN_BSL_region  { section .BSLConfig };
 
+place in DATA_region  { section DataBank};
+

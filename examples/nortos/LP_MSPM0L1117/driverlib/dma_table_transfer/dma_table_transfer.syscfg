@@ -35,5 +35,4 @@ GPIO1.associatedPins[1].pin.$assign  = "PA25";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 
-
 SYSCTL.clockTreeEn  = true;

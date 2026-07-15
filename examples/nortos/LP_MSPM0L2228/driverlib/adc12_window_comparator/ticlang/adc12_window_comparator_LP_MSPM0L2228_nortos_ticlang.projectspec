@@ -26,7 +26,6 @@
             @device.opt
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/third_party/CMSIS/Core/Include
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source
-            -gdwarf-3
             -mcpu=cortex-m0plus
             -march=thumbv6m
             -mfloat-abi=soft
@@ -49,7 +48,7 @@
             --compiler ticlang
         "
         sourceLookupPath="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/driverlib"
-        description="ADC12 single conversion in repeat mode using window comparator feature">
+        description="ADC12 single conversion in repeat mode using the window comparator feature">
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../adc12_window_comparator.c" openOnCreation="false" excludeFromBuild="false" action="copy">

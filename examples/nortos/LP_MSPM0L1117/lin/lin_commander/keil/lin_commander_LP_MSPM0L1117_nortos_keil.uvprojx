@@ -82,14 +82,14 @@
               <FilePath>../lin_commander.c</FilePath>
             </File>
             <File>
-              <FileName>lin_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../lin_config.c</FilePath>
-            </File>
-            <File>
               <FileName>lin_config.h</FileName>
               <FileType>5</FileType>
               <FilePath>../lin_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>lin_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../lin_config.c</FilePath>
             </File>
             <File>
               <FileName>lin_commander.syscfg</FileName>

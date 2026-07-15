@@ -194,6 +194,20 @@ let DMA_TRIGGERS = {
         "ADC0"  : ["DMA_ADC0_EVT_GEN_BD_TRIG"],
         "ADC1"  : ["DMA_ADC1_EVT_GEN_BD_TRIG"]
     },
+    MSPM0GX70X_GX73X: {
+        "SW"    : ["DMA_SOFTWARE_TRIG"],
+        "FSUB_0": ["DMA_GENERIC_SUB0_TRIG"],
+        "FSUB_1": ["DMA_GENERIC_SUB1_TRIG"],
+        "AES"   : ["DMA_AESADV_AES_0_TRIG", "DMA_AESADV_AES_1_TRIG"],
+        "DAC0"  : ["DMA_DAC0_EVT_BD_1_TRIG"],
+        "UC4"   : ["DMA_UC4_TX_TRIG","DMA_UC4_RX_TRIG"],
+        "UC0"   : ["DMA_UC0_TX_TRIG","DMA_UC0_RX_TRIG"],
+        "UC5"   : ["DMA_UC5_TX_TRIG","DMA_UC5_RX_TRIG"],
+        "UC2"   : ["DMA_UC2_TX_TRIG","DMA_UC2_RX_TRIG"],
+        "UC9"   : ["DMA_UC9_TX_TRIG","DMA_UC9_RX_TRIG"],
+        "ADC0"  : ["DMA_ADC0_EVT_GEN_BD_TRIG"],
+        "ADC1"  : ["DMA_ADC1_EVT_GEN_BD_TRIG"]
+    },
     MSPM0G122X: {
         // TBA
         undefined,
@@ -206,6 +220,21 @@ let DMA_TRIGGERS = {
         "UC19"   : ["DMA_UC19_TX_TRIG","DMA_UC19_RX_TRIG"],
         "USBLC0": ["DMA_USBLC0_EVT_0_TRIG","DMA_USBLC0_EVT_1_TRIG","DMA_USBLC0_EVT_2_TRIG","DMA_USBLC0_EVT_3_TRIG","DMA_USBLC0_EVT_4_TRIG","DMA_USBLC0_EVT_5_TRIG", "DMA_USBLC0_EVT_6_TRIG","DMA_USBLC0_EVT_7_TRIG"],
         "ADC0"  : ["DMA_ADC0_EVT_GEN_TRIG"],
+    },
+    MSPM0H821X: {
+        "SW"    : ["DMA_SOFTWARE_TRIG"],
+        "FSUB_0": ["DMA_GENERIC_SUB0_TRIG"],
+        "FSUB_1": ["DMA_GENERIC_SUB1_TRIG"],
+        "AES"   : ["DMA_AESADV_AES_0_TRIG", "DMA_AESADV_AES_1_TRIG"],
+        "DAC0"  : ["DMA_DAC0_EVT_BD_1_TRIG"],
+        "UC0_0"   : ["DMA_UC0_0_TX_BD_TRIG","DMA_UC0_0_RX_BD_TRIG"],
+        "UC0_1"   : ["DMA_UC0_1_TX_BD_TRIG","DMA_UC0_1_RX_BD_TRIG"],
+        "UC5"   : ["DMA_UC5_TX_BD_TRIG","DMA_UC5_RX_BD_TRIG"],
+        "UC3_0"   : ["DMA_UC3_0_TX_BD_TRIG","DMA_UC3_0_RX_BD_TRIG"],
+        "UC3_1"   : ["DMA_UC3_1_TX_BD_TRIG","DMA_UC3_1_RX_BD_TRIG"],
+        "UC2"   : ["DMA_UC2_TX_BD_TRIG","DMA_UC2_RX_BD_TRIG"],
+        "ADC0"  : ["DMA_ADC0_EVT_GEN_BD_TRIG"],
+        "ADC1"  : ["DMA_ADC1_EVT_GEN_BD_TRIG"]
     }
 };
 

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2.1. Advanced Encryption Standard (AES) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Hash Module" href="module_hash.html" />
+    <link rel="prev" title="2. Cipher Module" href="module_cipher.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.1. Advanced Encryption Standard (AES)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">2.1.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardware-support">2.1.2. Hardware Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-features">2.1.3. Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-codes">2.1.4. Status Codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-types">2.1.5. Key Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-selection">2.1.6. Key Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-functions">2.1.7. API Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#initialization-deinitialization">2.1.7.1. Initialization / Deinitialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-management">2.1.7.2. Key Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single-block-operations">2.1.7.3. Single Block Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cbc-mode-operations">2.1.7.4. CBC Mode Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ctr-mode-operations">2.1.7.5. CTR Mode Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmac-operations">2.1.7.6. CMAC Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ccm-aead-operations">2.1.7.7. CCM AEAD Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#authentication">2.1.7.8. Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-examples">2.1.8. Usage Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-encryption">2.1.8.1. Basic Encryption</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cbc-mode-encryption">2.1.8.2. CBC Mode Encryption</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmac-authentication">2.1.8.3. CMAC Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes">2.1.9. Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_cipher.html"><span class="section-number">2. </span>Cipher Module</a> &raquo;</li>
+      <li><span class="section-number">2.1. </span>Advanced Encryption Standard (AES)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-encryption-standard-aes">
+<h1><span class="section-number">2.1. </span>Advanced Encryption Standard (AES)<a class="headerlink" href="#advanced-encryption-standard-aes" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">2.1.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The AES (Advanced Encryption Standard) cipher module provides cryptographic
+functionality for encryption and decryption operations. This implementation
+supports both single block operations and multi-block cipher modes.</p>
+<p>AES operations are usually performed on data buffers that are 32-bit word
+aligned.  In such cases, this alignment is mandatory and is also checked
+by the library at run time.</p>
+<p>Most AES operations are performed on plaintext, ciphertext, and
+associated data buffers which are integer multiples of the AES block size,
+which is 128 bits (16 bytes).  In such cases, this is mandatory and is also
+checked by the library at run time.  If padding is required, the application
+must provide the desired padding before executing an encrypt, decrypt, or
+MAC operation.</p>
+<p>Some operations, such as CCM AEAD operations, do accept byte arrays as input for
+the payload, associated data, and nonce, as it is not mantatory that these
+data lengths be block or even word multiples.</p>
+</section>
+<section id="hardware-support">
+<h2><span class="section-number">2.1.2. </span>Hardware Support<a class="headerlink" href="#hardware-support" title="Permalink to this heading">¶</a></h2>
+<p>The library requires the AESADV hardware accelerator module on compatible
+MSPM0 and MSPM33 devices. Currently supported device families include:</p>
+<ul class="simple">
+<li><p>MSPM0Gx51x  (MSPM0G1518, MSPM0G1519, MSPM0G3518, MSPM0G3519)</p></li>
+<li><p>MSPM0Lx22x  (MSPM0L1227, MSPM0L1228, MSPM0L2227, MSPM021228)</p></li>
+<li><p>MSPM0L111x  (MSPM0L1116, MSPM0L1117)</p></li>
+<li><p>MSPM33C32xx (MSPM33C321A)</p></li>
+</ul>
+</section>
+<section id="key-features">
+<h2><span class="section-number">2.1.3. </span>Key Features<a class="headerlink" href="#key-features" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>AES single block encryption/decryption</p></li>
+<li><p>AES CBC mode encryption/decryption</p></li>
+<li><p>AES CTR mode encryption/decryption</p></li>
+<li><p>AES CBC-MAC message authentication code generation for fixed size messages</p></li>
+<li><p>AES CMAC message authentication code generation and verification</p></li>
+<li><p>AES CCM AEAD authenticated encryption with additional data</p></li>
+<li><p>Support for 128-bit and 256-bit keys</p></li>
+<li><p>Hardware acceleration</p></li>
+</ul>
+</section>
+<section id="status-codes">
+<h2><span class="section-number">2.1.4. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h2>
+<p>The AES functions return status codes defined by
+the <cite>crypto_aes_stat_t</cite> enumeration:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_TAG_INVALID_ERR</cite></p></td>
+<td><p>-5</p></td>
+<td><p>A operation failed due to an invalid authentication tag</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_AES_HW_ERR</cite></p></td>
+<td><p>-4</p></td>
+<td><p>A hardware accelerator error occurred during the operation</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_KEYWRITE_ERR</cite></p></td>
+<td><p>-3</p></td>
+<td><p>The key memory was not writeable during the key set operation</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_AES_ALIGNMENT_ERR</cite></p></td>
+<td><p>-2</p></td>
+<td><p>Parameters were not properly aligned</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_PARAM_ERR</cite></p></td>
+<td><p>-1</p></td>
+<td><p>One or more parameters passed to the function were invalid</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_AES_OK</cite></p></td>
+<td><p>0</p></td>
+<td><p>The operation completed successfully</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_OK_TAG_VALID</cite></p></td>
+<td><p>1</p></td>
+<td><p>The operation completed successfully and the tag is valid</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-types">
+<h2><span class="section-number">2.1.5. </span>Key Types<a class="headerlink" href="#key-types" title="Permalink to this heading">¶</a></h2>
+<p>The AES module supports different key types specified
+by the <cite>crypto_aes_keytype_t</cite> enumeration:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_KEYTYPE_128</cite></p></td>
+<td><p>128-bit AES key (4 32-bit words)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_AES_KEYTYPE_256</cite></p></td>
+<td><p>256-bit AES key (8 32-bit words)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-selection">
+<h2><span class="section-number">2.1.6. </span>Key Selection<a class="headerlink" href="#key-selection" title="Permalink to this heading">¶</a></h2>
+<p>The AES key slot to use is specified by the <cite>crypto_aes_key_t</cite> enumeration:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key Selection</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_AES_KEYSEL_SESSION</cite></p></td>
+<td><p>Use the AES session key (not from key store)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_AES_KEYSEL_SLOT0-3</cite></p></td>
+<td><p>Key store slots 0-3 (currently unsupported)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="api-functions">
+<h2><span class="section-number">2.1.7. </span>API Functions<a class="headerlink" href="#api-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for AES is defined below.</p>
+<section id="initialization-deinitialization">
+<h3><span class="section-number">2.1.7.1. </span>Initialization / Deinitialization<a class="headerlink" href="#initialization-deinitialization" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">Crypto_AES_init</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Initializes the AES engine for subsequent encryption/decryption operations.
+Must be called before any other AES operations.  This powers on the AES engine
+and resets it.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">Crypto_AES_denit</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Initializes the AES engine for subsequent encryption/decryption operations.
+Must be called before any other AES operations.  This powers off the AES engine
+and resets it.</p>
+</section>
+<section id="key-management">
+<h3><span class="section-number">2.1.7.2. </span>Key Management<a class="headerlink" href="#key-management" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_setSessionKey</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">key</span><span class="p">,</span>
+<span class="w">                                           </span><span class="n">crypto_aes_keytype_t</span><span class="w"> </span><span class="n">keyType</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Loads an AES session key to the AES engine.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>key</cite>: Pointer to the key value to load to the engine</p></li>
+<li><p><cite>keyType</cite>: Type of AES key (<cite>CRYPTO_AES_KEYTYPE_128</cite> or <cite>CRYPTO_AES_KEYTYPE_256</cite>)</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+<section id="single-block-operations">
+<h3><span class="section-number">2.1.7.3. </span>Single Block Operations<a class="headerlink" href="#single-block-operations" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_encrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES encryption on a single 128-bit data block.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input plaintext block (4 32-bit words)</p></li>
+<li><p><cite>out</cite>: Pointer to the output ciphertext block (4 32-bit words)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_decrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES decryption on a single 128-bit data block.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input ciphertext block (4 32-bit words)</p></li>
+<li><p><cite>out</cite>: Pointer to the output plaintext block (4 32-bit words)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+<section id="cbc-mode-operations">
+<h3><span class="section-number">2.1.7.4. </span>CBC Mode Operations<a class="headerlink" href="#cbc-mode-operations" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CBC_encrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span>
+<span class="w">                                    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">                                    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">iv</span><span class="p">,</span>
+<span class="w">                                    </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES cipher block chained (CBC) encryption on an input plaintext buffer.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input plaintext buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output ciphertext buffer (32-bit word aligned)</p></li>
+<li><p><cite>len</cite>: Length of the input plaintext in bytes (must be a multiple of 16)</p></li>
+<li><p><cite>iv</cite>: Pointer to the initialization vector (32-bit word aligned)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CBC_decrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">iv</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES cipher block chained (CBC) decryption on an input ciphertext buffer.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input ciphertext buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output plaintext buffer (32-bit word aligned)</p></li>
+<li><p><cite>len</cite>: Length of the input ciphertext in bytes (must be a multiple of 16)</p></li>
+<li><p><cite>iv</cite>: Pointer to the initialization vector (32-bit word aligned)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+<section id="ctr-mode-operations">
+<h3><span class="section-number">2.1.7.5. </span>CTR Mode Operations<a class="headerlink" href="#ctr-mode-operations" title="Permalink to this heading">¶</a></h3>
+<p>The counter mode enables unauthenticated stream cipher encryption/decryption.
+Plaintext/ciphertext still must be padded to a multiple of the block size of 16
+bytes.  The CTR implementation always uses a 96-bit (12-byte) nonce and a 32-bit
+(4-byte) counter, both of which are application specified.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CTR_encrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">nonce</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">counter</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES counter (CTR) encryption on an input plaintext buffer.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input plaintext buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output ciphertext buffer (32-bit word aligned)</p></li>
+<li><p><cite>len</cite>: Length of the input plaintext in bytes (must be a multiple of 16)</p></li>
+<li><p><cite>nonce</cite>: Pointer to the 96-bit nonce (32-bit word aligned)</p></li>
+<li><p><cite>counter</cite>: The starting 32-bit counter value (usually 0 or 1)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CTR_decrypt</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">nonce</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">counter</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES counter (CTR) decryption on an input ciphertext buffer.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input ciphertext buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output plaintext buffer (32-bit word aligned)</p></li>
+<li><p><cite>len</cite>: Length of the input ciphertext in bytes (must be a multiple of 16)</p></li>
+<li><p><cite>nonce</cite>: Pointer to the 96-bit nonce (32-bit word aligned)</p></li>
+<li><p><cite>counter</cite>: The starting 32-bit counter value (usually 0 or 1)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+<section id="cmac-operations">
+<h3><span class="section-number">2.1.7.6. </span>CMAC Operations<a class="headerlink" href="#cmac-operations" title="Permalink to this heading">¶</a></h3>
+<p>The cipher-based message authentication code (CMAC) mode provides message
+authentication using AES. CMAC is a more secure alternative to CBC-MAC as it
+addresses the security vulnerabilities of CBC-MAC, particularly for variable-
+length messages.</p>
+<p>CMAC can generate and verify message authentication codes for input messages
+of any byte length. Unlike CBC-MAC, the input message does not need to be
+pre-padded to a block size multiple (padding is handled internally).</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CMAC_genTag</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mLen</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">tagLen</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Generates an AES CMAC authentication tag for an input message.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input message buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output MAC tag buffer</p></li>
+<li><p><cite>mLen</cite>: Length of the input message in bytes (can be any length)</p></li>
+<li><p><cite>tagLen</cite>: Length of the output tag in bytes (1-16 bytes)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CMAC_verTag</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">tag</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mLen</span><span class="p">,</span>
+<span class="w">                                         </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">tagLen</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Verifies an AES CMAC authentication tag for an input message.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input message buffer (32-bit word aligned)</p></li>
+<li><p><cite>tag</cite>: Pointer to the expected MAC tag buffer</p></li>
+<li><p><cite>mLen</cite>: Length of the input message in bytes (can be any length)</p></li>
+<li><p><cite>tagLen</cite>: Length of the tag in bytes (1-16 bytes)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<dl class="simple">
+<dt><strong>Returns:</strong> Status of the operation</dt><dd><ul class="simple">
+<li><p><cite>CRYPTO_AES_OK_TAG_VALID</cite> if the tag is valid for the message and key</p></li>
+<li><p><cite>CRYPTO_AES_TAG_INVALID_ERR</cite> if the tag is invalid</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="ccm-aead-operations">
+<h3><span class="section-number">2.1.7.7. </span>CCM AEAD Operations<a class="headerlink" href="#ccm-aead-operations" title="Permalink to this heading">¶</a></h3>
+<p>The counter with CBC-MAC (CCM) mode provides authenticated encryption for a
+payload with additional associated data authentication.</p>
+<p>A nonce must be provided, and and the nonce must be unqiue for each combination
+of key and payload/AAD.</p>
+<p>The nonce length is configurable but must be between 7 and 13 bytes.</p>
+<p>The tag length is also configurable but must be between 4 and 16 and must be
+even (odd length authentication tags are not allowed for CCM mode).</p>
+<p>The nonce, associated data, plaintext/ciphertext, and tag buffers do not need
+to be word or block aligned.</p>
+<p>It is possible to have only authenticated data (no payload), or only payload
+(without authenticated data).  However, one of the two must be present (no
+empty messages).</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CCM_encryptAndGen</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">nonce</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">nonceLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">aad</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">aadLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">tag</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">tagLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES CCM encryption and tag generation on an input payload and AAD.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>nonce</cite>: Pointer to the input nonce value</p></li>
+<li><p><cite>nonceLen</cite>: Length of the nonce in bytes (must be between 7 and 13)</p></li>
+<li><p><cite>aad</cite>: Pointer to the additional data to be authenticated</p></li>
+<li><p><cite>aadLen</cite>: Length of associated data in bytes</p></li>
+<li><p><cite>in</cite>: Pointer to the payload input plaintext buffer</p></li>
+<li><p><cite>out</cite>: Pointer to the payload output ciphertext buffer</p></li>
+<li><p><cite>len</cite>: Length of the payload in bytes</p></li>
+<li><p><cite>tag</cite>: Pointer to the authentication tag output buffer</p></li>
+<li><p><cite>tagLen</cite>: Length of the authentication tag in bytes</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CCM_decryptAndVer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">nonce</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">nonceLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">aad</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">aadLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">tag</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">tagLen</span><span class="p">,</span><span class="w"> </span>\
+<span class="w">                                               </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES CCM decryption and tag verification on an encrypted payload and
+AAD.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>nonce</cite>: Pointer to the input nonce value</p></li>
+<li><p><cite>nonceLen</cite>: Length of the nonce in bytes (must be between 7 and 13)</p></li>
+<li><p><cite>aad</cite>: Pointer to the additional data to be authenticated</p></li>
+<li><p><cite>aadLen</cite>: Length of associated data in bytes</p></li>
+<li><p><cite>in</cite>: Pointer to the payload input ciphertext buffer</p></li>
+<li><p><cite>out</cite>: Pointer to the payload output plaintext buffer</p></li>
+<li><p><cite>len</cite>: Length of the payload in bytes</p></li>
+<li><p><cite>tag</cite>: Pointer to the authentication tag input buffer</p></li>
+<li><p><cite>tagLen</cite>: Length of the authentication tag in bytes</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+<section id="authentication">
+<h3><span class="section-number">2.1.7.8. </span>Authentication<a class="headerlink" href="#authentication" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="nf">Crypto_AES_CBC_MAC</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span>
+<span class="w">                                     </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">crypto_aes_key_t</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Performs AES cipher block chained (CBC) MAC on an input plaintext buffer.</p>
+<p><strong>Note:</strong> CBC-MAC can be insecure in certain scenarios, particularly with
+variable message lengths. CMAC is generally recommended over CBC-MAC for better
+security. CBC-MAC is included primarily for DRBG random number generation.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>in</cite>: Pointer to the input plaintext buffer (32-bit word aligned)</p></li>
+<li><p><cite>out</cite>: Pointer to the output MAC tag buffer (32-bit word aligned)</p></li>
+<li><p><cite>len</cite>: Length of the input plaintext in bytes (must be a multiple of 16)</p></li>
+<li><p><cite>key</cite>: The AES engine key selection</p></li>
+</ul>
+<p><strong>Returns:</strong> Status of the operation</p>
+</section>
+</section>
+<section id="usage-examples">
+<h2><span class="section-number">2.1.8. </span>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this heading">¶</a></h2>
+<p>Examples for using the AES programming interface are given below.</p>
+<section id="basic-encryption">
+<h3><span class="section-number">2.1.8.1. </span>Basic Encryption<a class="headerlink" href="#basic-encryption" title="Permalink to this heading">¶</a></h3>
+<p>The example below demonstrates basic encryption of a single block.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/msp-crypto-lib.h&quot;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">example_aes_encrypt</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x01234567</span><span class="p">,</span><span class="w"> </span><span class="mh">0x89ABCDEF</span><span class="p">,</span><span class="w"> </span><span class="mh">0xFEDCBA98</span><span class="p">,</span><span class="w"> </span><span class="mh">0x76543210</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">plaintext</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x00112233</span><span class="p">,</span><span class="w"> </span><span class="mh">0x44556677</span><span class="p">,</span><span class="w"> </span><span class="mh">0x8899AABB</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCDDEEFF</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ciphertext</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Initialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Set the session key (128-bit)</span>
+<span class="w">    </span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_setSessionKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYTYPE_128</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Encrypt a single block</span>
+<span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_encrypt</span><span class="p">(</span><span class="n">plaintext</span><span class="p">,</span><span class="w"> </span><span class="n">ciphertext</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYSEL_SESSION</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Successfully encrypted</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Deinitialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_denit</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cbc-mode-encryption">
+<h3><span class="section-number">2.1.8.2. </span>CBC Mode Encryption<a class="headerlink" href="#cbc-mode-encryption" title="Permalink to this heading">¶</a></h3>
+<p>The example below demonstrates encryption using CBC mode.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/msp-crypto-lib.h&quot;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">example_aes_cbc_encrypt</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x01234567</span><span class="p">,</span><span class="w"> </span><span class="mh">0x89ABCDEF</span><span class="p">,</span><span class="w"> </span><span class="mh">0xFEDCBA98</span><span class="p">,</span><span class="w"> </span><span class="mh">0x76543210</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x00000000</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00000000</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00000000</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00000000</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">plaintext</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="mh">0x00112233</span><span class="p">,</span><span class="w"> </span><span class="mh">0x44556677</span><span class="p">,</span><span class="w"> </span><span class="mh">0x8899AABB</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCDDEEFF</span><span class="p">,</span>
+<span class="w">        </span><span class="mh">0x00112233</span><span class="p">,</span><span class="w"> </span><span class="mh">0x44556677</span><span class="p">,</span><span class="w"> </span><span class="mh">0x8899AABB</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCDDEEFF</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ciphertext</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Initialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Set the session key (128-bit)</span>
+<span class="w">    </span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_setSessionKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYTYPE_128</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Encrypt two blocks in CBC mode (32 bytes)</span>
+<span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_CBC_encrypt</span><span class="p">(</span>
+<span class="w">            </span><span class="n">plaintext</span><span class="p">,</span><span class="w"> </span><span class="n">ciphertext</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">iv</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYSEL_SESSION</span>
+<span class="w">        </span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Successfully encrypted</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Deinitialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_denit</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cmac-authentication">
+<h3><span class="section-number">2.1.8.3. </span>CMAC Authentication<a class="headerlink" href="#cmac-authentication" title="Permalink to this heading">¶</a></h3>
+<p>The example below demonstrates CMAC tag generation and verification.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/msp-crypto-lib.h&quot;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">example_aes_cmac</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="mh">0x01234567</span><span class="p">,</span><span class="w"> </span><span class="mh">0x89ABCDEF</span><span class="p">,</span><span class="w"> </span><span class="mh">0xFEDCBA98</span><span class="p">,</span><span class="w"> </span><span class="mh">0x76543210</span><span class="p">,</span>
+<span class="w">        </span><span class="mh">0x01234567</span><span class="p">,</span><span class="w"> </span><span class="mh">0x89ABCDEF</span><span class="p">,</span><span class="w"> </span><span class="mh">0xFEDCBA98</span><span class="p">,</span><span class="w"> </span><span class="mh">0x76543210</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">message</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x00112233</span><span class="p">,</span><span class="w"> </span><span class="mh">0x44556677</span><span class="p">,</span><span class="w"> </span><span class="mh">0x8899AABB</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCDDEEFF</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">tag</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Initialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Set the session key (256-bit)</span>
+<span class="w">    </span><span class="n">crypto_aes_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_setSessionKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYTYPE_256</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Generate CMAC tag (16 bytes) for message (16 bytes)</span>
+<span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_CMAC_genTag</span><span class="p">(</span>
+<span class="w">            </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYSEL_SESSION</span>
+<span class="w">        </span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Tag generated successfully</span>
+
+<span class="w">            </span><span class="c1">// Now verify the tag</span>
+<span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_AES_CMAC_verTag</span><span class="p">(</span>
+<span class="w">                </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">CRYPTO_AES_KEYSEL_SESSION</span>
+<span class="w">            </span><span class="p">);</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_OK_TAG_VALID</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// Tag is valid</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_AES_TAG_INVALID_ERR</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// Tag is invalid</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Deinitialize AES module</span>
+<span class="w">    </span><span class="n">Crypto_AES_deinit</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="important-notes">
+<h2><span class="section-number">2.1.9. </span>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Except for CCM, All buffers should be 32-bit aligned for optimal performance
+and to avoid alignment errors.</p></li>
+<li><p>Except for CCM, input lengths for block cipher modes must always be a
+multiple of the block size (16 bytes).</p></li>
+<li><p>The AES module must be initialized with <cite>Crypto_AES_init()</cite> before any other
+operations.</p></li>
+<li><p>The AES module should be deinitialized with <cite>Crypto_AES_deinit()</cite> after
+operations are completed.</p></li>
+<li><p>CBC-MAC should be used with caution and only for fixed-length messages.
+CMAC is recommended over CBC-MAC for message authentication as it is more
+secure and supports variable-length messages.</p></li>
+<li><p>CMAC input messages can be any byte length and do not require pre-padding.
+The input buffer must still be 32-bit word aligned.</p></li>
+<li><p>CMAC tag length can be from 1 to 16 bytes. Common tag lengths are 8, 12,
+or 16 bytes depending on security requirements.</p></li>
+<li><p>AEAD ciphers are recommended as they provide both encryption and
+authentication.</p></li>
+<li><p>Take measures to avoid nonce re-use, as nonce control is left to the
+application layer.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_cipher.html" class="btn btn-neutral float-left" title="2. Cipher Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_hash.html" class="btn btn-neutral float-right" title="3. Hash Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+#ifndef INPUT_CONFIG_H_
+#define INPUT_CONFIG_H_
+
+#define SKIP_NORMALIZE
+#define OUTPUT_INT
+#define FE_RFFT
+#define FE_COMPLEX_MAG_SCALE
+#define FE_MAG
+#define FE_DC_REM
+#define FE_BIN
+#define FE_CONCAT
+#define FE_VARIABLES 3
+#define FE_FRAME_SIZE 256
+#define FE_HL 1
+#define FE_FEATURE_SIZE_PER_FRAME 8
+#define FE_STACKING_CHANNELS 3
+#define FE_STACKING_FRAME_WIDTH 64
+#define FE_NN_OUT_SIZE 2
+#define FE_OFFSET 0
+#define FE_SCALE None
+#define FE_COMPLEX_MAG_SCALE_FACTOR 5
+#define FE_BIN_SIZE 16
+#define FE_BIN_OFFSET 1
+#define FE_BIN_NORMALIZE 1
+#define FE_NUM_FRAME_CONCAT 8
+
+#endif /* INPUT_CONFIG_H_ */

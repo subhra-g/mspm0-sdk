@@ -9,6 +9,8 @@ ifeq ($(MCU_VARIANT), mspm0g511x)
 	CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_MSPM0G511X
 else ifeq ($(MCU_VARIANT), mspm0g518x)
 	CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_MSPM0G518X
+else ifeq ($(MCU_VARIANT), mspm0c511x)
+	CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_MSPM0C511X
 endif
 
 # mcu driver cause following warnings
@@ -25,12 +27,22 @@ endif
 
 LD_FILE = $(SDK_DIR)/ti/devices/msp/m0p/linker_files/${TOOLCHAIN}/${MCU_SPECIFIC}.${LINKER_FILE_EXT}
 
+ifeq ($(MCU_VARIANT), mspm0c511x)
+	SRC_C += \
+		src/portable/mentor/musb/dcd_musbfsfc.c \
+
+else
+	SRC_C += \
+		src/portable/mentor/musb/dcd_musb.c \
+		src/portable/mentor/musb/hcd_musb.c \
+
+endif
+
 SRC_C += \
-	src/portable/mentor/musb/dcd_musb.c \
-	src/portable/mentor/musb/hcd_musb.c \
 	$(SDK_DIR)/ti/driverlib/dl_common.c \
 	$(SDK_DIR)/system_${MCU_VARIANT}.c \
 	$(SDK_DIR)/ti/devices/msp/m0p/startup_system_files/${TOOLCHAIN}/startup_${MCU_VARIANT}_${TOOLCHAIN}.c \
+
 
 INC += \
 	$(TOP)/lib/CMSIS_5/CMSIS/Core/Include \

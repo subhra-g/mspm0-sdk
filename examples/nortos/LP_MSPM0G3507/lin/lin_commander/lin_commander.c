@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2026, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,142 +29,341 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h>
-#include <string.h>
+
 #include "lin_config.h"
-#include "ti_msp_dl_config.h"
 
-#define LIN_TABLE_INDEX_PID_39 (0)
-#define LIN_TABLE_INDEX_PID_3A (1)
-#define LIN_TABLE_INDEX_PID_3B (2)
-#define LIN_TABLE_INDEX_PID_08 (3)
-#define LIN_TABLE_INDEX_PID_09 (4)
-#define LIN_TABLE_INDEX_PID_0D (5)
+static void App_processRxCallback(void);
+static void App_executeCurrentState(void);
 
-volatile bool gSendMessage1      = false;
-volatile bool gSendMessage2      = false;
-volatile bool gDataReceived      = false;
+volatile bool gProcessCmd = false;
+volatile OperationState_t gCurrentState = OP_STATE_PUBLISH;
 
-uint8_t gCommanderRXBuffer[LIN_DATA_MAX_BUFFER_SIZE] = {0};
-uint8_t gCommanderTXPacket[LIN_DATA_MAX_BUFFER_SIZE] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
+/*
+ * LIN Commander Message Table
+ *
+ * Defines the PIDs (Protected Identifiers) this commander handles.
+ * Each entry contains:
+ *   - msgID: 6-bit frame identifier
+ *   - msgPID: Protected identifier
+ *   - msgSize: Number of bytes in the message (1-8)
+ *   - checksumType: CLASSIC or ENHANCED
+ *   - direction: PUBLISH/SUBSCRIBE/IGNORE
+ *   - callbackFunction: Optional function pointer
+ */
 
-static void LIN_processMessage_Rx(void);
-
-LIN_table_record_t gCommanderMessageTable[LIN_COMMANDER_NUM_MSGS] = {
-    {0x39, /* PID 0x39 */
-        8, NULL},
-    {0xBA, /* PID 0x3A */
-        8, NULL},
-    {0xFB, /* PID 0x3B */
-        8, NULL},
-    {0x08, /* PID 0x08 */
-        5, LIN_processMessage_Rx},
-    {0x49, /* PID 0x09 */
-        5, LIN_processMessage_Rx},
-    {0x0D, /* PID 0x0D */
-        5, LIN_processMessage_Rx}};
+LIN_table_record_t commanderMessageTable[LIN_COMMANDER_NUM_MSGS] = {
+        /* PUBLISH frame - Commander sends data to Responder */
+        {
+          .msgID = 0x10,
+          .msgPID = 0x00,
+          .msgSize = 8,
+          .checksumType = LIN_CHECKSUM_ENHANCED,
+          .direction = LIN_DIRECTION_PUBLISH,
+          .callbackFunction = NULL
+        },
+        /* SUBSCRIBE frame - Commander receives data from Responder */
+        {
+          .msgID = 0x20,
+          .msgPID = 0x00,
+          .msgSize = 8,
+          .checksumType = LIN_CHECKSUM_ENHANCED,
+          .direction = LIN_DIRECTION_SUBSCRIBE,
+          .callbackFunction = App_processRxCallback
+        },
+        /* RESPONDER_TO_RESPONDER frames - Commander sends header only */
+        {
+          .msgID = 0x30,
+          .msgPID = 0x00,
+          .msgSize = 8,
+          .checksumType = LIN_CHECKSUM_ENHANCED,
+          .direction = LIN_DIRECTION_IGNORE,
+          .callbackFunction = NULL
+        },
+        {
+          .msgID = 0x31,
+          .msgPID = 0x00,
+          .msgSize = 8,
+          .checksumType = LIN_CHECKSUM_ENHANCED,
+          .direction = LIN_DIRECTION_IGNORE,
+          .callbackFunction = NULL
+        }
+};
 
 int main(void)
 {
+    /* Initialize all peripherals configured in SysConfig */
     SYSCFG_DL_init();
 
-    /* Enable transceiver */
+    /* Enable the LIN transceiver by setting the enable pin high */
     DL_GPIO_setPins(GPIO_LIN_ENABLE_PORT, GPIO_LIN_ENABLE_USER_LIN_ENABLE_PIN);
 
+    /* Calculate PIDs for all messages */
+    for (uint8_t msg = 0; msg < LIN_COMMANDER_NUM_MSGS; msg++)
+    {
+        commanderMessageTable[msg].msgPID = LIN_calculatePID(commanderMessageTable[msg].msgID);
+    }
+
+    /* Link message table to global LIN context */
+    gLIN.cmdMsgTbl = commanderMessageTable;
+
+    /* Initialize TX buffer with test data */
+    for (uint8_t testDataIndex = 0; testDataIndex < LIN_DATA_MAX_BUFFER_SIZE; testDataIndex++)
+    {
+        gLIN.txBuf[testDataIndex] = testDataIndex;
+    }
+
+    /* Clear any pending interrupts and enable LIN UART interrupt */
     NVIC_ClearPendingIRQ(LIN_0_INST_INT_IRQN);
     NVIC_EnableIRQ(LIN_0_INST_INT_IRQN);
+
+    /* Clear any pending interrupts and enable timer interrupt */
+    NVIC_ClearPendingIRQ(TIMER_0_INST_INT_IRQN);
     NVIC_EnableIRQ(TIMER_0_INST_INT_IRQN);
 
+    /* Enable switch interrupts */
     NVIC_EnableIRQ(GPIO_SWITCHES1_INT_IRQN);
-    NVIC_EnableIRQ(GPIO_SWITCHES2_INT_IRQN);
 
-    while (1) {
-        __WFI();
+    /* Initial LED state - both off */
+    DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
 
-        if (gSendMessage1 == true) { /* Send LIN message PID_39 */
-            gSendMessage1 = false;
-            gDataReceived = false;
-             /* Increment first and last bytes of the data */
-            gCommanderTXPacket[0] += 1;
-            gCommanderTXPacket[7] += 1;
-            LIN_Commander_sendPID(LIN_0_INST, LIN_TABLE_INDEX_PID_39, gCommanderTXPacket, gCommanderMessageTable);
+    /* Main loop - Sequential operation demo */
+    while (1)
+    {
+        /* Button press triggers next operation */
+        if (gProcessCmd)
+        {
+            gProcessCmd = false;
+            App_executeCurrentState();
 
-            /* Toggle LED1 with TX packet */
-            DL_GPIO_togglePins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
-
-        } else if (gSendMessage2 == true) { /* Send LIN message PID_08 */
-            gSendMessage2 = false;
-            gDataReceived = false;
-            LIN_Commander_sendPID(LIN_0_INST, LIN_TABLE_INDEX_PID_08, gCommanderTXPacket, gCommanderMessageTable);
+            /* Advance to next state */
+            gCurrentState++;
+            if (gCurrentState >= OP_STATE_MAX)
+            {
+                gCurrentState = OP_STATE_PUBLISH;
+            }
         }
+        else
+        {
+            /* Low power wait */
+            __WFI();
+        }
+    }
+}
+
+static void App_executeCurrentState(void)
+{
+    switch (gCurrentState)
+    {
+    case OP_STATE_PUBLISH:
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_PUBLISH, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        /* LED1 pulse for TX */
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        delay_cycles(DELAY_1MS * 50);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        break;
+
+    case OP_STATE_SUBSCRIBE:
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_SUBSCRIBE, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        /*
+         * There is no LED indication here because a callback function will be triggered on successful RX of data
+         * which will blink LED2.
+         */
+        break;
+
+    case OP_STATE_RESP_TO_RESP_1:
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_R2R_1, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        /* LED1 pulse for header TX */
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        delay_cycles(DELAY_1MS * 50);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        break;
+
+    case OP_STATE_RESP_TO_RESP_2:
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_R2R_2, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        /* LED1 pulse for header TX */
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        delay_cycles(DELAY_1MS * 50);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN);
+        break;
+
+    case OP_STATE_SLEEP:
+        LIN_Commander_sendGoToSleep(LIN_0_INST);
+        while (gLIN.transactionCompleted != true);
+        /* Turn both LEDs on briefly to indicate sleep */
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        delay_cycles(DELAY_1MS * 500);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        delay_cycles(OPERATION_DELAY_CYCLES);
+        break;
+
+    case OP_STATE_WAKEUP:
+        LIN_Commander_sendWakeup(LIN_0_INST);
+        while (gLIN.transactionCompleted != true);
+        /* Turn both LEDs on briefly to indicate wake-up */
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        delay_cycles(DELAY_1MS * 100);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        break;
+
+    case OP_STATE_SYNC_ERROR:
+        /* Wrong sync byte - 0xAA instead of 0x55 */
+        DL_UART_enableLINSendBreak(LIN_0_INST);
+        delay_cycles(LIN_BREAK_LENGTH);
+        DL_UART_disableLINSendBreak(LIN_0_INST);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, 0xAA);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, commanderMessageTable[MSG_IDX_PUBLISH].msgPID);
+        while (DL_UART_isBusy(LIN_0_INST));
+        while (!DL_UART_isRXFIFOEmpty(LIN_0_INST))
+        {
+            DL_UART_Extend_receiveData(LIN_0_INST);
+        }
+        break;
+
+    case OP_STATE_CHKSUM_ERROR:
+        /* Wrong checksum */
+        DL_UART_enableLINSendBreak(LIN_0_INST);
+        delay_cycles(LIN_BREAK_LENGTH);
+        DL_UART_disableLINSendBreak(LIN_0_INST);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, LIN_SYNC_BYTE);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, commanderMessageTable[MSG_IDX_PUBLISH].msgPID);
+        while (DL_UART_isBusy(LIN_0_INST));
+        while (!DL_UART_isRXFIFOEmpty(LIN_0_INST))
+        {
+            DL_UART_Extend_receiveData(LIN_0_INST);
+        }
+        for (uint8_t i = 0; i < 8; i++)
+        {
+            DL_UART_Extend_transmitDataBlocking(LIN_0_INST, gLIN.txBuf[i]);
+        }
+        /* Wrong checksum */
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, 0x00);
+        while (DL_UART_isBusy(LIN_0_INST));
+        while (!DL_UART_isRXFIFOEmpty(LIN_0_INST))
+        {
+            DL_UART_Extend_receiveData(LIN_0_INST);
+        }
+        break;
+
+    case OP_STATE_PID_PARITY_ERROR:
+        /* Bad PID parity - flip parity bits */
+        DL_UART_enableLINSendBreak(LIN_0_INST);
+        delay_cycles(LIN_BREAK_LENGTH);
+        DL_UART_disableLINSendBreak(LIN_0_INST);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, LIN_SYNC_BYTE);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, commanderMessageTable[MSG_IDX_PUBLISH].msgPID ^ 0xC0);
+        while (DL_UART_isBusy(LIN_0_INST));
+        while (!DL_UART_isRXFIFOEmpty(LIN_0_INST))
+        {
+            DL_UART_Extend_receiveData(LIN_0_INST);
+        }
+        break;
+
+    case OP_STATE_COM_NO_RES_ERROR:
+        /* Unknown PID - no responder will reply */
+        DL_UART_enableLINSendBreak(LIN_0_INST);
+        delay_cycles(LIN_BREAK_LENGTH);
+        DL_UART_disableLINSendBreak(LIN_0_INST);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, LIN_SYNC_BYTE);
+        DL_UART_Extend_transmitDataBlocking(LIN_0_INST, LIN_calculatePID(0x15));
+        while (DL_UART_isBusy(LIN_0_INST));
+        while (!DL_UART_isRXFIFOEmpty(LIN_0_INST))
+        {
+            DL_UART_Extend_receiveData(LIN_0_INST);
+        }
+        /*
+         * Enable RX interrupt and TIMER to receive RX data and generate TIMEOUT error
+         * if not byte is received.
+         */
+        gLIN.transactionCompleted = false;
+        gLIN.rxIdx = 0;
+        gLIN.chkSum.word = 0;
+        gLIN.rxState = LIN_RX_STATE_DATA;
+        gLIN.msgTblIdx = MSG_IDX_SUBSCRIBE;
+        DL_UART_Extend_clearInterruptStatus(LIN_0_INST,DL_UART_EXTEND_INTERRUPT_RX);
+        DL_UART_Extend_enableInterrupt(LIN_0_INST, DL_UART_EXTEND_INTERRUPT_RX);
+        DL_Timer_setLoadValue(TIMER_0_INST, TIMEOUT);
+        DL_Timer_startCounter(TIMER_0_INST);
+        while (gLIN.transactionCompleted != true);
+        break;
+
+    case OP_STATE_COM_INCMPLT_RES_ERROR:
+        commanderMessageTable[MSG_IDX_SUBSCRIBE].msgSize = 9;
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_SUBSCRIBE, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        commanderMessageTable[MSG_IDX_SUBSCRIBE].msgSize = 8;
+        break;
+
+    case OP_STATE_RES_NO_RES_ERROR:
+        commanderMessageTable[MSG_IDX_PUBLISH].msgSize = 0;
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_PUBLISH, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        commanderMessageTable[MSG_IDX_PUBLISH].msgSize = 8;
+        break;
+
+    case OP_STATE_RES_INCMPLT_RES_ERROR:
+        commanderMessageTable[MSG_IDX_PUBLISH].msgSize = 5;
+        LIN_Commander_sendFrame(LIN_0_INST, TIMER_0_INST, MSG_IDX_PUBLISH, gLIN.txBuf, commanderMessageTable);
+        while (gLIN.transactionCompleted != true);
+        commanderMessageTable[MSG_IDX_PUBLISH].msgSize = 8;
+        break;
+
+    default:
+        gCurrentState = OP_STATE_PUBLISH;
+        break;
     }
 }
 
 void GROUP1_IRQHandler(void)
 {
-    switch (DL_Interrupt_getPendingGroup(DL_INTERRUPT_GROUP_1)) {
-        case DL_INTERRUPT_GROUP1_IIDX_GPIOB:
-            switch (DL_GPIO_getPendingInterrupt(GPIO_SWITCHES1_PORT)) {
-                case GPIO_SWITCHES1_USER_SWITCH_1_IIDX:
-                    /* When USER_SWITCH_1_INST is pressed, send PID 0x39 */
-                    gSendMessage1 = true;
-
-                    break;
-                default:
-                    break;
-            }
+    switch (DL_Interrupt_getPendingGroup(DL_INTERRUPT_GROUP_1))
+    {
+    case GPIO_SWITCHES1_INT_IIDX:
+        switch (DL_GPIO_getPendingInterrupt(GPIO_SWITCHES1_PORT))
+        {
+        case GPIO_SWITCHES1_USER_SWITCH_1_IIDX:
+            gProcessCmd = true;
             break;
-        case DL_INTERRUPT_GROUP1_IIDX_GPIOA:
-            switch (DL_GPIO_getPendingInterrupt(GPIO_SWITCHES2_PORT)) {
-                case GPIO_SWITCHES2_USER_SWITCH_2_IIDX:
-                    /* When USER_SWITCH_2_INST is pressed, send PID 0x08 */
-                    gSendMessage2 = true;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-
-void LIN_0_INST_IRQHandler(void)
-{
-
-    uint8_t data = 0;
-
-    switch (DL_UART_Extend_getPendingInterrupt(LIN_0_INST)) {
-        case DL_UART_EXTEND_IIDX_RX:
-            /* Process data received from the Responder */
-            data = DL_UART_Extend_receiveData(LIN_0_INST);
-            DL_Timer_stopCounter(TIMER_0_INST);
-            DL_Timer_setLoadValue(TIMER_0_INST, TIMEOUT);
-            LIN_Commander_receiveMessage(LIN_0_INST, data, gCommanderRXBuffer, gCommanderMessageTable);
-            break;
-
-
-#ifdef Transmit_INT
-        case DL_UART_EXTEND_IIDX_TX:
-            LIN_Commander_transmitMessage(LIN_0_INST, gCommanderTXPacket, gCommanderMessageTable);
-            break;
-#endif
 
         default:
             break;
+        }
+        break;
+
+    default:
+        break;
     }
 }
 
-
-
-static void LIN_processMessage_Rx(void)
+/**
+ * @brief Callback function for successful RX (SUBSCRIBE frames)
+ */
+static void App_processRxCallback(void)
 {
-    /* Message received */
-    gDataReceived = true;
-
-    /* Toggle LED2 with RX packet */
-    DL_GPIO_togglePins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_2_PIN);
+    /* LED2 pulse for RX */
+    DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_2_PIN);
+    delay_cycles(DELAY_1MS * 50);
+    DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_2_PIN);
 }
 
-
+/**
+ * @brief LIN Error Handler
+ *
+ * Called when a LIN error is detected.
+ *
+ * @param error The error type that occurred
+ */
+void LIN_processError(LIN_ERROR error)
+{
+    /* Visual indication: Both LEDs blink 3 times to indicate error*/
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        delay_cycles(CPUCLK_FREQ / 20);
+        DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_USER_LED_1_PIN | GPIO_LEDS_USER_LED_2_PIN);
+        delay_cycles(CPUCLK_FREQ / 20);
+    }
+}

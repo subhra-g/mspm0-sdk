@@ -20,10 +20,12 @@ ifeq ($(VERBOSE), 1)
   V :=
 endif
 
-OBJECTS = tida_010997_data_capture.obj device_agent_protocol_dap_interface.obj comm_i2c_comm.obj comm_spi_comm.obj sensors_sensor.obj sensors_ambient_light_sensor_OPT4001.obj sensors_hall_effect_sensor_TMAG5170.obj sensors_humidity_temperature_sensor_HDC3020.obj sensors_imu_sensor_BMI270.obj sensors_pressure_sensor_BMP384.obj ti_edgeAI_device_agent_protocol_core_dap_core.obj ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
+OBJECTS = tida_010997_data_capture.obj device_agent_protocol_dap_interface.obj comm_i2c_comm.obj comm_spi_comm.obj sensors_sensor.obj sensors_ambient_light_sensor_OPT4001.obj sensors_hall_effect_sensor_TMAG5170.obj sensors_humidity_temperature_sensor_HDC3020.obj sensors_imu_sensor_BMI270.obj sensors_pressure_sensor_BMP384.obj sensors_analog_mic_sensor_TAA3020.obj ti_edgeAI_device_agent_protocol_core_dap_core.obj ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
 
 NAME = tida_010997_data_capture
 
+
+DFLAGS += -gdwarf-3
 
 CFLAGS += -I.. \
     -I. \
@@ -39,23 +41,30 @@ CFLAGS += -I.. \
     -Iexamples/edgeAI/tida_010997_data_capture/sensors/hall_effect \
     -Iexamples/edgeAI/tida_010997_data_capture/sensors/humidity_temperature \
     -Iexamples/edgeAI/tida_010997_data_capture/sensors/imu \
+    -Iexamples/edgeAI/tida_010997_data_capture/sensors/analog_mic \
     -Iexamples/edgeAI/tida_010997_data_capture/sensors/pressure \
     -I../comm \
     -I../sensors \
     -I../sensors/hall_effect \
     -I../sensors/humidity_temperature \
     -I../sensors/imu \
+    -I../sensors/analog_mic \
     -I../sensors/pressure \
     -I../sensors/ambient_light \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/device_agent_protocol/core" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/device_agent_protocol/uart_comm" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -ldevice.cmd.genlibs \
     "-L$(MSPM0_SDK_INSTALL_DIR)/source" \
@@ -138,11 +147,15 @@ sensors_pressure_sensor_BMP384.obj: ../sensors/pressure/sensor_BMP384.c $(SYSCFG
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_device_agent_protocol_core_dap_core.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/1845/execroot/__main__/source/ti/edgeAI/device_agent_protocol/core/dap_core.c $(SYSCFG_H_FILES)
+sensors_analog_mic_sensor_TAA3020.obj: ../sensors/analog_mic/sensor_TAA3020.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/1845/execroot/__main__/source/ti/edgeAI/device_agent_protocol/uart_comm/uart_comm_target.c $(SYSCFG_H_FILES)
+ti_edgeAI_device_agent_protocol_core_dap_core.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/8392/execroot/__main__/source/ti/edgeAI/device_agent_protocol/core/dap_core.c $(SYSCFG_H_FILES)
+	@ echo Building $@
+	$(V) $(CC) $(CFLAGS) -c $< -o $@
+
+ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/8392/execroot/__main__/source/ti/edgeAI/device_agent_protocol/uart_comm/uart_comm_target.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

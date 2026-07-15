@@ -98,7 +98,9 @@
                     }
                     else if((Common.isDeviceFamily_PARENT_MSPM0GX51X() ||
                                 Common.isDeviceFamily_PARENT_MSPM0G352X()  ||
-                                Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()) &&
+                                Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
+                                Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() ||
+                                Common.isDeviceFamily_PARENT_MSPM0H821X()) &&
                                 ind == 11 && inst.disChan11){
                         // do nothing
                     }

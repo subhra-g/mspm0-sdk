@@ -55,7 +55,7 @@
             <v6LangP>3</v6LangP>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>__MSPM0G5187__,__MSPM0G518X__,CFG_TUSB_MCU=OPT_MCU_MSPM0G518X,__USE_SYSCONFIG__</Define>
+              <Define>__MSPM0G5187__,__USE_SYSCONFIG__,__MSPM0G518X__,CFG_TUSB_MCU=OPT_MCU_MSPM0G518X</Define>
               <Undefine></Undefine>
               <IncludePath>../,../../../../../../source/third_party/CMSIS/Core/Include,../../../../../../source/,../../../../../../source/ti,../../../../../../source/ti/devices/msp,../../../../../../source/ti/driverlib,../../../../../../source/third_party/CMSIS/Core/Include,../../../../../../source/third_party/tinyusb/src,../../../../../../source/third_party/tinyusb/hw,../../../../../../source/third_party/tinyusb/hw/bsp/mspm0,../../../../../../source/third_party/tinyusb/hw/mcu/ti/mspm0/,../../../../../../source</IncludePath>
             </VariousControls>
@@ -76,6 +76,16 @@
         <Group>
           <GroupName>Source</GroupName>
           <Files>
+            <File>
+              <FileName>dcd_musb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c</FilePath>
+            </File>
+            <File>
+              <FileName>hcd_musb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c</FilePath>
+            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -109,6 +119,11 @@
             <File>
               <FileName>board.h</FileName>
               <FileType>5</FileType>
+              <FilePath>../third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116/board.h</FilePath>
+            </File>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
               <FilePath>../third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117/board.h</FilePath>
             </File>
             <File>
@@ -120,6 +135,11 @@
               <FileName>family.c</FileName>
               <FileType>1</FileType>
               <FilePath>../third_party/tinyusb/hw/bsp/mspm0/family.c</FilePath>
+            </File>
+            <File>
+              <FileName>family.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../third_party/tinyusb/hw/bsp/mspm0/family.h</FilePath>
             </File>
             <File>
               <FileName>audio.h</FileName>
@@ -497,14 +517,9 @@
               <FilePath>../third_party/tinyusb/src/osal/osal_rtx4.h</FilePath>
             </File>
             <File>
-              <FileName>dcd_musb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c</FilePath>
-            </File>
-            <File>
-              <FileName>hcd_musb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c</FilePath>
+              <FileName>dcd_musbfsfc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../third_party/tinyusb/src/portable/mentor/musb/dcd_musbfsfc.h</FilePath>
             </File>
             <File>
               <FileName>musb_ti.h</FileName>

@@ -114,8 +114,14 @@
     let vrefDelayVal = 1;
     let modSYSCTL = system.modules["/ti/driverlib/SYSCTL"];
     if(modSYSCTL){
-        // Delay expressed in cycles based on frequency, should be 10us
-        vrefDelayVal = Math.ceil(modSYSCTL.$static.MCLK_Freq / 100000);
+        if(Common.vrefHas5VIP()){
+            // 5V IP: 2.2ms power-up time per spec
+            vrefDelayVal = Math.ceil(modSYSCTL.$static.MCLK_Freq * 2.2 / 1000);
+        } else {
+            // TODO: [(H) JAN] need to confirm actual delay time with Luis.(MSPSWSDK-2038)
+            // Delay expressed in cycles based on frequency, should be 10us
+            vrefDelayVal = Math.ceil(modSYSCTL.$static.MCLK_Freq / 100000);
+        }
     }
 %%}
 % let vrefDelayStr2 = "("+vrefDelayVal+")";

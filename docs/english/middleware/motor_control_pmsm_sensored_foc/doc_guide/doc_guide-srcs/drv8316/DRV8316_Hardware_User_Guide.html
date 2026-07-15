@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hall Sensored FOC - DRV8316 Gate Driver User Guide &mdash; Sensored FOC Motor Control User Guide 1.02.01.xx documentation</title>
+  <title>Hall Sensored FOC - DRV8316 Gate Driver User Guide &mdash; Sensored FOC Motor Control User Guide 1.02.02.xx documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> Sensored FOC Motor Control User Guide
           </a>
               <div class="version">
-                1.02.01.xx
+                1.02.02.xx
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -90,6 +90,7 @@
 <h2>1. Hardware Required<a class="headerlink" href="#hardware-required" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.ti.com/tool/LP-MSPM0G3507">LP-MSPM0G3507</a> - MSPM0G3507 Launchpad</p></li>
+<li><p><a class="reference external" href="https://www.ti.com/tool/LP-MSPM0G3218">LP-MSPM0G3218</a> - MSPM0G3218 Launchpad</p></li>
 <li><p><a class="reference external" href="https://www.ti.com/tool/LP-MSPM0G3519">LP-MSPM0G3519</a> - MSPM0G3519 Launchpad</p></li>
 <li><p><a class="reference external" href="https://www.ti.com/tool/DRV8316REVM">DRV8316REVM</a> - The DRV8316REVM provides three half-H-bridge integrated MOSFET drivers for driving a three-phase brushless DC (BLDC) motor with 8-A Peak current drive, for 12-V/24-V DC rails or battery powered applications.</p></li>
 <li><p>DC Power supply that supports the required voltage and current</p></li>
@@ -101,11 +102,11 @@
 <h2>2. Hardware Setup<a class="headerlink" href="#hardware-setup" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic">
 <li><ul>
-<li><p>By default PA10 &amp; PA11 pins of MSPM0G3507 LaunchPad are connected to Backchannel UART pins through XDS. Sensored FOC application with DRV8316 Booster pack uses PA10 &amp; PA11 for Hall Sensor Inputs. To enable the Hall Sensing on PA10 and PA11 connect jumpers on J21 &amp; J22 between pins 2-3 as shown below.</p>
+<li><p>By default PA10 &amp; PA11 pins of MSPM0G3507/LP-MSPM0G3218 LaunchPad are connected to Backchannel UART pins through XDS. Sensored FOC application with DRV8316 Booster pack uses PA10 &amp; PA11 for Hall Sensor Inputs. To enable the Hall Sensing on PA10 and PA11 connect jumpers on J21 &amp; J22 between pins 2-3 as shown below.</p>
 <figure class="align-default" id="id1">
-<img alt="Jumpers on J21 &amp; J22 connected between pins 2-3 in LP-MSPM0G3507" src="../../_images/LPMSPM0G3507_JP_21_22.jpg" />
+<img alt="Jumpers on J21 &amp; J22 connected between pins 2-3 in LP-MSPM0G3507/LP-MSPM0G3218" src="../../_images/LPMSPM0G3507_JP_21_22.jpg" />
 <figcaption>
-<p><span class="caption-number">Fig. 22 </span><span class="caption-text">Jumpers on J21 &amp; J22 connected between pins 2-3 in LP-MSPM0G3507</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Fig. 22 </span><span class="caption-text">Jumpers on J21 &amp; J22 connected between pins 2-3 in LP-MSPM0G3507/LP-MSPM0G3218</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </li>
@@ -119,11 +120,11 @@
 </li>
 </ul>
 </li>
-<li><p>Connect the LP-MSPM0G3507/LP-MSPM0G3519 to the DRV8316REVM in one of two ways:</p>
+<li><p>Connect the LP-MSPM0G3507/LP-MSPM0G3218/LP-MSPM0G3519 to the DRV8316REVM in one of two ways:</p>
 <ul>
-<li><p>1 Plug the connectors J3 and J4 of the DRV8316REVM to the top of the connectors J3/J4 of the LP-MSPM0G3507/MSPM0G3519.</p>
+<li><p>1 Plug the connectors J3 and J4 of the DRV8316REVM to the top of the connectors J3/J4 of the LP-MSPM0G3507/LP-MSPM0G3218/LP-MSPM0G3519.</p>
 <ul class="simple">
-<li><p>In case of LP-MSPM0G3507 an additional connection need to be made from ISENB in DRV8316REVM to the PA25.</p></li>
+<li><p>In case of LP-MSPM0G3507/LP-MSPM0G3218 an additional connection need to be made from ISENB in DRV8316REVM to the PA25.</p></li>
 <li><p>In case of LP-MSPM0G3519 additional connection need to be made from ISENB to PA14 &amp; ISENC to PA25.</p></li>
 </ul>
 </li>
@@ -132,6 +133,7 @@
 <thead>
 <tr class="row-odd"><th class="head"><p>Connection</p></th>
 <th class="head"><p>MSPM0G3507</p></th>
+<th class="head"><p>MSPM0G3218</p></th>
 <th class="head"><p>MSPM0G3519</p></th>
 <th class="head"><p>DRV8316REVM</p></th>
 </tr>
@@ -139,35 +141,42 @@
 <tbody>
 <tr class="row-even"><td><p>Phase A HS input</p></td>
 <td><p>PB4</p></td>
+<td><p>PB4</p></td>
 <td><p>PB3</p></td>
 <td><p>INHA</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase A LS input</p></td>
+<td><p>PB1</p></td>
 <td><p>PB1</p></td>
 <td><p>PB9</p></td>
 <td><p>INLA</p></td>
 </tr>
 <tr class="row-even"><td><p>Phase B HS input</p></td>
 <td><p>PA28</p></td>
+<td><p>PA28</p></td>
 <td><p>PC4</p></td>
 <td><p>INHB</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase B LS input</p></td>
+<td><p>PA31</p></td>
 <td><p>PA31</p></td>
 <td><p>PC5</p></td>
 <td><p>INLB</p></td>
 </tr>
 <tr class="row-even"><td><p>Phase C HS input</p></td>
 <td><p>PB20</p></td>
+<td><p>PB20</p></td>
 <td><p>PB4</p></td>
 <td><p>INHC</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase C LS input</p></td>
 <td><p>PB13</p></td>
+<td><p>PB13</p></td>
 <td><p>PB5</p></td>
 <td><p>INLC</p></td>
 </tr>
 <tr class="row-even"><td><p>Serial clock input</p></td>
+<td><p>PB9</p></td>
 <td><p>PB9</p></td>
 <td><p>PB31</p></td>
 <td><p>SCLK</p></td>
@@ -175,74 +184,89 @@
 <tr class="row-odd"><td><p>Serial Data/Peripheral input</p></td>
 <td><p>PB8</p></td>
 <td><p>PB8</p></td>
+<td><p>PB8</p></td>
 <td><p>SDI</p></td>
 </tr>
 <tr class="row-even"><td><p>Serial Data/Peripheral output</p></td>
+<td><p>PB7</p></td>
 <td><p>PB7</p></td>
 <td><p>PB7</p></td>
 <td><p>SDO</p></td>
 </tr>
 <tr class="row-odd"><td><p>Chip Select</p></td>
 <td><p>PB12</p></td>
+<td><p>PB12</p></td>
 <td><p>PA7</p></td>
 <td><p>nSCS</p></td>
 </tr>
 <tr class="row-even"><td><p>Bus voltage input</p></td>
+<td><p>PA18</p></td>
 <td><p>PA18</p></td>
 <td><p>PB25</p></td>
 <td><p>VSENVM</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase A current input</p></td>
 <td><p>PA24</p></td>
+<td><p>PA24</p></td>
 <td><p>PB26</p></td>
 <td><p>ISENA</p></td>
 </tr>
 <tr class="row-even"><td><p>Phase B current input 1</p></td>
+<td><p>PA25</p></td>
 <td><p>PA25</p></td>
 <td><p>PB27</p></td>
 <td><p>ISENB</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase B current input 2</p></td>
 <td><p>PA17</p></td>
+<td><p>PA17</p></td>
 <td><p>PA14</p></td>
 <td><p>ISENB</p></td>
 </tr>
 <tr class="row-even"><td><p>Phase C current input</p></td>
+<td><p>PA16</p></td>
 <td><p>PA16</p></td>
 <td><p>PA25</p></td>
 <td><p>ISENC</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase A Voltage input</p></td>
 <td><p>PB19</p></td>
+<td><p>PB19</p></td>
 <td><p>PA27</p></td>
 <td><p>VSENA</p></td>
 </tr>
 <tr class="row-even"><td><p>Phase B Voltage input</p></td>
+<td><p>PA22</p></td>
 <td><p>PA22</p></td>
 <td><p>PA26</p></td>
 <td><p>VSENB</p></td>
 </tr>
 <tr class="row-odd"><td><p>Phase C Voltage input</p></td>
 <td><p>PB18</p></td>
+<td><p>PB18</p></td>
 <td><p>PB24</p></td>
 <td><p>VSENC</p></td>
 </tr>
 <tr class="row-even"><td><p>Fault Input</p></td>
+<td><p>PA27</p></td>
 <td><p>PA27</p></td>
 <td><p>PB30</p></td>
 <td><p>nFAULT</p></td>
 </tr>
 <tr class="row-odd"><td><p>DRV Enable output</p></td>
 <td><p>PB6</p></td>
+<td><p>PB6</p></td>
 <td><p>PB12</p></td>
 <td><p>DRVOFF</p></td>
 </tr>
 <tr class="row-even"><td><p>DRV Sleep</p></td>
 <td><p>PB2</p></td>
+<td><p>PB2</p></td>
 <td><p>PC2</p></td>
 <td><p>nSLEEP</p></td>
 </tr>
 <tr class="row-odd"><td><p>Controller Fault Output</p></td>
+<td><p>PB16</p></td>
 <td><p>PB16</p></td>
 <td><p>PB14</p></td>
 <td><p>LED</p></td>
@@ -251,8 +275,10 @@
 <td><p>GND</p></td>
 <td><p>GND</p></td>
 <td><p>GND</p></td>
+<td><p>GND</p></td>
 </tr>
 <tr class="row-odd"><td><p>HALL Sensor A GPIO input</p></td>
+<td><p>PA10</p></td>
 <td><p>PA10</p></td>
 <td><p>PA10</p></td>
 <td><p>HALLA</p></td>
@@ -260,19 +286,23 @@
 <tr class="row-even"><td><p>HALL Sensor B GPIO input</p></td>
 <td><p>PA11</p></td>
 <td><p>PA11</p></td>
+<td><p>PA11</p></td>
 <td><p>HALLB</p></td>
 </tr>
 <tr class="row-odd"><td><p>HALL Sensor C GPIO input</p></td>
+<td><p>PA12</p></td>
 <td><p>PA12</p></td>
 <td><p>PA12</p></td>
 <td><p>HALLC</p></td>
 </tr>
 <tr class="row-even"><td><p>UART TX</p></td>
 <td><p>PA26</p></td>
+<td><p>PA26</p></td>
 <td><p>PA9</p></td>
 <td><p>TX</p></td>
 </tr>
 <tr class="row-odd"><td><p>UART RX</p></td>
+<td><p>PA13</p></td>
 <td><p>PA13</p></td>
 <td><p>PA8</p></td>
 <td><p>RX</p></td>

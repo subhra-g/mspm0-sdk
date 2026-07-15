@@ -267,7 +267,12 @@ static const DL_DMA_Config gDMA_CH0Config = {
 
 SYSCONFIG_WEAK void SYSCFG_DL_DMA_CH0_init(void)
 {
+    DL_DMA_clearInterruptStatus(DMA, DL_DMA_INTERRUPT_CHANNEL0);
+    DL_DMA_enableInterrupt(DMA, DL_DMA_INTERRUPT_CHANNEL0);
+    DL_DMA_clearInterruptStatus(DMA, DL_DMA_FULL_CH_INTERRUPT_EARLY_CHANNEL0);
+    DL_DMA_enableInterrupt(DMA, DL_DMA_FULL_CH_INTERRUPT_EARLY_CHANNEL0);
     DL_DMA_initChannel(DMA, DMA_CH0_CHAN_ID , (DL_DMA_Config *) &gDMA_CH0Config);
+    DL_DMA_Full_Ch_setEarlyInterruptThreshold(DMA, DMA_CH0_CHAN_ID, DL_DMA_EARLY_INTERRUPT_THRESHOLD_HALF);
 }
 SYSCONFIG_WEAK void SYSCFG_DL_DMA_init(void){
     SYSCFG_DL_DMA_CH0_init();
@@ -293,7 +298,7 @@ static const DL_I2S_Config gI2S_0_config = {
     .wclkInvert  = DL_I2S_WCLK_INVERSION_ENABLED,
     .phase       = DL_I2S_PHASE_DUAL,
     .samplingEdge = DL_I2S_SAMPLE_EDGE_POS,
-    .sampleWordLength = 24,
+    .sampleWordLength = 31,
     .dataDelay   = DL_I2S_DATA_DELAY_ONE,
     .emptySlotOutput = DL_I2S_EMPTY_SLOT_OUTPUT_ZERO,
     .memoryAccessLength = DL_I2S_MEMORY_LENGTH_32_BIT,
@@ -319,7 +324,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_I2S_0_init(void) {
     DL_I2S_enableFreeRun(I2S_0_INST);
     DL_I2S_disableMCLKGeneration(I2S_0_INST);
     DL_I2S_setTXFIFOThreshold(I2S_0_INST, DL_I2S_TX_FIFO_LEVEL_1_2_EMPTY);
-    DL_I2S_setRXFIFOThreshold(I2S_0_INST, DL_I2S_RX_FIFO_LEVEL_1_2_FULL);
+    DL_I2S_setRXFIFOThreshold(I2S_0_INST, DL_I2S_RX_FIFO_LEVEL_1_4_FULL);
 
     /* Enable SPI RX interrupt as a trigger for DMA */
     DL_I2S_enableDMAReceiveEvent(I2S_0_INST, DL_I2S_DMA_INTERRUPT_RX_TRIGGER);

@@ -18,6 +18,8 @@ OBJECTS = ti_drivers_config.obj ti_msp_dl_config.obj main_freertos.obj empty.obj
 NAME = empty_freertos
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I../.. \
     -D__MSPM0G3507__ \
     -O2 \
@@ -27,12 +29,17 @@ CFLAGS += -I../.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/posix/ticlang" \
     "-I$(KERNEL_BUILD)" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-l$(MSPM0_SDK_INSTALL_DIR)/source/ti/drivers/lib/ticlang/m0p/drivers_mspm0g1x0x_g3x0x.a" \
     -i${WORKSPACE_LOC}/freertos_builds_LP_MSPM0G3507_release_ticlang/Debug \

@@ -244,6 +244,11 @@ if(!Common.vrefOnlyInternal()){
     profileOptions.push({name: "EXT_2_0_V", displayName: "External 2V"});
 }
 
+/* TODO: M0H821X profiles temporarily disabled — Re-enable with device-specific
+ * options (4V, 2.5V) once validated. */
+if(Common.isDeviceFamily_PARENT_MSPM0H821X()){
+    profileOptions = [];
+}
 profileOptions.push({name: "CUSTOM", displayName: "Custom"});
 
 
@@ -421,6 +426,30 @@ Consult datasheet for specifications. `,
             options     : [
                 //This is not actually a DL define. There is no bitfield to configure.
                 {name: "DL_VREF_BUFCONFIG_OUTPUT_4V", displayName: "4"},
+            ],
+            onChange    : onChangeBasicIntVolt,
+        },
+    ])
+}
+// 5V VREF IP supports 4V and 2.5V internal voltages
+else if(Common.vrefHas5VIP()) {
+    vrefBasicConfig = vrefBasicConfig.concat([
+        {
+            name        : "basicIntVolt",
+            displayName : "Internal Voltage (V)",
+            description : 'Configures output voltage of internal VREF',
+            longDescription:`
+When enabled as an internal source, VREF can be configured to output:
+* 4V, or
+* 2.5V
+
+Consult datasheet for specifications. `,
+            hidden      : false,
+            default     : "DL_VREF_BUFCONFIG_OUTPUT_1_4V",
+            options     : [
+                // DL_VREF_BUFCONFIG_OUTPUT_1_4V (bit encoding 0x80) outputs 4V on the 5V IP
+                {name: "DL_VREF_BUFCONFIG_OUTPUT_1_4V", displayName: "4"},
+                {name: "DL_VREF_BUFCONFIG_OUTPUT_2_5V", displayName: "2.5"},
             ],
             onChange    : onChangeBasicIntVolt,
         },
@@ -625,7 +654,7 @@ Check **SYSCTL** module for more information. `,
                         displayName : "Enable Sample-and-Hold Mode",
                         description : 'Enable Sample-and-Hold Mode',
                         longDescription: ``,
-                        hidden      : false,
+                        hidden      : !Common.vrefHasSampleHold(),
                         default     : false,
                         onChange    : onChangeadvSHEnable,
                     },
@@ -730,7 +759,8 @@ function moduleInstances(inst){
         Common.isDeviceFamily_PARENT_MSPM0GX51X() ||
         Common.isDeviceFamily_PARENT_MSPM0G352X() ||
         Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
-        Common.isDeviceFamily_PARENT_MSPM0G122X()) &&
+        Common.isDeviceFamily_PARENT_MSPM0G122X() ||
+        Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X()) &&
         (inst.basicMode.includes("DL_VREF_ENABLE_DISABLE"))))
     {
         if (["VREF+-","VREF+"].includes(inst.basicVrefPins))
@@ -778,7 +808,7 @@ function updateGUIbasedonConfig(inst, ui)
         ui.advClkSrcCalc_units.hidden   = !boolInternal;
         ui.basicIntVolt.hidden          = !boolInternal;
         ui.advClockConfigEnable.hidden  = !boolInternal;
-        ui.advSHEnable.hidden           = !boolInternal;
+        ui.advSHEnable.hidden           = !boolInternal || !Common.vrefHasSampleHold();
         ui.basicExtVolt.hidden          = !boolExternal;
         ui.basicVrefPins.hidden         = !boolExternal;
     }
@@ -792,7 +822,7 @@ function updateGUIbasedonConfig(inst, ui)
                 ui.basicIntVolt.hidden = false;
                 ui.basicExtVolt.hidden = true;
                 ui.advClockConfigEnable.hidden = false;
-                ui.advSHEnable.hidden = false;
+                ui.advSHEnable.hidden = !Common.vrefHasSampleHold();
             break;
             case "DL_VREF_ENABLE_DISABLE":
                 ui.advClkSrc.hidden = true;
@@ -953,7 +983,8 @@ function getVREFmV(inst) {
         /* Internal mode */
         if (inst.basicIntVolt == "DL_VREF_BUFCONFIG_OUTPUT_1_4V")
         {
-            vRefOutput = 1400;
+            // 5V IP: this bit encoding (0x80) produces 4V, not 1.4V
+            vRefOutput = Common.vrefHas5VIP() ? 4000 : 1400;
         }
         else if (inst.basicIntVolt == "DL_VREF_BUFCONFIG_OUTPUT_2_5V")
         {
@@ -977,7 +1008,8 @@ function getVREFmVInternal(inst) {
         /* Internal mode */
         if (inst.basicIntVolt == "DL_VREF_BUFCONFIG_OUTPUT_1_4V")
         {
-            vRefOutput = 1400;
+            // 5V IP: this bit encoding (0x80) produces 4V, not 1.4V
+            vRefOutput = Common.vrefHas5VIP() ? 4000 : 1400;
         }
         else if (inst.basicIntVolt == "DL_VREF_BUFCONFIG_OUTPUT_2_5V")
         {

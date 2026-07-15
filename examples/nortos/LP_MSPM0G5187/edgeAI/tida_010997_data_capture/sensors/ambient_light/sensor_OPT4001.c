@@ -34,7 +34,7 @@
 #include "i2c_comm.h"
 
 /* Number of CPU cycles for 1ms delay */
-#define CYCLES_PER_MS          (32000)
+#define CYCLES_PER_MS          (80000)
 
 /* Macro to convert duration (ms) to hardware clock ticks */
 #define MS_TO_CYCLES(ms)       ((ms) * (CYCLES_PER_MS))

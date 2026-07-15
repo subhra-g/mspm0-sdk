@@ -25,6 +25,8 @@ OBJECTS = calc.obj crc.obj main.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FIL
 NAME = absolute_angle_encoder_TIDA_010961
 
 
+DFLAGS += -gstrict-dwarf
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -40,10 +42,15 @@ CFLAGS += -I.. \
     -ffunction-sections \
     -fdata-sections \
     -g \
-    -gstrict-dwarf \
     -Wall \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include/newlib-nano" \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-L$(MSPM0_SDK_INSTALL_DIR)/source/ti/iqmath/lib/gcc/m0p/mathacl/mspm0g1x0x_g3x0x" \
     -l:iqmath.a \

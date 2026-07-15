@@ -101,7 +101,7 @@ SysConfig allows developers to easily configure unused pins by selecting **Board
 For more information about jumper configuration to achieve low-power using the MSPM0 LaunchPad, please visit the [LP-MSPM0G5187 User's Guide](https://www.ti.com/lit/slau967).
 
 ## Example Usage
-1. Connect a current sensor to the ADC input pin PA21. The sensor should be capable of safely measuring AC current in the circuit being monitored.
+1. Connect a current sensor to the ADC input pin PB22. The sensor should be capable of safely measuring AC current in the circuit being monitored.
 2. Compile, load and run the example.
 
 During operation:
@@ -113,6 +113,7 @@ Note: This example has been trained and validated with typical household AC circ
 ## References
 
 - [AFCI ModelZoo Example](https://github.com/TexasInstruments/tinyml-tensorlab/tree/r1.3/tinyml-modelzoo/examples/ac_arc_fault)
+- AC Arc Fault Detection Using Edge AI on MSPM0 LowPower MCU : [Applicvation Note](https://www.ti.com/lit/an/sdaa252/sdaa252.pdf)
 - MSPM0G5187 Technical Reference Manual [Link](https://www.ti.com/product/MSPM0G5187)
 - UL 1699 Standard for Arc-Fault Circuit Interrupters [Link](https://code-authorities.ul.com/wp-content/uploads/2014/05/Dini2.pdf)
 - [TI Neural Network Compiler Guide](https://software-dl.ti.com/mctools/nnc/mcu/users_guide/)

@@ -90,10 +90,16 @@ function(family_configure_example TARGET RTOS)
     family_add_tinyusb(${TARGET} OPT_MCU_MSPM0G511X ${RTOS})
   elseif (${MCU_VARIANT} STREQUAL "mspm0g518x")
     family_add_tinyusb(${TARGET} OPT_MCU_MSPM0G518X ${RTOS})
+  elseif (${MCU_VARIANT} STREQUAL "mspm0c511x")
+    family_add_tinyusb(${TARGET} OPT_MCU_MSPM0C511X ${RTOS})
   endif ()
   target_sources(${TARGET}-tinyusb PUBLIC
-    ${TOP}/src/portable/mentor/musb/dcd_musb.c
-    ${TOP}/src/portable/mentor/musb/hcd_musb.c
+    if (${MCU_VARIANT} STREQUAL "mspm0c511x")
+      ${TOP}/src/portable/mentor/musb/dcd_musbfsfc.c
+    else ()
+      ${TOP}/src/portable/mentor/musb/dcd_musb.c
+      ${TOP}/src/portable/mentor/musb/hcd_musb.c
+    endif ()
     )
   target_link_libraries(${TARGET}-tinyusb PUBLIC board_${BOARD})
 

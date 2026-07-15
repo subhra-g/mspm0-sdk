@@ -6,8 +6,6 @@
 //@v2CliArgs --device "MSPM0G5187" --package "LQFP-64(PM)"
 // @cliArgs --board /ti/boards/LP_MSPM0G5187 --rtos nortos
 
-
-
 /**
  * Import the modules used in this configuration.
  */

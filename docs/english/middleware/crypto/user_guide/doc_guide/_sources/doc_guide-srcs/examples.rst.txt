@@ -1,0 +1,26 @@
+################################################################################
+MSP Crypto Library Examples
+################################################################################
+
+The MSP Crypto Library includes code examples to demonstrate how to use the
+cryptographic primitives provided by the library.  These code examples
+are intentionally kept as simple as possible to make the usage of the modules
+as clear as possible.
+
+********************************************************************************
+Prerequisites
+********************************************************************************
+
+Prior to running the examples, the MSPM0-SDK or MSPM33-SDK must be downloaded 
+and installed as well.
+
+Link: `MSPM0-SDK <https://www.ti.com/tool/MSPM0-SDK>`
+
+Link: `MSPM33-SDK <https://www.ti.com/tool/MSPM33-SDK>`
+
+********************************************************************************
+Examples
+********************************************************************************
+
+The code examples are contained in the /examples directory, and are organized
+by example name, board, and IDE/compiler.

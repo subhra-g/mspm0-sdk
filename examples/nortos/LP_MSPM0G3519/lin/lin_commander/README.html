@@ -35,7 +35,16 @@
 <div id="content">
   <h1>Readme</h1>
 <h2 id="example-summary">Example Summary</h2>
-<p>This example configures the UART as a LIN Commander, and demonstrates basic transmit and receive of LIN 2.0 packets using enhanced checksum. LIN is a feature only usable with a UART Extend instance.</p>
+<p>This example configures the UART as a LIN Commander node that implements multi-frame LIN 2.0 communication including:</p>
+<ul>
+<li>Publishing (transmitting) data to responder nodes</li>
+<li>Subscribing (receiving) data from responder nodes</li>
+<li>Responder-to-responder communication (sending headers only)</li>
+<li>Bus sleep/wake-up signaling</li>
+<li>Error injection and handling (checksum errors, incomplete responses)</li>
+<li>State machine-based sequential frame transmission triggered by button press</li>
+</ul>
+<p>LIN is a feature only usable with a UART Extend instance.</p>
 <h2 id="peripherals-pin-assignments">Peripherals &amp; Pin Assignments</h2>
 <table>
 <thead>
@@ -188,59 +197,192 @@
 <p>SysConfig allows developers to easily configure unused pins by selecting <strong>Board</strong>→<strong>Configure Unused Pins</strong>.</p>
 <p>For more information about jumper configuration to achieve low-power using the MSPM0 LaunchPad, please visit the <a href="https://www.ti.com/lit/slau947">LP-MSPM0G3519 User’s Guide</a>.</p>
 <h2 id="example-usage">Example Usage</h2>
-<p>Connect the LIN Commander to a LIN BoosterPack with the following connections:</p>
+<h3 id="hardware-setup">Hardware Setup</h3>
+<ol>
+<li><strong>Connect LaunchPad to LIN BoosterPack:</strong></li>
+</ol>
 <ul>
 <li>Commander GND -&gt; BoosterPack GND</li>
 <li>Commander LIN_ENABLE -&gt; BoosterPack LIN_EN</li>
-<li>Commander TX -&gt; BoosterPack UATX (LIN TX)</li>
-<li>Commander RX -&gt; BoosterPack UARX (LIN RX)</li>
+<li>Commander TX (PA10) -&gt; BoosterPack UATX (LIN TX)</li>
+<li>Commander RX (PA11) -&gt; BoosterPack UARX (LIN RX)</li>
 </ul>
-<p>Connect a LIN Responder to a LIN BoosterPack with the following connections:</p>
+<ol>
+<li><strong>Connect LIN Bus:</strong></li>
+</ol>
 <ul>
-<li>Responder GND -&gt; BoosterPack GND</li>
-<li>Responder LIN_ENABLE -&gt; BoosterPack LIN_EN</li>
-<li>Responder TX -&gt; BoosterPack UATX (LIN TX)</li>
-<li>Responder RX -&gt; BoosterPack UARX (LIN RX)</li>
+<li>Connect the LIN Commander BoosterPack and the LIN Responder BoosterPack using the LIN bus lines in J5.</li>
+<li>The two LaunchPads will communicate via the LIN bus.</li>
 </ul>
-<p>Note: the BOOSTXL-CANFD-LIN BoosterPack is not directly compatible with the LP_MSPM0G3519 LaunchPad since the pins on the UART connector don’t support LIN. For this reason, the BoosterPack shouldn’t be stacked on top of the LaunchPad.</p>
-<p>Connect the LIN Commander BoosterPack and the LIN Responder BoosterPack using the LIN bus lines in J5.</p>
-<p>NOTE: Alternatively, a Network Analyzer compatible with LIN 2.0 can be substituted for a LIN Responder. To use the Network Analyzer, make the following connections between the Network Analyzer and LIN BoosterPack:</p>
+<p><strong>Note:</strong> The BOOSTXL-CANFD-LIN BoosterPack is not directly compatible with the LP_MSPM0G3519 LaunchPad since the pins on the UART connector don’t support LIN. The BoosterPack should NOT be stacked on top of the LaunchPad.</p>
+<p><strong>Alternative Setup:</strong> A Network Analyzer compatible with LIN 2.0 can be substituted for the LIN Responder. Make the following connections:</p>
 <ul>
 <li>Network Analyzer GND -&gt; BoosterPack GND</li>
 <li>Network Analyzer LINbus -&gt; BoosterPack LIN_TERM</li>
 </ul>
-<p>The LIN Commander is configured to run at 32MHz at 19200 baud. These settings can be modified in the application. The commander can transmit data either in polling mode or interrupt mode.</p>
-<p>The list of acceptable PID commands are:</p>
+<h3 id="configuration">Configuration</h3>
+<p>The LIN Commander is configured to run at 32MHz at 19200 baud. These settings can be modified in the application.</p>
+<h3 id="running-the-example">Running the Example</h3>
+<ol>
+<li>Compile and load the example on both the LIN Commander and LIN Responder LaunchPads.</li>
+<li>Run the Responder first (enters sleep waiting for bus activity).</li>
+<li>Run the Commander (will wake up the Responder and begin sequential frame transmission).</li>
+<li>Press S1 button (PA18 with internal pull-up) to advance through operation states.</li>
+</ol>
+<h3 id="operation-state-machine">Operation State Machine</h3>
+<p>The commander cycles through the following operation states each time the S1 button is pressed:</p>
+<table>
+<thead>
+<tr class="header">
+<th>State</th>
+<th>Operation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OP_STATE_PUBLISH</td>
+<td>Send Data</td>
+<td>Transmits 8 bytes to responder (MessageID 0x10); LED1 pulses on success</td>
+</tr>
+<tr class="even">
+<td>OP_STATE_SUBSCRIBE</td>
+<td>Receive Data</td>
+<td>Requests 8 bytes from responder (MessageID 0x20); LED2 pulses on successful RX</td>
+</tr>
+<tr class="odd">
+<td>OP_STATE_RESP_TO_RESP_1</td>
+<td>R2R Frame 1</td>
+<td>Sends header only for MessageID 0x30 (responder-to-responder); LED1 pulses</td>
+</tr>
+<tr class="even">
+<td>OP_STATE_RESP_TO_RESP_2</td>
+<td>R2R Frame 2</td>
+<td>Sends header only for MessageID 0x31 (responder-to-responder); LED1 pulses</td>
+</tr>
+<tr class="odd">
+<td>OP_STATE_SLEEP</td>
+<td>Go to Sleep</td>
+<td>Sends LIN sleep command (0x3C with 0x00 first byte); both LEDs on for 500ms</td>
+</tr>
+<tr class="even">
+<td>OP_STATE_WAKEUP</td>
+<td>Send Wakeup</td>
+<td>Transmits wakeup pulse (250µs–5ms dominant pulse); both LEDs on for 100ms</td>
+</tr>
+<tr class="odd">
+<td>OP_STATE_CHKSUM_ERROR</td>
+<td>Checksum Error</td>
+<td>Sends a frame with incorrect checksum for testing error handling</td>
+</tr>
+<tr class="even">
+<td>OP_STATE_RES_INCMPLT_RES_ERROR</td>
+<td>Incomplete Response</td>
+<td>Sends 5-byte frame instead of 8 bytes to test incomplete response error</td>
+</tr>
+</tbody>
+</table>
+<p>After reaching OP_STATE_RES_INCMPLT_RES_ERROR, the cycle repeats back to OP_STATE_PUBLISH.</p>
+<h3 id="commander-message-table">Commander Message Table</h3>
+<table>
+<thead>
+<tr class="header">
+<th>MessageID</th>
+<th>PID Range</th>
+<th>Frame Type</th>
+<th>Direction</th>
+<th>Size</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0x10</td>
+<td>Auto-calculated</td>
+<td>PUBLISH</td>
+<td>TX (8 bytes)</td>
+<td>8</td>
+<td>Sends 8 bytes of data to responder</td>
+</tr>
+<tr class="even">
+<td>0x20</td>
+<td>Auto-calculated</td>
+<td>SUBSCRIBE</td>
+<td>RX (8 bytes)</td>
+<td>8</td>
+<td>Receives 8 bytes of data from responder</td>
+</tr>
+<tr class="odd">
+<td>0x30</td>
+<td>Auto-calculated</td>
+<td>R2R</td>
+<td>IGNORE</td>
+<td>8</td>
+<td>Responder-to-responder: commander sends header only</td>
+</tr>
+<tr class="even">
+<td>0x31</td>
+<td>Auto-calculated</td>
+<td>R2R</td>
+<td>IGNORE</td>
+<td>8</td>
+<td>Responder-to-responder: commander sends header only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>TX Data Buffer:</strong></p>
 <ul>
-<li>PID 0x39 / 0x3A / 0x3B
-<ul>
-<li>Usage: LIN Commander sends a packet containing 8 bytes of data for LIN Responder to receive and store.</li>
-<li>Packet: [PID, DATA1, DATA2, DATA3, DATA4, DATA5, DATA6, DATA7, DATA8, ENHANCED_CHECKSUM]</li>
-<li>Example Packet: [0x39, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xA2]</li>
-</ul></li>
-<li>PID 0x08 / 0x09 / 0x0A
-<ul>
-<li>Usage: LIN Commander tells the LIN Responder to respond with 5 bytes of stored data.</li>
-<li>Packet: [PID]</li>
-<li>Example Packet: [0x8] The PIDs, message size, and functionality of the callback handlers can be modified and customized in the “gCommanderMessageTable” array in lin_commander.c.</li>
-</ul></li>
+<li>Initialized with sequential values: [0x00, 0x01, 0x02, …, 0x07]</li>
+<li>First byte increments after each successful PUBLISH transmission</li>
 </ul>
-<p>Compile, load and run the example.</p>
-<p>When S2 button is pressed, the following LIN 2.0 packet will be transmitted:</p>
+<p><strong>RX Data Buffer:</strong></p>
 <ul>
-<li>PID: 0x39</li>
-<li>Data: [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]</li>
-<li>Enhanced Checksum: 0xA2 Each time the S2 button is pressed, LED1 will toggle and the value of the first and last data bytes will be incremented by one.</li>
+<li>Stored in gLIN.rxPdu.shadowBuffer (max 8 bytes)</li>
+<li>Overwritten each time a SUBSCRIBE frame is successfully received</li>
 </ul>
-<p>When S2 button is pressed, the following LIN 2.0 packet will be transmitted:</p>
+<p><strong>Customization:</strong> The message table, PID mappings, and operation state logic can be modified in <a href="lin_commander.c" class="uri">lin_commander.c</a>.</p>
+<h3 id="button-interaction">Button Interaction</h3>
+<p><strong>S1 Button (PA18):</strong></p>
 <ul>
-<li>PID: 0x08</li>
-<li>Data: None</li>
-<li>Enhanced Checksum: None</li>
+<li>Press to advance to the next operation state</li>
+<li>Each press triggers the corresponding LIN frame transmission/reception</li>
+<li>Button uses internal pull-up; connect to GND when pressed</li>
+<li>GPIO_SWITCHES1_USER_SWITCH_1 interrupt handler sets gProcessCmd flag</li>
 </ul>
-<p>It is expected for the LIN Commander to receive 5 bytes of data after in response to PID 0x08.</p>
-<p>If the LIN Responder correctly sends a response, then LED2 will toggle and the variable “gDataReceived” will be set to true.</p>
-<p>The received bytes will be stored in “gCommanderRXBuffer”. Each time a new packet of data is received, it will overwrite what was previously stored in “gCommanderRXBuffer”.</p>
+<h3 id="sleepwakeup-sequence">Sleep/Wakeup Sequence</h3>
+<p><strong>Sleep Sequence:</strong></p>
+<ul>
+<li>Commander sends LIN sleep frame (PID 0x3C with data [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])</li>
+<li>Both LEDs turn on for 500ms to indicate sleep command sent</li>
+<li>Responder automatically enters sleep state</li>
+<li>Channel transitions to LIN_CHANNEL_SLEEP</li>
+</ul>
+<p><strong>Wakeup Sequence:</strong></p>
+<ul>
+<li>Commander sends a dominant pulse (250µs minimum per LIN spec, up to 5ms)</li>
+<li>Both LEDs turn on for 100ms to indicate wakeup pulse sent</li>
+<li>Responder wakes from sleep and returns to operational state</li>
+<li>Channel transitions to LIN_CHANNEL_OPERATIONAL</li>
+</ul>
+<h3 id="error-testing">Error Testing</h3>
+<p><strong>Checksum Error (OP_STATE_CHKSUM_ERROR):</strong></p>
+<ul>
+<li>Manually constructs LIN frame with incorrect checksum (0x00 instead of calculated value)</li>
+<li>Tests responder error handling and recovery</li>
+</ul>
+<p><strong>Incomplete Response Error (OP_STATE_RES_INCMPLT_RES_ERROR):</strong></p>
+<ul>
+<li>Temporarily reduces message size from 8 bytes to 5 bytes</li>
+<li>Responder sends only 5 bytes instead of expected 8, triggering incomplete response error</li>
+<li>Message size automatically restored to 8 bytes after frame transmission</li>
+</ul>
+<h3 id="led-indicators">LED Indicators</h3>
+<ul>
+<li><strong>LED1 (PB15):</strong> Brief pulse (50ms) on successful PUBLISH or R2R frame transmission</li>
+<li><strong>LED2 (PB22/PB26):</strong> Brief pulse (50ms) on successful SUBSCRIBE frame reception</li>
+<li><strong>Both LEDs:</strong> 500ms on during sleep command; 100ms on during wakeup pulse</li>
+<li><strong>Both LEDs:</strong> 3 rapid blinks (50ms on/off) when an error is detected</li>
+</ul>
 <!-- Close div from before_body_template.html -->
 </div>
 <footer id="tiFooter">

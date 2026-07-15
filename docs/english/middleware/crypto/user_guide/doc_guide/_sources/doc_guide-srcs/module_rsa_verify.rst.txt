@@ -1,0 +1,362 @@
+################################################################################
+RSA Digital Signature Verification Module
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The RSA module implements RSA-based digital signature verification routines for
+authenticating digital signatures. It provides functionality for:
+
+* RSASSA-PKCS1-v1.5 signature verification
+* RSASSA-PSS signature verification  
+* Public key preparation for optimized verification
+* Support for both direct modulus and pre-computed public key verification
+
+The implementation supports the following configuration:
+
+* Public exponent: 65537 (performance optimal and most common exponent)
+* Modulus size: 2048-bit (256-byte)
+* Padding schemes: EMSA-PKCS1-v1_5, EMSA-PSS
+* Hash functions: SHA-256 (for message digests and use inside the MGF)
+
+================================================================================
+Usage Patterns
+================================================================================
+
+There are two ways to use the RSA module:
+
+1. **Slower, but single call**: Use `Crypto_RSA_PKCS1P5_verify()` or
+   `Crypto_RSA_PSS_verify()` and pass the modulus directly. This is
+   a 1-step process but uses more CPU cycles because the public key
+   parameters for verification need to be computed from the modulus.
+
+2. **Faster, but 2 calls**: Use `Crypto_RSA_preparePkFromModulus()` first
+   to prepare a `crypto_rsa_fast_verify_pk_t` for each public key to
+   be used. Then, use the `Crypto_RSA_PKCS1P5_fastVerify()` or the
+   `Crypto_RSA_PSS_fastVerify()` function to perform RSA verification
+   on the public key after the public key parameters are pre-computed
+   in advance. This is faster at runtime and allows pre-computation
+   during application development/key installation.
+
+================================================================================
+Key Requirements
+================================================================================
+
+=============== ================ =============== ====================
+Parameter       Size             Format          Security Strength
+=============== ================ =============== ====================
+RSA Modulus     2048 bits        256 bytes       Approx. 112 bits
+Public Exponent Fixed            65537           N/A
+Signature       2048 bits        256 bytes       N/A
+Message Digest  256 bits         32 bytes        128 bits (collision)
+=============== ================ =============== ====================
+
+********************************************************************************
+Status Codes
+********************************************************************************
+
+RSA functions return status codes to indicate the result of requested operations.
+The RSA functions return status codes defined by the `crypto_rsa_stat_t`
+enumeration. Commonly used status codes for the RSA module are given in the
+table below.
+
+========================================== ====== =============================================================
+Status Code                                Value  Description
+========================================== ====== =============================================================
+`CRYPTO_RSA_STAT_OK`                       0x00   Operation completed successfully
+`CRYPTO_RSA_STAT_VALID_SIGNATURE`          0xA5   RSA signature verification result: signature valid
+`CRYPTO_RSA_STAT_INVALID_SIGNATURE`        0x5A   RSA signature verification result: signature not valid
+`CRYPTO_RSA_STAT_ERR_PARAM`                0x10   Parameter error (invalid input)
+`CRYPTO_RSA_STAT_ERR_OVERFLOW`             0x11   Arithmetic overflow occurred
+`CRYPTO_RSA_STAT_ERR_BNMATH`               0x12   Big number mathematics error
+`CRYPTO_RSA_STAT_ERR_UNSUPPORTED_MD_ALG`   0x13   Unsupported message digest algorithm
+`CRYPTO_RSA_STAT_ERR_BAD_EB`               0x14   Bad encoded block (PKCS1.5)
+`CRYPTO_RSA_STAT_ERR_BAD_TAG`              0x15   Bad tag in encoded block
+`CRYPTO_RSA_STAT_ERR_PSS_INCONSISTENT_EM`  0x16   PSS encoded message inconsistent
+========================================== ====== =============================================================
+
+Review the `crypto_rsa_stat_t` structure for a complete list.
+
+********************************************************************************
+Data Types and Definitions
+********************************************************************************
+
+================================================================================
+Key Size Definitions
+================================================================================
+
+The RSA module uses the following key size definitions from `rsa_type.h`:
+
+.. code-block:: c
+
+    /** @brief Key size for RSA: default to 2048-bit key length */
+    #define CRYPTO_RSA_KEY_SIZE_BITS 2048 
+
+    /** @brief RSA big number size in bytes */
+    #define CRYPTO_RSA_NUMBYTES ((CRYPTO_RSA_KEY_SIZE_BITS) / 8)
+
+    /** @brief RSA big number size in 32-bit words */
+    #define CRYPTO_RSA_NUMWORDS (CRYPTO_RSA_NUMBYTES / sizeof(uint32_t))
+
+================================================================================
+Endianness Selection
+================================================================================
+
+The `crypto_rsa_endianness_t` enumeration specifies input data endianness for
+inputting public keys:
+
+.. code-block:: c
+
+    typedef enum
+    {
+        CRYPTO_RSA_LITTLE_ENDIAN = 0x00,
+        CRYPTO_RSA_BIG_ENDIAN = 0x01
+    } crypto_rsa_endianness_t;
+
+================================================================================
+Hash Algorithm Selection
+================================================================================
+
+The `crypto_rsa_md_t` enumeration specifies supported hash algorithms.  As of
+now, only SHA-256 is supported with RSA verification.
+
+.. code-block:: c
+
+    typedef enum
+    {
+        CRYPTO_RSA_MD_SHA256 = 0x01,
+    } crypto_rsa_md_t;
+
+================================================================================
+Fast Verification Public Key Structure
+================================================================================
+
+The `crypto_rsa_fast_verify_pk_t` structure holds pre-computed public key
+parameters for optimized verification:
+
+.. code-block:: c
+
+    typedef struct {
+        /* Public key modulus as little endian array */
+        uint32_t n[CRYPTO_RSA_NUMWORDS];
+        /* Pre-computed R^2 value stored as a little endian array */
+        uint32_t rr[CRYPTO_RSA_NUMWORDS];
+        /* Pre-computed -1 / n[0] mod 2^32 value stored as an integer*/
+        uint32_t n0inv;
+    } crypto_rsa_fast_verify_pk_t;
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+================================================================================
+Public Key Preparation
+================================================================================
+
+The module supports public key preparation with the `Crypto_RSA_preparePkFromModulus` function.
+
+.. code-block:: c
+
+    extern crypto_rsa_stat_t Crypto_RSA_preparePkFromModulus(
+        const uint8_t *modulus, uint16_t modulusLen, 
+        crypto_rsa_endianness_t endianness,
+        crypto_rsa_fast_verify_pk_t *pk);
+
+Populates the fields in a `crypto_rsa_fast_verify_pk_t` data structure based on
+the modulus of a public key. The library assumes the use of the default RSA
+exponent of 65537.
+
+**Parameters:**
+
+* `modulus`: Pointer to the buffer containing the public key modulus
+* `modulusLen`: Byte length of the modulus
+* `endianness`: The endianness of the modulus input (big/little)
+* `pk`: Pointer to the public key data structure to populate
+
+**Returns:**
+
+* `CRYPTO_RSA_STAT_OK` on success, other status codes indicate specific errors.
+
+================================================================================
+PKCS#1 v1.5 Signature Verification
+================================================================================
+
+**Direct Verification (Slower)**
+
+.. code-block:: c
+
+    extern crypto_rsa_stat_t Crypto_RSA_PKCS1P5_verify(
+        const uint8_t *pkMod, uint16_t pkModLen, crypto_rsa_endianness_t endianness,
+        const uint8_t *md, crypto_rsa_md_t mdAlg,
+        const uint8_t *sig, uint32_t sigLen);
+
+Verifies a RSA RSASSA-PKCS1-v1.5 digital signature using a public key modulus
+provided directly. This is slower as it computes additional parameters every time.
+
+**Fast Verification (Pre-computed)**
+
+.. code-block:: c
+
+    extern crypto_rsa_stat_t Crypto_RSA_PKCS1P5_fastVerify(
+        const crypto_rsa_fast_verify_pk_t *pk, 
+        const uint8_t *md, crypto_rsa_md_t mdAlg,
+        const uint8_t *sig, uint32_t sigLen);
+
+Verifies a RSA RSASSA-PKCS1-v1.5 digital signature using pre-computed public
+key parameters for faster verification.
+
+**Common Parameters:**
+
+* `pkMod`/`pk`: Public key modulus or pre-computed public key structure
+* `pkModLen`: Length of the modulus in bytes (direct verification only)
+* `endianness`: Endianness of the modulus input (direct verification only)
+* `md`: Pointer to the pre-computed message digest
+* `mdAlg`: The message digest secure hash algorithm
+* `sig`: Pointer to the signature
+* `sigLen`: Length of the signature in bytes
+
+================================================================================
+PSS Signature Verification
+================================================================================
+
+**Direct Verification (Slower)**
+
+.. code-block:: c
+
+    extern crypto_rsa_stat_t Crypto_RSA_PSS_verify(
+        const uint8_t *pkMod, uint16_t pkModLen, crypto_rsa_endianness_t endianness,
+        const uint8_t *md, crypto_rsa_md_t mdAlg,
+        const uint8_t *sig, uint32_t sigLen,
+        uint32_t saltLen);
+
+**Fast Verification (Pre-computed)**
+
+.. code-block:: c
+
+    extern crypto_rsa_stat_t Crypto_RSA_PSS_fastVerify(
+        const crypto_rsa_fast_verify_pk_t *pk, 
+        const uint8_t *md, crypto_rsa_md_t mdAlg,
+        const uint8_t *sig, uint32_t sigLen,
+        uint32_t saltLen);
+
+Verifies RSA RSASSA-PSS digital signatures. Parameters are similar to PKCS#1 v1.5
+verification with an additional `saltLen` parameter specifying the length of the
+signature salt in bytes.
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for signature verification are shown below.
+
+================================================================================
+PKCS#1 v1.5 Verification with Direct Modulus
+================================================================================
+
+Verify a signature using the public key modulus directly:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Public key and signature data
+    uint8_t modulus[256];           // 2048-bit RSA modulus
+    uint8_t messageDigest[32];      // SHA-256 digest
+    uint8_t signature[256];         // RSA signature
+
+    // Verify signature using direct modulus (slower method)
+    crypto_rsa_stat_t status = Crypto_RSA_PKCS1P5_verify(
+        modulus, sizeof(modulus), CRYPTO_RSA_BIG_ENDIAN,
+        messageDigest, CRYPTO_RSA_MD_SHA256,
+        signature, sizeof(signature));
+
+    if (status == CRYPTO_RSA_STAT_VALID_SIGNATURE) {
+        // Signature is valid
+    } else if (status == CRYPTO_RSA_STAT_INVALID_SIGNATURE) {
+        // Signature is invalid
+    } else {
+        // Other error condition
+    }
+
+================================================================================
+PKCS#1 v1.5 Verification with Pre-computed Public Key
+================================================================================
+
+Verify a signature using pre-computed public key parameters for better performance:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Public key and signature data
+    uint8_t modulus[256];           // 2048-bit RSA modulus
+    uint8_t messageDigest[32];      // SHA-256 digest
+    uint8_t signature[256];         // RSA signature
+    crypto_rsa_fast_verify_pk_t pk; // Pre-computed public key structure
+
+    // Step 1: Prepare the public key (do this once per public key)
+    crypto_rsa_stat_t status = Crypto_RSA_preparePkFromModulus(
+        modulus, sizeof(modulus), CRYPTO_RSA_BIG_ENDIAN, &pk);
+
+    if (status != CRYPTO_RSA_STAT_OK) {
+        // Handle error
+        return;
+    }
+
+    // Step 2: Verify signature using fast verification (faster method)
+    status = Crypto_RSA_PKCS1P5_fastVerify(
+        &pk, messageDigest, CRYPTO_RSA_MD_SHA256,
+        signature, sizeof(signature));
+
+    if (status == CRYPTO_RSA_STAT_VALID_SIGNATURE) {
+        // Signature is valid
+    } else if (status == CRYPTO_RSA_STAT_INVALID_SIGNATURE) {
+        // Signature is invalid
+    } else {
+        // Other error condition
+    }
+
+================================================================================
+PSS Verification Example
+================================================================================
+
+Verify a PSS signature with salt length:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Public key and signature data
+    crypto_rsa_fast_verify_pk_t pk; // Pre-computed public key structure
+    uint8_t messageDigest[32];      // SHA-256 digest
+    uint8_t signature[256];         // RSA signature
+    uint32_t saltLength = 32;       // Salt length in bytes
+
+    // Verify PSS signature using fast verification
+    crypto_rsa_stat_t status = Crypto_RSA_PSS_fastVerify(
+        &pk, messageDigest, CRYPTO_RSA_MD_SHA256,
+        signature, sizeof(signature), saltLength);
+
+    if (status == CRYPTO_RSA_STAT_VALID_SIGNATURE) {
+        // Signature is valid
+    } else if (status == CRYPTO_RSA_STAT_INVALID_SIGNATURE) {
+        // Signature is invalid  
+    } else {
+        // Other error condition
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+1. The RSA module only supports signature verification, not signature generation.
+2. All routines expect the application to compute the message digest of the
+   message being verified using SHA-256 before calling the RSA verification
+   functions.
+3. The implementation assumes a fixed public exponent of 65537.
+4. For optimal performance, use the fast verification functions with
+   pre-computed public key parameters when verifying multiple signatures
+   with the same public key.
+5. Ensure proper endianness handling when providing the modulus input.

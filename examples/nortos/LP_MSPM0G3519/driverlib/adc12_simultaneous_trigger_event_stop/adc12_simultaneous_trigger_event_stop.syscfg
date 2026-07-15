@@ -36,7 +36,6 @@ ADC121.adcMem0chansel              = "DL_ADC12_INPUT_CHAN_12";
 ADC121.peripheral.$assign          = "ADC0";
 ADC121.peripheral.adcPin12.$assign = "PA14";
 
-
 ADC122.$name                       = "ADC12_1";
 ADC122.sampClkSrc                  = "DL_ADC12_CLOCK_ULPCLK";
 ADC122.sampClkDiv                  = "DL_ADC12_CLOCK_DIVIDE_8";
@@ -50,7 +49,6 @@ ADC122.subChanID                   = 12;
 ADC122.adcMem0chansel              = "DL_ADC12_INPUT_CHAN_14";
 ADC122.peripheral.$assign          = "ADC1";
 ADC122.peripheral.adcPin14.$assign = "PB27";
-
 
 Board.configureUnused             = true;
 Board.peripheral.$assign          = "DEBUGSS";

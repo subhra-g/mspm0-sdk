@@ -31,7 +31,6 @@ ADC121.adcMem0chansel              = "DL_ADC12_INPUT_CHAN_14";
 ADC121.peripheral.$assign          = "ADC1";
 ADC121.peripheral.adcPin14.$assign = "PB27";
 
-
 GPIO1.$name                          = "GPIO_LEDS";
 GPIO1.port                           = "PORTA";
 GPIO1.portSegment                    = "Lower";

@@ -27,6 +27,8 @@ OBJECTS = main.obj main-blinky.obj freertos_ticlang_startup_mspm0g351x_ticlang.o
 NAME = blink_led
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I../.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -38,12 +40,17 @@ CFLAGS += -I../.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/posix/ticlang" \
     "-I$(KERNEL_BUILD)" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -i${WORKSPACE_LOC}/freertos_builds_LP_MSPM0G3519_release_ticlang/Debug \
     -lfreertos_builds_LP_MSPM0G3519_release_ticlang.lib \

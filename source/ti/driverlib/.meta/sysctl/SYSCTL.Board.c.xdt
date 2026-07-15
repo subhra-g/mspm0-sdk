@@ -114,7 +114,7 @@
 %   }
 %}
 %   if(stat.enableEXCLK){
-%        if((Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X() || Common.isDeviceM0C()) && (["HFCLK","SYSPLLOUT1"].includes(stat.EXCLKSource))){
+%        if(ClockSignals.includes("HSCLK") && (["HFCLK","SYSPLLOUT1"].includes(stat.EXCLKSource))){
     /*
      * To output a signal that is greater than 32MHz a High-Speed IO (HSIO) pin
      * needs to be used and have high drive enabled.
@@ -287,7 +287,7 @@ SYSCONFIG_WEAK bool SYSCFG_DL_SYSCTL_SYSPLL_init(void)
 %   } // if (stat.useSYSPLL)
 % } // if Clock Tree enabled
 % /* LFCLK Config */
-%   if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X()){
+%   if(ClockSignals.includes("LFXT")){
     %   if(stat.LFCLKSource == "LFXT"){
 static const DL_SYSCTL_LFCLKConfig gSYSCTLConfig = {
     .lowCap   = `stat.LFCLKLowCap`,
@@ -415,7 +415,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
 %%}
 %%{ /* Helper function for Clock Tree needs */
     let isHSCLK = stat.MCLKSource == "HSCLK";
-    if(stat.clockTreeEn && Common.isDeviceM0G())
+    if(stat.clockTreeEn && (Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()))
     {
         let mod = system.modules["/ti/clockTree/mux.js"];
         let mclkMuxInst = _.find(mod.$instances, ['$name', 'SYSCTLMUX']);
@@ -566,7 +566,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
 %   }
 % }
 % /* LFCLK Config */
-%   if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X()){
+%   if(ClockSignals.includes("LFXT")){
     %   if(stat.LFCLKSource == "LFXT"){
     DL_SYSCTL_setLFCLKSourceLFXT((DL_SYSCTL_LFCLKConfig *) &gSYSCTLConfig);
     %   }
@@ -597,7 +597,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
             break;
        /* HSCLK Config */
         case "HSCLK":
-            if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X() || Common.isDeviceM0C()){
+            if(ClockSignals.includes("HSCLK")){
                 switch(stat.HSCLKSource){
                     case "SYSPLLCLK0":
                         printMClkSource += "DL_SYSCTL_setMCLKSource(SYSOSC, HSCLK, DL_SYSCTL_HSCLK_SOURCE_SYSPLL);";
@@ -641,7 +641,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
 % }
 % /* MFPCLK Config */
 % if(stat.MFPCLKEn === true){
-%   if(Common.isDeviceM0G()){
+%   if(ClockSignals.includes("MFPCLK") && ClockSignals.includes("HFCLK")){
     DL_SYSCTL_setMFPCLKSource(DL_SYSCTL_MFPCLK_SOURCE_`stat.MFPCLKSource`);
 %   if(stat.MFPCLKSource === "HFCLK" && stat.HFCLK4MFPCLKDIV != "DISABLE"){
     DL_SYSCTL_setHFCLKDividerForMFPCLK(DL_SYSCTL_HFCLK_MFPCLK_DIVIDER_`stat.HFCLK4MFPCLKDIV`);
@@ -690,7 +690,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
         }
     }
 
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         if((((stat.powerSysInterrupts).length>0) && (!stat.driversEn))){
         let powerSysInterruptCount = 0
         /* Disabled when TI Drivers configuration enabled */
@@ -751,7 +751,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
     let clockSources = [];
     if(stat.validateClkStatus){
         if(stat.clockTreeEn){
-            if(Common.isDeviceM0G()){
+            if(ClockSignals.includes("SYSPLL")){
                 let mod = system.modules["/ti/clockTree/divider.js"];
                 let pllClk0Inst = _.find(mod.$instances, ['$name', 'PLL_CLK0_DIV']);
                 let pllClk1Inst = _.find(mod.$instances, ['$name', 'PLL_CLK1_DIV']);
@@ -790,7 +790,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
 
             }
         } else {
-            if(Common.isDeviceM0G()){
+            if(ClockSignals.includes("SYSPLL")){
                 if(stat.useSYSPLL){
                     clockSources.push("DL_SYSCTL_CLK_STATUS_SYSPLL_GOOD");
                 }
@@ -801,7 +801,7 @@ if(!stat.powerPolicy.match(/SLEEP/)) {
                     clockSources.push("DL_SYSCTL_CLK_STATUS_HSCLK_GOOD");
                 }
             }
-            if(Common.isDeviceM0G()){
+            if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
                 if(stat.LFCLKSource === "LFXT"){
                     clockSources.push("DL_SYSCTL_CLK_STATUS_LFXT_GOOD");
                 }

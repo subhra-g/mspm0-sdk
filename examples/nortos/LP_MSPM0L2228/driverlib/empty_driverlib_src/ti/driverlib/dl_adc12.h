@@ -66,7 +66,7 @@ extern "C" {
 
 /* clang-format off */
 
-#if (ADC_SYS_NUM_ANALOG_CHAN > 16)
+#if (defined(ADC_SYS_NUM_ANALOG_CHAN) && (ADC_SYS_NUM_ANALOG_CHAN > 16))
 /*
  * @brief Device has more than 16 ADC input channels
  */
@@ -1417,7 +1417,7 @@ __STATIC_INLINE DL_ADC12_TRIG_SRC DL_ADC12_getTriggerSource(
 {
     uint32_t trigSrc = adc12->ULLMEM.CTL1 & ADC12_CTL1_TRIGSRC_MASK;
 
-    return (DL_ADC12_TRIG_SRC)(trigSrc);
+    return (DL_ADC12_TRIG_SRC) (trigSrc);
 }
 
 /**
@@ -1515,7 +1515,7 @@ __STATIC_INLINE void DL_ADC12_setDMASamplesCnt(
  */
 __STATIC_INLINE uint8_t DL_ADC12_getDMASampleCnt(const ADC12_Regs *adc12)
 {
-    return (uint8_t)((adc12->ULLMEM.CTL2 & ADC12_CTL2_SAMPCNT_MASK) >> 11);
+    return (uint8_t) ((adc12->ULLMEM.CTL2 & ADC12_CTL2_SAMPCNT_MASK) >> 11);
 }
 
 /**
@@ -1705,7 +1705,7 @@ __STATIC_INLINE void DL_ADC12_setSampleTime0(
  */
 __STATIC_INLINE uint16_t DL_ADC12_getSampleTime0(const ADC12_Regs *adc12)
 {
-    return (uint16_t)(adc12->ULLMEM.SCOMP0 + (uint32_t) 1);
+    return (uint16_t) (adc12->ULLMEM.SCOMP0 + (uint32_t) 1);
 }
 
 /**
@@ -1731,7 +1731,7 @@ __STATIC_INLINE void DL_ADC12_setSampleTime1(
  */
 __STATIC_INLINE uint16_t DL_ADC12_getSampleTime1(const ADC12_Regs *adc12)
 {
-    return (uint16_t)(adc12->ULLMEM.SCOMP1 + (uint32_t) 1);
+    return (uint16_t) (adc12->ULLMEM.SCOMP1 + (uint32_t) 1);
 }
 
 /**
@@ -1777,7 +1777,7 @@ __STATIC_INLINE uint32_t DL_ADC12_getFIFOData(const ADC12_Regs *adc12)
 {
     volatile const uint32_t *pReg = &adc12->ULLMEM.FIFODATA;
 
-    return (uint32_t)(*(pReg + DL_ADC12_SVT_OFFSET));
+    return (uint32_t) (*(pReg + DL_ADC12_SVT_OFFSET));
 }
 
 /**
@@ -1789,7 +1789,7 @@ __STATIC_INLINE uint32_t DL_ADC12_getFIFOData(const ADC12_Regs *adc12)
  */
 __STATIC_INLINE uint32_t DL_ADC12_getFIFOAddress(const ADC12_Regs *adc12)
 {
-    return ((uint32_t)(&adc12->ULLMEM.FIFODATA + DL_ADC12_SVT_OFFSET));
+    return ((uint32_t) (&adc12->ULLMEM.FIFODATA + DL_ADC12_SVT_OFFSET));
 }
 
 /**
@@ -1850,7 +1850,7 @@ __STATIC_INLINE uint16_t DL_ADC12_getMemResult(
 {
     volatile const uint32_t *pReg = &adc12->ULLMEM.MEMRES[idx];
 
-    return (uint16_t)(*(pReg + DL_ADC12_SVT_OFFSET));
+    return (uint16_t) (*(pReg + DL_ADC12_SVT_OFFSET));
 }
 
 /**
@@ -1865,7 +1865,7 @@ __STATIC_INLINE uint16_t DL_ADC12_getMemResult(
 __STATIC_INLINE uint32_t DL_ADC12_getMemResultAddress(
     const ADC12_Regs *adc12, DL_ADC12_MEM_IDX idx)
 {
-    return ((uint32_t)(&adc12->ULLMEM.MEMRES[idx] + DL_ADC12_SVT_OFFSET));
+    return ((uint32_t) (&adc12->ULLMEM.MEMRES[idx] + DL_ADC12_SVT_OFFSET));
 }
 
 /**
@@ -2083,7 +2083,7 @@ __STATIC_INLINE void DL_ADC12_setPublisherChanID(
  */
 __STATIC_INLINE uint8_t DL_ADC12_getPublisherChanID(const ADC12_Regs *adc12)
 {
-    return (uint8_t)(adc12->ULLMEM.FPUB_1 & ADC12_FPUB_1_CHANID_MAXIMUM);
+    return (uint8_t) (adc12->ULLMEM.FPUB_1 & ADC12_FPUB_1_CHANID_MAXIMUM);
 }
 
 /**
@@ -2111,7 +2111,7 @@ __STATIC_INLINE void DL_ADC12_setSubscriberChanID(
  */
 __STATIC_INLINE uint8_t DL_ADC12_getSubscriberChanID(const ADC12_Regs *adc12)
 {
-    return (uint8_t)(adc12->ULLMEM.FSUB_0 & ADC12_FSUB_0_CHANID_MAXIMUM);
+    return (uint8_t) (adc12->ULLMEM.FSUB_0 & ADC12_FSUB_0_CHANID_MAXIMUM);
 }
 
 /**
@@ -2385,7 +2385,7 @@ __STATIC_INLINE bool DL_ADC12_isSAMPCAPEnabled(const ADC12_Regs *adc12)
 __STATIC_INLINE int16_t DL_ADC12_getADCOffsetCalibration(float userRef)
 {
     float adcBuff = DL_FactoryRegion_getADCOffset() * (3.3 / userRef);
-    return (int16_t)(round(adcBuff));
+    return (int16_t) (round(adcBuff));
 }
 #endif
 

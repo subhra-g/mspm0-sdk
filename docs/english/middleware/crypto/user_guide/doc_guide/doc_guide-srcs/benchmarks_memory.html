@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9.3. Memory Requirements &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. MSP Crypto Library Examples" href="examples.html" />
+    <link rel="prev" title="9.2. Performance and Throughput - MSPM33C3 Platform" href="benchmarks_performance_mspm33c321a.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="benchmarks_performance_mspm0g3519.html">9.1. Performance and Throughput - MSPM0G Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks_performance_mspm33c321a.html">9.2. Performance and Throughput - MSPM33C3 Platform</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9.3. Memory Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sram-stack-and-data-requirements-mspm0-arm-cortex-m0">9.3.1. SRAM (Stack and Data) Requirements - MSPM0 (Arm Cortex-M0+)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="benchmarks.html"><span class="section-number">9. </span>Benchmarks</a> &raquo;</li>
+      <li><span class="section-number">9.3. </span>Memory Requirements</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="memory-requirements">
+<h1><span class="section-number">9.3. </span>Memory Requirements<a class="headerlink" href="#memory-requirements" title="Permalink to this heading">¶</a></h1>
+<p>The memory requirements for various modules of the library are given below
+as a reference for estimating the memory impact of including a given primitive.</p>
+<p><strong>NOTE:</strong> Some primitives share subroutines.  In these cases, the code (flash)
+size for including two algorithms (for example, a sign and verify algorithm) may
+be lower than the simple sum of the code size of each algorithm on its own.</p>
+<p><strong>NOTE:</strong> Some primitives require a minimum stack space to be available.  Be
+sure to budget the stack usage for your application, considering call sequences.</p>
+<p><strong>NOTE:</strong> This library does not use any dynamic memory allocation (no heap).
+All SRAM memory required by the library is taken from the call stack itself.</p>
+<section id="sram-stack-and-data-requirements-mspm0-arm-cortex-m0">
+<h2><span class="section-number">9.3.1. </span>SRAM (Stack and Data) Requirements - MSPM0 (Arm Cortex-M0+)<a class="headerlink" href="#sram-stack-and-data-requirements-mspm0-arm-cortex-m0" title="Permalink to this heading">¶</a></h2>
+<p>The SRAM requirements including stack usage and expected associated data
+for buffers which are generally required to use a given function are
+given in the table below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Function</p></th>
+<th class="head"><p>Stack (B)</p></th>
+<th class="head"><p>Data (B)</p></th>
+<th class="head"><p>Tot RAM (B)</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_setSessionKey</p></td>
+<td><p>40</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>Assumes the key to load was in flash or stored separately.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_encrypt</p></td>
+<td><p>48</p></td>
+<td><p>16</p></td>
+<td><p>64</p></td>
+<td><p>Data is SRAM buffer to hold the resulting ciphertext.</p></td>
+</tr>
+<tr class="row-even"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_decrypt</p></td>
+<td><p>48</p></td>
+<td><p>16</p></td>
+<td><p>64</p></td>
+<td><p>Data is SRAM buffer to hold the resulting plaintext.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CBC_encrypt</p></td>
+<td><p>96</p></td>
+<td><p>32</p></td>
+<td><p>128</p></td>
+<td><p>Data is SRAM buffer to hold the IV and the resulting minimum ciphertext.</p></td>
+</tr>
+<tr class="row-even"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CBC_decrypt</p></td>
+<td><p>96</p></td>
+<td><p>32</p></td>
+<td><p>128</p></td>
+<td><p>Data is SRAM buffer to hold the IV and the resulting minimum plaintext.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CMAC_genTag</p></td>
+<td><p>184</p></td>
+<td><p>16</p></td>
+<td><p>200</p></td>
+<td><p>Data is SRAM buffer to hold CMAC output.</p></td>
+</tr>
+<tr class="row-even"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CMAC_verTag</p></td>
+<td><p>208</p></td>
+<td><p>0</p></td>
+<td><p>208</p></td>
+<td><p>Assumes the key to load and tag were in flash or stored separately.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CCM_encryptAndGen</p></td>
+<td><p>168</p></td>
+<td><p>16</p></td>
+<td><p>184</p></td>
+<td><p>Data is SRAM buffer to hold tag output.</p></td>
+</tr>
+<tr class="row-even"><td><p>Cipher</p></td>
+<td><p>Crypto_AES_CCM_decryptAndVer</p></td>
+<td><p>168</p></td>
+<td><p>0</p></td>
+<td><p>168</p></td>
+<td><p>Assumes the key to load and tag were in flash or stored separately.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hash</p></td>
+<td><p>Crypto_SHA224</p></td>
+<td><p>312</p></td>
+<td><p>28</p></td>
+<td><p>340</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-even"><td><p>Hash</p></td>
+<td><p>Crypto_SHA256</p></td>
+<td><p>312</p></td>
+<td><p>32</p></td>
+<td><p>344</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hash</p></td>
+<td><p>Crypto_SHA384</p></td>
+<td><p>456</p></td>
+<td><p>48</p></td>
+<td><p>504</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-even"><td><p>Hash</p></td>
+<td><p>Crypto_SHA512</p></td>
+<td><p>456</p></td>
+<td><p>64</p></td>
+<td><p>520</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hash</p></td>
+<td><p>Crypto_SHA3_224</p></td>
+<td><p>416</p></td>
+<td><p>28</p></td>
+<td><p>444</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-even"><td><p>Hash</p></td>
+<td><p>Crypto_SHA3_256</p></td>
+<td><p>416</p></td>
+<td><p>32</p></td>
+<td><p>448</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hash</p></td>
+<td><p>Crypto_SHA3_384</p></td>
+<td><p>416</p></td>
+<td><p>48</p></td>
+<td><p>464</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-even"><td><p>Hash</p></td>
+<td><p>Crypto_SHA3_512</p></td>
+<td><p>416</p></td>
+<td><p>64</p></td>
+<td><p>480</p></td>
+<td><p>Data is SRAM buffers to hold the resulting md.</p></td>
+</tr>
+<tr class="row-odd"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P256_sign</p></td>
+<td><p>1304</p></td>
+<td><p>64</p></td>
+<td><p>1368</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-even"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P384_sign</p></td>
+<td><p>1688</p></td>
+<td><p>96</p></td>
+<td><p>1784</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-odd"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P521_sign</p></td>
+<td><p>2168</p></td>
+<td><p>136</p></td>
+<td><p>2304</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-even"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P256_verify</p></td>
+<td><p>1648</p></td>
+<td><p>0</p></td>
+<td><p>1648</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-odd"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P384_verify</p></td>
+<td><p>2176</p></td>
+<td><p>0</p></td>
+<td><p>2176</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-even"><td><p>EC</p></td>
+<td><p>Crypto_ECDSA_P521_verify</p></td>
+<td><p>2840</p></td>
+<td><p>0</p></td>
+<td><p>2840</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_44_keyGen</p></td>
+<td><p>24032</p></td>
+<td><p>3872</p></td>
+<td><p>27904</p></td>
+<td><p>Data is SRAM buffers to hold the resulting pk and sk.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_65_keyGen</p></td>
+<td><p>32224</p></td>
+<td><p>5984</p></td>
+<td><p>38208</p></td>
+<td><p>Data is SRAM buffers to hold the resulting pk and sk.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_87_keyGen</p></td>
+<td><p>42472</p></td>
+<td><p>7488</p></td>
+<td><p>49960</p></td>
+<td><p>Data is SRAM buffers to hold the resulting pk and sk.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_44_sign</p></td>
+<td><p>37704</p></td>
+<td><p>2420</p></td>
+<td><p>40124</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_65_sign</p></td>
+<td><p>51016</p></td>
+<td><p>3309</p></td>
+<td><p>54325</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_87_sign</p></td>
+<td><p>67392</p></td>
+<td><p>4627</p></td>
+<td><p>72019</p></td>
+<td><p>Data is SRAM buffer for resulting signature.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_44_verify</p></td>
+<td><p>21928</p></td>
+<td><p>0</p></td>
+<td><p>21928</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_65_verify</p></td>
+<td><p>29128</p></td>
+<td><p>0</p></td>
+<td><p>29128</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_MLDSA_87_verify</p></td>
+<td><p>37608</p></td>
+<td><p>0</p></td>
+<td><p>37608</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_512_keygen</p></td>
+<td><p>15672</p></td>
+<td><p>2432</p></td>
+<td><p>18104</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ek, dk.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_512_encaps</p></td>
+<td><p>19272</p></td>
+<td><p>800</p></td>
+<td><p>20072</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ct, ss.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_512_decaps</p></td>
+<td><p>21072</p></td>
+<td><p>32</p></td>
+<td><p>21104</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ss.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_768_keygen</p></td>
+<td><p>15672</p></td>
+<td><p>3584</p></td>
+<td><p>19256</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ek, dk.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_768_encaps</p></td>
+<td><p>19272</p></td>
+<td><p>1120</p></td>
+<td><p>20392</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ct, ss.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_768_decaps</p></td>
+<td><p>21072</p></td>
+<td><p>32</p></td>
+<td><p>21104</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ss.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_1024_keygen</p></td>
+<td><p>15672</p></td>
+<td><p>4736</p></td>
+<td><p>20408</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ek, dk.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_1024_encaps</p></td>
+<td><p>19272</p></td>
+<td><p>1600</p></td>
+<td><p>20408</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ct, ss.</p></td>
+</tr>
+<tr class="row-even"><td><p>PQC</p></td>
+<td><p>Crypto_KEM_1024_decaps</p></td>
+<td><p>21072</p></td>
+<td><p>32</p></td>
+<td><p>21104</p></td>
+<td><p>Data is SRAM buffers to hold the resulting ss.</p></td>
+</tr>
+<tr class="row-odd"><td><p>rand</p></td>
+<td><p>Crypto_getEntropy</p></td>
+<td><p>36</p></td>
+<td><p>0</p></td>
+<td><p>36</p></td>
+<td><p>User must add the buffer space needed to store the entropy.</p></td>
+</tr>
+<tr class="row-even"><td><p>rand</p></td>
+<td><p>Crypto_DRBG_initialize</p></td>
+<td><p>368</p></td>
+<td><p>104</p></td>
+<td><p>472</p></td>
+<td><p>Data is the DRBG structure and 48 bytes to hold the seed and nonce inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>rand</p></td>
+<td><p>Crypto_DRBG_generate</p></td>
+<td><p>216</p></td>
+<td><p>56</p></td>
+<td><p>272</p></td>
+<td><p>Data is the DRBG structure.  User must add space to store the random output.</p></td>
+</tr>
+<tr class="row-even"><td><p>rsa</p></td>
+<td><p>Crypto_RSA_PSS_verify</p></td>
+<td><p>3560</p></td>
+<td><p>0</p></td>
+<td><p>3560</p></td>
+<td><p>Assumes the message, signature, and public key are in flash.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="benchmarks_performance_mspm33c321a.html" class="btn btn-neutral float-left" title="9.2. Performance and Throughput - MSPM33C3 Platform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="10. MSP Crypto Library Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

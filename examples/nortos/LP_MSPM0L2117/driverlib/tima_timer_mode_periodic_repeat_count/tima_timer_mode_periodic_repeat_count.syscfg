@@ -32,7 +32,6 @@ GPIO1.associatedPins[1].initialValue        = "SET";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 
-
 SYSCTL.clockTreeEn  = true;
 SYSCTL.forceDefaultClkConfig = true;
 

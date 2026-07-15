@@ -42,10 +42,10 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0C1104 User's Guide](https://www.ti.com/lit/slau908).
 
 ## Example Usage
-Provide a valid voltage to A0_2 (Voltage source for ADC is excepted to be
-between 0V and MCU supply voltage). Compile, load and run the example. The
+Provide a valid voltage to A0_2 (Voltage source for ADC is expected to be
+between 0V and MCU supply voltage). Compile, load, and run the example. The
 example will hit the breakpoint after the ADC conversion is done automatically.
-Once it hits the break point gADCResult array can be inspected.
+Once it hits the breakpoint, gADCResult array can be inspected.
 
 On powerup, the ADC pin(s) used in this example are by default set to
 the correct analog mode. Therefore, calls to

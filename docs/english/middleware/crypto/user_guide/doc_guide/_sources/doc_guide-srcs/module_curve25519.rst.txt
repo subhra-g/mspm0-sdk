@@ -1,0 +1,228 @@
+################################################################################
+Curve25519 and Ed25519 Cryptography
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The Curve25519 module implements cryptographic operations over the Curve25519 
+elliptic curve. It provides functionality for:
+
+* X25519 -  Curve 25519 Diffie-Hellman (DH) key agreement
+* Ed25519 - Edwards-curve Digital Signature Algorithm (EdDSA)
+
+Curve25519 is a high-security, high-performance elliptic curve designed by 
+Daniel J. Bernstein. It offers several advantages:
+
+* 128-bit security level
+* Efficient implementation on various platforms
+* Protection against various side-channel attacks
+* Simple key validation requirements
+
+================================================================================
+Security Level
+================================================================================
+
+The Curve25519 implementation provides a security level equivalent to approximately 
+128 bits of symmetric security.
+
+=============== ================ ================ =============== ==================
+Security Level  Secret Key Size  Public Key Size  Signature Size  Security Strength
+=============== ================ ================ =============== ==================
+Curve25519      32 bytes         32 bytes         64 bytes        Apprx. 128 bits
+=============== ================ ================ =============== ==================
+
+================================================================================
+Memory Requirements
+================================================================================
+
+The Curve25519 functions typically require less stack space than traditional 
+NIST curves, making them suitable for constrained environments.
+
+********************************************************************************
+Status Codes
+********************************************************************************
+
+Curve25519 functions return status codes to indicate the result of requested 
+operations. The X25519 and Ed25519 functions return status codes defined by 
+the respective enumeration types.
+
+**X25519 Status Codes**
+
+========================================== ====== =============================================================
+Status Code                                Value  Description
+========================================== ====== =============================================================
+`CRYPTO_X25519_STAT_SUCCESS`               0x99   X25519 operation completed successfully
+`CRYPTO_X25519_STAT_INVALID_PARAM`         0x22   Invalid parameter provided to the function
+`CRYPTO_X25519_STAT_ERROR`                 0x11   General error during X25519 operation
+========================================== ====== =============================================================
+
+**Ed25519 Status Codes**
+
+========================================== ====== =============================================================
+Status Code                                Value  Description
+========================================== ====== =============================================================
+`CRYPTO_ED25519_STAT_SUCCESS`              0x99   Ed25519 operation completed successfully
+`CRYPTO_ED25519_STAT_VALID_SIGNATURE`      0xA5   Ed25519 signature verification result: signature valid
+`CRYPTO_ED25519_STAT_INVALID_SIGNATURE`    0x5A   Ed25519 signature verification result: signature not valid
+`CRYPTO_ED25519_STAT_INVALID_PARAM`        0x22   Invalid parameter provided to the function
+`CRYPTO_ED25519_STAT_ERROR`                0x11   General error during Ed25519 operation
+========================================== ====== =============================================================
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for Curve25519 is defined below.
+
+================================================================================
+X25519 Key Exchange
+================================================================================
+
+X25519 is a Curve 25519 Diffie-Hellman (DH) function that allows two parties 
+to establish a shared secret.
+
+.. code-block:: c
+
+    crypto_x25519_stat_t Crypto_X25519_keyExchange(
+        const uint8_t sk[X25519_KEY_LENGTH],
+        const uint8_t peer_pk[X25519_KEY_LENGTH],
+        uint8_t shared_secret[X25519_KEY_LENGTH]);
+
+Performs a key exchange operation using X25519.
+
+**Parameters:**
+
+* `sk`: The caller's private key (32 bytes)
+* `peer_pk`: The peer's public key (32 bytes)
+* `shared_secret`: Output buffer for the shared secret key (32 bytes)
+
+**Returns:**
+
+* `CRYPTO_X25519_STAT_SUCCESS` if the key exchange was successful
+* `CRYPTO_X25519_STAT_ERROR` if an error occurred during key exchange
+* `CRYPTO_X25519_STAT_INVALID_PARAM` if any of the input parameters are invalid
+
+================================================================================
+Ed25519 Signature Verification
+================================================================================
+
+Ed25519 is a digital signature scheme using a twisted Edwards curve that is 
+birationally equivalent to Curve25519.
+
+.. code-block:: c
+
+    crypto_ed25519_stat_t Crypto_ED25519_verify(
+        const uint8_t *public_key,
+        const uint8_t *message, size_t message_len,
+        const uint8_t *signature);
+
+Verifies an Ed25519 signature for a message using a public key.
+
+**Parameters:**
+
+* `public_key`: The signer's Ed25519 public key (32 bytes)
+* `message`: The message that was signed
+* `message_len`: Length of the message in bytes
+* `signature`: The signature to verify (64 bytes)
+
+**Returns:**
+
+* `CRYPTO_ED25519_STAT_VALID_SIGNATURE` if the signature is valid
+* `CRYPTO_ED25519_STAT_INVALID_SIGNATURE` if the signature is invalid
+* Other status codes for error conditions
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for X25519 key exchange and Ed25519 signature verification are shown below.
+
+================================================================================
+X25519 Key Exchange Example
+================================================================================
+
+Establish a shared secret between two parties using X25519:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Key data
+    uint8_t alice_private_key[X25519_KEY_LENGTH];  // Alice's private key
+    uint8_t alice_public_key[X25519_KEY_LENGTH];   // Alice's public key
+    uint8_t bob_private_key[X25519_KEY_LENGTH];    // Bob's private key
+    uint8_t bob_public_key[X25519_KEY_LENGTH];     // Bob's public key
+    uint8_t shared_secret_alice[X25519_KEY_LENGTH]; // Shared secret computed by Alice
+    uint8_t shared_secret_bob[X25519_KEY_LENGTH];   // Shared secret computed by Bob
+    uint8_t random_bytes[X25519_KEY_LENGTH];       // Random data for key generation
+    
+    // Generate random data (implementation not shown)
+    // ...
+    
+    // Generate keypairs
+    Crypto_X25519_keyGen(random_bytes, alice_public_key, alice_private_key);
+    Crypto_X25519_keyGen(random_bytes, bob_public_key, bob_private_key);
+
+    // Alice computes shared secret using her private key and Bob's public key
+    crypto_x25519_stat_t result_alice = Crypto_X25519_keyExchange(
+        alice_private_key,
+        bob_public_key,
+        shared_secret_alice);
+
+    // Bob computes shared secret using his private key and Alice's public key
+    crypto_x25519_stat_t result_bob = Crypto_X25519_keyExchange(
+        bob_private_key,
+        alice_public_key,
+        shared_secret_bob);
+
+    // Check if both operations were successful
+    if (result_alice == CRYPTO_X25519_STAT_SUCCESS && 
+        result_bob == CRYPTO_X25519_STAT_SUCCESS) {
+        // Both shared_secret_alice and shared_secret_bob should be identical
+        // and can be used as input to a key derivation function
+    }
+
+================================================================================
+Ed25519 Signature Verification Example
+================================================================================
+
+Verify an Ed25519 signature:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Signature data
+    uint8_t public_key[ED25519_PUBLIC_KEY_LENGTH];  // Signer's public key
+    uint8_t message[100];  // Message that was signed
+    size_t message_len = 100;  // Length of the message
+    uint8_t signature[ED25519_SIGNATURE_LENGTH];  // Signature to verify
+
+    // Verify the signature
+    crypto_ed25519_stat_t status = Crypto_ED25519_verify(
+        message, message_len,
+        signature, public_key);
+
+    if (status == CRYPTO_ED25519_STAT_VALID_SIGNATURE) {
+        // Signature is valid
+    } else if (status == CRYPTO_ED25519_STAT_INVALID_SIGNATURE) {
+        // Signature is invalid
+    } else {
+        // Other error condition
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. Unlike NIST curves, Curve25519 is designed to be safer against implementation
+   mistakes. For example, it's designed to resist side-channel attacks and
+   doesn't require point validation.
+
+#. Ed25519 signatures include message hashing as part of the signature algorithm.
+   Unlike ECDSA, there's no need to pre-hash messages before signing.
+
+#. For X25519, the shared secret should not be used directly as a key for 
+   encryption. Instead, it should be passed through a key derivation function (KDF).

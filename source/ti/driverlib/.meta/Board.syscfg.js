@@ -85,6 +85,7 @@ let completeOrder = [
     "USB",
     "I2S",
     "LCD",
+    "SD24",
 ];
 
 /* Function to filter out unavailable peripheral modules */

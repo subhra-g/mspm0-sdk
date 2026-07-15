@@ -35,7 +35,6 @@ mux7.inputSelect = "HSCLKMUX_SYSPLL2X";
 
 ADC121.$name                            = "ADC12_0";
 ADC121.repeatMode                       = true;
-ADC121.adcMem0chansel                   = "DL_ADC12_INPUT_CHAN_8";
 ADC121.powerDownMode                    = "DL_ADC12_POWER_DOWN_MODE_MANUAL";
 ADC121.hwNumerator                      = "DL_ADC12_HW_AVG_NUM_ACC_4";
 ADC121.enabledInterrupts                = ["DL_ADC12_INTERRUPT_DMA_DONE"];
@@ -44,14 +43,15 @@ ADC121.enableFIFO                       = true;
 ADC121.sampleTime0                      = "1 us";
 ADC121.sampCnt                          = 6;
 ADC121.enabledDMATriggers               = ["DL_ADC12_DMA_MEM11_RESULT_LOADED"];
-ADC121.peripheral.$assign               = "ADC0";
-ADC121.peripheral.adcPin8.$assign       = "PA21";
+ADC121.adcMem0chansel                   = "DL_ADC12_INPUT_CHAN_24";
 ADC121.DMA_CHANNEL.addressMode          = "f2b";
 ADC121.DMA_CHANNEL.enableInterrupt      = true;
 ADC121.DMA_CHANNEL.earlyIntThresh       = "HALF";
 ADC121.DMA_CHANNEL.enableEarlyInterrupt = true;
 ADC121.DMA_CHANNEL.$name                = "DMA_CH2";
 ADC121.DMA_CHANNEL.peripheral.$assign   = "DMA_CH2";
+ADC121.peripheral.$assign               = "ADC0";
+ADC121.peripheral.adcPin24.$assign      = "PB22";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 

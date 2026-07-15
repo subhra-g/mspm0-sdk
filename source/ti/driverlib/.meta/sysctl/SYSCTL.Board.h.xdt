@@ -346,11 +346,22 @@ void SYSCFG_DL_SYSCTL_init(void);
         if(stat.LFCLKSource === "LFOSC"){
             clkSrcCheck = true;
         }
-        else if(Common.isDeviceM0G()){
-            clkSrcCheck = (stat.useSYSPLL || (stat.useHFCLK) || (stat.MCLKSource === "HSCLK") || (stat.LFCLKSource === "LFXT"));
-        }
-        else if(Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X()){
-            clkSrcCheck = (stat.LFCLKSource === "LFXT");
+        else {
+            /* For devices with SYSPLL (e.g. M0G, M0H821X), CLK_init is needed when
+             * SYSPLL, HFCLK, or HSCLK are in use — these require polling clock status.
+             * HFCLK and HSCLK are gated under SYSPLL because in the non-clock-tree path
+             * their status bits are only pushed alongside SYSPLL in SYSCTL.Board.c.xdt. */
+            if(ClockSignals.includes("SYSPLL")){
+                if(stat.useSYSPLL || stat.useHFCLK || stat.MCLKSource === "HSCLK"){
+                    clkSrcCheck = true;
+                }
+            }
+            if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
+                clkSrcCheck = (stat.useSYSPLL || (stat.useHFCLK) || (stat.MCLKSource === "HSCLK") || (stat.LFCLKSource === "LFXT"));
+            }
+            else if(Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X()){
+                clkSrcCheck = (stat.LFCLKSource === "LFXT");
+            }
         }
     }
 %%}

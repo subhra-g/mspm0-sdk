@@ -25,6 +25,8 @@ OBJECTS = modules_Adc.obj modules_ControlPilot.obj modules_ControlPilot_HAL.obj 
 NAME = evse_controller_TIDA-010939
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -36,12 +38,17 @@ CFLAGS += -I.. \
     -Iexamples/demos/evse_controller_TIDA-010939/pb/nanopb \
     -Iexamples/demos/evse_controller_TIDA-010939/pb/protobuf \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 CPPFLAGS += -I.. \
     -I. \
@@ -54,7 +61,6 @@ CPPFLAGS += -I.. \
     -Iexamples/demos/evse_controller_TIDA-010939/pb/nanopb \
     -Iexamples/demos/evse_controller_TIDA-010939/pb/protobuf \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \

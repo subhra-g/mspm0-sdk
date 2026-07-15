@@ -18,6 +18,8 @@ let CRC_polynomial32Support = {
     MSPM0L211X_L112X: false,
     MSPM0L210X: false,
     MSPM0GX218_GX207: true,
+    MSPM0GX70X_GX73X: true,
+    MSPM0H821X: true,
     MSPM0G122X: true,
     MSPM0C511X: false,
 };

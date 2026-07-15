@@ -59,7 +59,6 @@
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/devices/msp
-            -gdwarf-3
             -march=thumbv6m
             -Wall
         "
@@ -90,6 +89,10 @@
         description="TinyUSB Device Audio Test Example">
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
+        <file path="../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
+        </file>
+        <file path="../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
+        </file>
         <file path="../main.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../usb_descriptors.c" openOnCreation="false" excludeFromBuild="false" action="copy">
@@ -104,11 +107,15 @@
         </file>
         <file path="../third_party/tinyusb/hw/bsp/board_mcu.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp">
         </file>
+        <file path="../third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116/board.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116">
+        </file>
         <file path="../third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117/board.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117">
         </file>
         <file path="../third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5187/board.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5187">
         </file>
         <file path="../third_party/tinyusb/hw/bsp/mspm0/family.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp/mspm0">
+        </file>
+        <file path="../third_party/tinyusb/hw/bsp/mspm0/family.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/hw/bsp/mspm0">
         </file>
         <file path="../third_party/tinyusb/src/class/audio/audio.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/class/audio">
         </file>
@@ -260,9 +267,7 @@
         </file>
         <file path="../third_party/tinyusb/src/osal/osal_rtx4.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/osal">
         </file>
-        <file path="../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
-        </file>
-        <file path="../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
+        <file path="../third_party/tinyusb/src/portable/mentor/musb/dcd_musbfsfc.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
         </file>
         <file path="../third_party/tinyusb/src/portable/mentor/musb/musb_ti.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="third_party/tinyusb/src/portable/mentor/musb">
         </file>

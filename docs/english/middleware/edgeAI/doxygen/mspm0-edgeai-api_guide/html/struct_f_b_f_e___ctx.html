@@ -73,7 +73,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Context structure for the Filterbank Feature Extraction.  
+<p>Runtime state for a single filterbank feature extraction instance.  
  <a href="struct_f_b_f_e___ctx.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="filterbank__feature__extract_8h_source.html">filterbank_feature_extract.h</a>&gt;</code></p>
@@ -82,77 +82,349 @@ Collaboration diagram for FBFE_Ctx:</div>
 <div class="dyncontent">
 <div class="center"><img src="struct_f_b_f_e___ctx__coll__graph.png" border="0" usemap="#_f_b_f_e___ctx_coll__map" alt="Collaboration graph"/></div>
 <map name="_f_b_f_e___ctx_coll__map" id="_f_b_f_e___ctx_coll__map">
-<area shape="rect" id="node2" href="struct_f_b_f_e___config.html" title="Configuration structure for the Filterbank Feature Extraction. " alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node2" href="struct_f_b_f_e___config.html" title="Configuration parameters for the filterbank feature extraction. " alt="" coords="5,5,108,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:aaa533ffced33d11878ca17a08e24d868"><td class="memItemLeft" align="right" valign="top"><a id="aaa533ffced33d11878ca17a08e24d868"></a>
-<a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">cfg</a></td></tr>
-<tr class="memdesc:aaa533ffced33d11878ca17a08e24d868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration parameters for the feature extraction. <br /></td></tr>
+<tr class="memitem:aaa533ffced33d11878ca17a08e24d868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">cfg</a></td></tr>
+<tr class="memdesc:aaa533ffced33d11878ca17a08e24d868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the configuration supplied to <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>.  <a href="#aaa533ffced33d11878ca17a08e24d868">More...</a><br /></td></tr>
 <tr class="separator:aaa533ffced33d11878ca17a08e24d868"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ab8be41004c7e19c2cea756052ba5d0"><td class="memItemLeft" align="right" valign="top"><a id="a1ab8be41004c7e19c2cea756052ba5d0"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">final_features</a></td></tr>
-<tr class="memdesc:a1ab8be41004c7e19c2cea756052ba5d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the buffer where final extracted features are stored. <br /></td></tr>
+<tr class="memitem:a1ab8be41004c7e19c2cea756052ba5d0"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">final_features</a></td></tr>
+<tr class="memdesc:a1ab8be41004c7e19c2cea756052ba5d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the caller-supplied sliding feature window buffer.  <a href="#a1ab8be41004c7e19c2cea756052ba5d0">More...</a><br /></td></tr>
 <tr class="separator:a1ab8be41004c7e19c2cea756052ba5d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a661873939aff9a7397dec67cf75fa8f6"><td class="memItemLeft" align="right" valign="top"><a id="a661873939aff9a7397dec67cf75fa8f6"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">final_features_bytes</a></td></tr>
-<tr class="memdesc:a661873939aff9a7397dec67cf75fa8f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size in bytes of the final features buffer. <br /></td></tr>
+<tr class="memitem:a661873939aff9a7397dec67cf75fa8f6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">final_features_bytes</a></td></tr>
+<tr class="memdesc:a661873939aff9a7397dec67cf75fa8f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size in bytes of the final_features buffer.  <a href="#a661873939aff9a7397dec67cf75fa8f6">More...</a><br /></td></tr>
 <tr class="separator:a661873939aff9a7397dec67cf75fa8f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0463014858678dd61633992a1f106a97"><td class="memItemLeft" align="right" valign="top"><a id="a0463014858678dd61633992a1f106a97"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">sample_index</a></td></tr>
-<tr class="memdesc:a0463014858678dd61633992a1f106a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current sample index in the processing frame. <br /></td></tr>
+<tr class="memitem:a0463014858678dd61633992a1f106a97"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">sample_index</a></td></tr>
+<tr class="memdesc:a0463014858678dd61633992a1f106a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of the next sample slot within the current frame.  <a href="#a0463014858678dd61633992a1f106a97">More...</a><br /></td></tr>
 <tr class="separator:a0463014858678dd61633992a1f106a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26759736ad00118fc3868e808b677f3b"><td class="memItemLeft" align="right" valign="top"><a id="a26759736ad00118fc3868e808b677f3b"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">pack_index</a></td></tr>
-<tr class="memdesc:a26759736ad00118fc3868e808b677f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current packing index used for sample processing. <br /></td></tr>
+<tr class="memitem:a26759736ad00118fc3868e808b677f3b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">pack_index</a></td></tr>
+<tr class="memdesc:a26759736ad00118fc3868e808b677f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index into the four-sample packing group (0–3).  <a href="#a26759736ad00118fc3868e808b677f3b">More...</a><br /></td></tr>
 <tr class="separator:a26759736ad00118fc3868e808b677f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae62273e106e999a3fde4d522831eab85"><td class="memItemLeft" align="right" valign="top"><a id="ae62273e106e999a3fde4d522831eab85"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">ls_bytes</a> [4]</td></tr>
-<tr class="memdesc:ae62273e106e999a3fde4d522831eab85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for storing least significant bytes during processing. <br /></td></tr>
+<tr class="memitem:ae62273e106e999a3fde4d522831eab85"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">ls_bytes</a> [4]</td></tr>
+<tr class="memdesc:ae62273e106e999a3fde4d522831eab85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Staging array for the least-significant bytes of up to four samples.  <a href="#ae62273e106e999a3fde4d522831eab85">More...</a><br /></td></tr>
 <tr class="separator:ae62273e106e999a3fde4d522831eab85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04fa251a400c9e818e7ac784ddd4a0ed"><td class="memItemLeft" align="right" valign="top"><a id="a04fa251a400c9e818e7ac784ddd4a0ed"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">ms_bytes</a> [4]</td></tr>
-<tr class="memdesc:a04fa251a400c9e818e7ac784ddd4a0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for storing most significant bytes during processing. <br /></td></tr>
+<tr class="memitem:a04fa251a400c9e818e7ac784ddd4a0ed"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">ms_bytes</a> [4]</td></tr>
+<tr class="memdesc:a04fa251a400c9e818e7ac784ddd4a0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Staging array for the most-significant bytes of up to four samples.  <a href="#a04fa251a400c9e818e7ac784ddd4a0ed">More...</a><br /></td></tr>
 <tr class="separator:a04fa251a400c9e818e7ac784ddd4a0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48ca88e9fd8bb3acb8c6ec6ff9d344a9"><td class="memItemLeft" align="right" valign="top"><a id="a48ca88e9fd8bb3acb8c6ec6ff9d344a9"></a>
-int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">frame_buffer</a></td></tr>
-<tr class="memdesc:a48ca88e9fd8bb3acb8c6ec6ff9d344a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for raw frame samples. <br /></td></tr>
+<tr class="memitem:a48ca88e9fd8bb3acb8c6ec6ff9d344a9"><td class="memItemLeft" align="right" valign="top">int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">frame_buffer</a></td></tr>
+<tr class="memdesc:a48ca88e9fd8bb3acb8c6ec6ff9d344a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the raw packed-word frame buffer (library-owned).  <a href="#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">More...</a><br /></td></tr>
 <tr class="separator:a48ca88e9fd8bb3acb8c6ec6ff9d344a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b54408420d5ae8452cacab9e2e15943"><td class="memItemLeft" align="right" valign="top"><a id="a8b54408420d5ae8452cacab9e2e15943"></a>
-int8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">fb_input</a></td></tr>
-<tr class="memdesc:a8b54408420d5ae8452cacab9e2e15943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for NPU input with overlapped frames. <br /></td></tr>
+<tr class="memitem:a8b54408420d5ae8452cacab9e2e15943"><td class="memItemLeft" align="right" valign="top">int8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">fb_input</a></td></tr>
+<tr class="memdesc:a8b54408420d5ae8452cacab9e2e15943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the overlapped NPU input buffer (library-owned).  <a href="#a8b54408420d5ae8452cacab9e2e15943">More...</a><br /></td></tr>
 <tr class="separator:a8b54408420d5ae8452cacab9e2e15943"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f932d70ca5655f51f0831121e6b5315"><td class="memItemLeft" align="right" valign="top"><a id="a1f932d70ca5655f51f0831121e6b5315"></a>
-int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">msb_temp</a></td></tr>
-<tr class="memdesc:a1f932d70ca5655f51f0831121e6b5315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporary buffer for most significant byte processing. <br /></td></tr>
+<tr class="memitem:a1f932d70ca5655f51f0831121e6b5315"><td class="memItemLeft" align="right" valign="top">int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">msb_temp</a></td></tr>
+<tr class="memdesc:a1f932d70ca5655f51f0831121e6b5315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the MSB-pass output scratch buffer (library-owned).  <a href="#a1f932d70ca5655f51f0831121e6b5315">More...</a><br /></td></tr>
 <tr class="separator:a1f932d70ca5655f51f0831121e6b5315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7218e85434e3f1d90fe69dfee954a973"><td class="memItemLeft" align="right" valign="top"><a id="a7218e85434e3f1d90fe69dfee954a973"></a>
-int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">lsb_temp</a></td></tr>
-<tr class="memdesc:a7218e85434e3f1d90fe69dfee954a973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporary buffer for least significant byte processing. <br /></td></tr>
+<tr class="memitem:a7218e85434e3f1d90fe69dfee954a973"><td class="memItemLeft" align="right" valign="top">int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">lsb_temp</a></td></tr>
+<tr class="memdesc:a7218e85434e3f1d90fe69dfee954a973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the LSB-pass output scratch buffer (library-owned).  <a href="#a7218e85434e3f1d90fe69dfee954a973">More...</a><br /></td></tr>
 <tr class="separator:a7218e85434e3f1d90fe69dfee954a973"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e35900be227a93a8b90397b86aca8f2"><td class="memItemLeft" align="right" valign="top"><a id="a1e35900be227a93a8b90397b86aca8f2"></a>
-int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">max_values</a></td></tr>
-<tr class="memdesc:a1e35900be227a93a8b90397b86aca8f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for storing maximum values from filterbank. <br /></td></tr>
+<tr class="memitem:a1e35900be227a93a8b90397b86aca8f2"><td class="memItemLeft" align="right" valign="top">int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">max_values</a></td></tr>
+<tr class="memdesc:a1e35900be227a93a8b90397b86aca8f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the per-channel maximum accumulator (library-owned).  <a href="#a1e35900be227a93a8b90397b86aca8f2">More...</a><br /></td></tr>
 <tr class="separator:a1e35900be227a93a8b90397b86aca8f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d76ed735dc25976654dd9b42975c286"><td class="memItemLeft" align="right" valign="top"><a id="a2d76ed735dc25976654dd9b42975c286"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">single_out</a></td></tr>
-<tr class="memdesc:a2d76ed735dc25976654dd9b42975c286"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output buffer for single filterbank iteration. <br /></td></tr>
+<tr class="memitem:a2d76ed735dc25976654dd9b42975c286"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">single_out</a></td></tr>
+<tr class="memdesc:a2d76ed735dc25976654dd9b42975c286"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the single-pass NPU output buffer (library-owned).  <a href="#a2d76ed735dc25976654dd9b42975c286">More...</a><br /></td></tr>
 <tr class="separator:a2d76ed735dc25976654dd9b42975c286"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8ff3027ab345fc9a189ea10a7b602de"><td class="memItemLeft" align="right" valign="top"><a id="af8ff3027ab345fc9a189ea10a7b602de"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">maxpool_outputs</a></td></tr>
-<tr class="memdesc:af8ff3027ab345fc9a189ea10a7b602de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for maxpool operation outputs. <br /></td></tr>
+<tr class="memitem:af8ff3027ab345fc9a189ea10a7b602de"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">maxpool_outputs</a></td></tr>
+<tr class="memdesc:af8ff3027ab345fc9a189ea10a7b602de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the quantized maxpool output buffer (library-owned).  <a href="#af8ff3027ab345fc9a189ea10a7b602de">More...</a><br /></td></tr>
 <tr class="separator:af8ff3027ab345fc9a189ea10a7b602de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e7956233acd946503b7e30e7505da17"><td class="memItemLeft" align="right" valign="top"><a id="a5e7956233acd946503b7e30e7505da17"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">inited</a></td></tr>
-<tr class="memdesc:a5e7956233acd946503b7e30e7505da17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether the context has been initialized. <br /></td></tr>
+<tr class="memitem:a5e7956233acd946503b7e30e7505da17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">inited</a></td></tr>
+<tr class="memdesc:a5e7956233acd946503b7e30e7505da17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization guard flag.  <a href="#a5e7956233acd946503b7e30e7505da17">More...</a><br /></td></tr>
 <tr class="separator:a5e7956233acd946503b7e30e7505da17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Context structure for the Filterbank Feature Extraction. </p>
-<p>This structure holds the current state of the filterbank feature extraction process, including configuration, buffers, and processing state variables. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<div class="textblock"><p>Runtime state for a single filterbank feature extraction instance. </p>
+<p>Holds all mutable state required to operate the filterbank pipeline: the active configuration, pointers to library-owned internal buffers, sample-packing staging arrays, processing index counters, and the caller-supplied output feature window.</p>
+<p>Callers must allocate an instance of this structure (stack or static) and pass it to <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a> before using any other API function. The structure should be treated as opaque after initialization; direct field access is not part of the public API contract. </p>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a id="aaa533ffced33d11878ca17a08e24d868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa533ffced33d11878ca17a08e24d868">&sect;&nbsp;</a></span>cfg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a> FBFE_Ctx::cfg</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy of the configuration supplied to <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. </p>
+<p>Stored by value so the caller is free to discard or reuse the original <a class="el" href="struct_f_b_f_e___config.html" title="Configuration parameters for the filterbank feature extraction. ">FBFE_Config</a> after initialization returns. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>, <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a1ab8be41004c7e19c2cea756052ba5d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab8be41004c7e19c2cea756052ba5d0">&sect;&nbsp;</a></span>final_features</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* FBFE_Ctx::final_features</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the caller-supplied sliding feature window buffer. </p>
+<p>Updated by <a class="el" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b" title="Process one complete frame through the filterbank NPU pipeline. ">FBFE_RunOneFrame()</a> after every frame. The buffer must remain valid for the lifetime of the context. Its required size is at least FEATURES_BYTES bytes. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow()</a>.</p>
+
+</div>
+</div>
+<a id="a661873939aff9a7397dec67cf75fa8f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a661873939aff9a7397dec67cf75fa8f6">&sect;&nbsp;</a></span>final_features_bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t FBFE_Ctx::final_features_bytes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Size in bytes of the final_features buffer. </p>
+<p>Captured at initialization and used to guard against buffer overruns when clearing or updating the feature window. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+
+</div>
+</div>
+<a id="a0463014858678dd61633992a1f106a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0463014858678dd61633992a1f106a97">&sect;&nbsp;</a></span>sample_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t FBFE_Ctx::sample_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Index of the next sample slot within the current frame. </p>
+<p>Counts from 0 to NUM_SAMPLES - 1, wrapping back to 0 once a full frame has been accumulated. Updated by <a class="el" href="filterbank__feature__extract_8c.html#ab0c690f846a85bceee4fb5fe97877ff0" title="Push a new audio sample into the filterbank processing pipeline. ">FBFE_PushSample()</a>. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e">FBFE_AdvanceSampleState()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a26759736ad00118fc3868e808b677f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26759736ad00118fc3868e808b677f3b">&sect;&nbsp;</a></span>pack_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t FBFE_Ctx::pack_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Index into the four-sample packing group (0–3). </p>
+<p>Tracks which position within the current group of four samples is being filled. When it reaches 3, the four staged bytes are flushed to frame_buffer by <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e" title="Pack four staged sample bytes into the frame buffer. ">FBFE_PackFourSamplesIntoFrameBuffer()</a>. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e">FBFE_AdvanceSampleState()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>, <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="ae62273e106e999a3fde4d522831eab85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae62273e106e999a3fde4d522831eab85">&sect;&nbsp;</a></span>ls_bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t FBFE_Ctx::ls_bytes[4]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Staging array for the least-significant bytes of up to four samples. </p>
+<p>Holds the LS byte extracted from each of the four samples in the current packing group, indexed by pack_index. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a04fa251a400c9e818e7ac784ddd4a0ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04fa251a400c9e818e7ac784ddd4a0ed">&sect;&nbsp;</a></span>ms_bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t FBFE_Ctx::ms_bytes[4]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Staging array for the most-significant bytes of up to four samples. </p>
+<p>Holds the MS byte extracted (after masking and shifting) from each of the four samples in the current packing group, indexed by pack_index. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a48ca88e9fd8bb3acb8c6ec6ff9d344a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">&sect;&nbsp;</a></span>frame_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t* FBFE_Ctx::frame_buffer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the raw packed-word frame buffer (library-owned). </p>
+<p>Bound to the internal static array <code>g_frame_buffer</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Stores one complete frame of packed int16_t words ready to be copied into fb_input at frame boundaries. Capacity: NUM_SAMPLES elements. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a8b54408420d5ae8452cacab9e2e15943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b54408420d5ae8452cacab9e2e15943">&sect;&nbsp;</a></span>fb_input</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t* FBFE_Ctx::fb_input</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the overlapped NPU input buffer (library-owned). </p>
+<p>Bound to the internal static array <code>g_fb_input</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Holds the packed byte stream for the NPU, including the overlap region from the previous frame. Capacity: FB_INPUT_BYTES bytes. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a1f932d70ca5655f51f0831121e6b5315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f932d70ca5655f51f0831121e6b5315">&sect;&nbsp;</a></span>msb_temp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t* FBFE_Ctx::msb_temp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the MSB-pass output scratch buffer (library-owned). </p>
+<p>Bound to <code>g_msbTemp</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Receives the sign-extended DREG19 results of the MSB pass for one stride before they are combined with the LSB results. Capacity: MODEL_MAX_OUT_CH_PER_ITER elements. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride()</a>.</p>
+
+</div>
+</div>
+<a id="a7218e85434e3f1d90fe69dfee954a973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7218e85434e3f1d90fe69dfee954a973">&sect;&nbsp;</a></span>lsb_temp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t* FBFE_Ctx::lsb_temp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the LSB-pass output scratch buffer (library-owned). </p>
+<p>Bound to <code>g_lsbTemp</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Receives the sign-extended DREG19 results of the LSB pass for one stride before combination and maxpool update. Capacity: MODEL_MAX_OUT_CH_PER_ITER elements. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride()</a>.</p>
+
+</div>
+</div>
+<a id="a1e35900be227a93a8b90397b86aca8f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e35900be227a93a8b90397b86aca8f2">&sect;&nbsp;</a></span>max_values</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t* FBFE_Ctx::max_values</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the per-channel maximum accumulator (library-owned). </p>
+<p>Bound to <code>g_maxValues</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Tracks the highest combined MSB+LSB activation seen across all stride positions for every output channel within a single frame. Capacity: MODEL_CONV_OUT_CHANNELS elements. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d">FBFE_InitBlockMaxValues()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride()</a>.</p>
+
+</div>
+</div>
+<a id="a2d76ed735dc25976654dd9b42975c286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d76ed735dc25976654dd9b42975c286">&sect;&nbsp;</a></span>single_out</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* FBFE_Ctx::single_out</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the single-pass NPU output buffer (library-owned). </p>
+<p>Bound to <code>g_singleOut</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Configured as the OFMAP destination in the NPU's CTL1 register for each pass. Capacity: MODEL_CONV_OUT_CHANNELS bytes. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="af8ff3027ab345fc9a189ea10a7b602de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8ff3027ab345fc9a189ea10a7b602de">&sect;&nbsp;</a></span>maxpool_outputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* FBFE_Ctx::maxpool_outputs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer to the quantized maxpool output buffer (library-owned). </p>
+<p>Bound to <code>g_maxpool</code> during <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. Receives the final uint8_t feature values produced by <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340" title="Apply post-processing to all channels of one output block. ">FBFE_PostprocessBlock()</a> and is passed to <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6" title="Shift the neural network input window to incorporate a new frame. ">FBFE_ShiftNNInputWindow()</a> to update the feature window. Capacity: MODEL_CONV_OUT_CHANNELS bytes. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock()</a>, and <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a5e7956233acd946503b7e30e7505da17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7956233acd946503b7e30e7505da17">&sect;&nbsp;</a></span>inited</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FBFE_Ctx::inited</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialization guard flag. </p>
+<p>Set to <code>true</code> by <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a> upon successful completion. All API functions check this flag via <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0" title="Check whether a filterbank context is ready for use. ">FBFE_IsReady()</a> and return <code>false</code> immediately if it is not set. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady()</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="filterbank__feature__extract_8h_source.html">filterbank_feature_extract.h</a></li>
 </ul>
 </div><!-- contents -->

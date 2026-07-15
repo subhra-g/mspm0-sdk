@@ -6,8 +6,6 @@
 //@v2CliArgs --device "MSPM0C1104" --package "VSSOP-20(DGS20)"
 // @cliArgs --board /ti/boards/LP_MSPM0C1104 --rtos nortos
 
-
-
 /**
  * Import the modules used in this configuration.
  */

@@ -63,7 +63,7 @@ int16_t gADCSamplesPong[ADC_SAMPLE_SIZE];
 volatile int8_t gIF_Map[FE_FEATURE_SIZE];
 
 /* Global variable to store Model output */
-volatile int8_t gOF_Map[1][2] = {0, 0};
+volatile int8_t gOF_Map[1][2]  __attribute__((aligned(4))) = {0, 0};
 
 struct tvmgen_default_inputs tvm_if_map = { (void*) &gIF_Map[0] };
 struct tvmgen_default_outputs tvm_of_map = { (void*) &gOF_Map[0] };

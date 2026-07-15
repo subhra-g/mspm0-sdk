@@ -25,6 +25,8 @@ OBJECTS = cascade_input_voltage.obj dac_init.obj remove_dc_voltage.obj saturatio
 NAME = High_Gain_Self_Compensating_ADC
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -32,12 +34,17 @@ CFLAGS += -I.. \
     @device.opt \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -ldevice.cmd.genlibs \
     "-L$(MSPM0_SDK_INSTALL_DIR)/source" \

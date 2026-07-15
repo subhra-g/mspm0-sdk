@@ -54,9 +54,9 @@ static void DL_Timer_getInChanPairConfig(
 void DL_Timer_setClockConfig(
     GPTIMER_Regs *gptimer, const DL_Timer_ClockConfig *config)
 {
-    gptimer->CLKSEL = (uint32_t)(config->clockSel);
+    gptimer->CLKSEL = (uint32_t) (config->clockSel);
 
-    gptimer->CLKDIV = (uint32_t)(config->divideRatio);
+    gptimer->CLKDIV = (uint32_t) (config->divideRatio);
 
     gptimer->COMMONREGS.CPS = (config->prescale);
 }
@@ -64,11 +64,11 @@ void DL_Timer_setClockConfig(
 void DL_Timer_getClockConfig(
     const GPTIMER_Regs *gptimer, DL_Timer_ClockConfig *config)
 {
-    config->clockSel = (DL_TIMER_CLOCK)(gptimer->CLKSEL);
+    config->clockSel = (DL_TIMER_CLOCK) (gptimer->CLKSEL);
 
-    config->divideRatio = (DL_TIMER_CLOCK_DIVIDE)(gptimer->CLKDIV);
+    config->divideRatio = (DL_TIMER_CLOCK_DIVIDE) (gptimer->CLKDIV);
 
-    config->prescale = (uint8_t)(gptimer->COMMONREGS.CPS);
+    config->prescale = (uint8_t) (gptimer->COMMONREGS.CPS);
 }
 
 void DL_Timer_initTimerMode(
@@ -573,7 +573,7 @@ DL_TIMER_SEC_COMP_DOWN_EVT DL_Timer_getSecondCompSrcDn(
 
     uint32_t secCompDn = *pReg & GPTIMER_CCCTL_01_CC2SELD_MASK;
 
-    return ((DL_TIMER_SEC_COMP_DOWN_EVT)(secCompDn));
+    return ((DL_TIMER_SEC_COMP_DOWN_EVT) (secCompDn));
 }
 void DL_Timer_setSecondCompSrcUp(GPTIMER_Regs *gptimer,
     DL_TIMER_SEC_COMP_UP_EVT secCompUp, DL_TIMER_CC_INDEX ccIndex)
@@ -597,7 +597,7 @@ DL_TIMER_SEC_COMP_UP_EVT DL_Timer_getSecondCompSrcUp(
 
     uint32_t secCompUp = *pReg & GPTIMER_CCCTL_01_CC2SELU_MASK;
 
-    return ((DL_TIMER_SEC_COMP_UP_EVT)(secCompUp));
+    return ((DL_TIMER_SEC_COMP_UP_EVT) (secCompUp));
 }
 
 void DL_Timer_setSecondCompActionDn(GPTIMER_Regs *gptimer,
@@ -622,7 +622,7 @@ DL_TIMER_SEC_COMP_DOWN_ACT_SEL DL_Timer_getSecondCompActionDn(
 
     uint32_t secCompDnAct = *pReg & GPTIMER_CCACT_01_CC2DACT_MASK;
 
-    return ((DL_TIMER_SEC_COMP_DOWN_ACT_SEL)(secCompDnAct));
+    return ((DL_TIMER_SEC_COMP_DOWN_ACT_SEL) (secCompDnAct));
 }
 
 void DL_Timer_setSecondCompActionUp(GPTIMER_Regs *gptimer,
@@ -647,7 +647,7 @@ DL_TIMER_SEC_COMP_UP_ACT_SEL DL_Timer_getSecondCompActionUp(
 
     uint32_t secCompUpAct = *pReg & GPTIMER_CCACT_01_CC2UACT_MASK;
 
-    return ((DL_TIMER_SEC_COMP_UP_ACT_SEL)(secCompUpAct));
+    return ((DL_TIMER_SEC_COMP_UP_ACT_SEL) (secCompUpAct));
 }
 
 void DL_Timer_enableSuppressionOfCompEvent(
@@ -694,7 +694,7 @@ DL_TIMER_CC_UPDATE_METHOD DL_Timer_getCaptCompUpdateMethod(
 
     uint32_t ccUpdtMode = *pReg & GPTIMER_CCCTL_01_CCUPD_MASK;
 
-    return ((DL_TIMER_CC_UPDATE_METHOD)(ccUpdtMode));
+    return ((DL_TIMER_CC_UPDATE_METHOD) (ccUpdtMode));
 }
 
 void DL_Timer_setCaptCompActUpdateMethod(GPTIMER_Regs *gptimer,
@@ -719,7 +719,7 @@ DL_TIMER_CCACT_UPDATE_METHOD DL_Timer_getCaptCompActUpdateMethod(
 
     uint32_t ccActUpdtMode = *pReg & GPTIMER_CCCTL_01_CCACTUPD_MASK;
 
-    return ((DL_TIMER_CCACT_UPDATE_METHOD)(ccActUpdtMode));
+    return ((DL_TIMER_CCACT_UPDATE_METHOD) (ccActUpdtMode));
 }
 
 void DL_Timer_setCaptureCompareOutCtl(GPTIMER_Regs *gptimer, uint32_t ccpIV,
@@ -1288,7 +1288,7 @@ static void DL_Timer_getInChanConfig(
             break;
         case DL_TIMER_INPUT_CHAN_2:
             config->index    = (DL_TIMER_CC_2_INDEX);
-            config->ccpInput = (DL_TIMER_CC_IN_SEL_CCP0);
+            config->ccpInput = (DL_TIMER_CC_IN_SEL_CCPX);
             config->timerConfig =
                 (GPTIMER_CTRCTL_CLC_CCCTL2_LCOND |
                     GPTIMER_CTRCTL_CAC_CCCTL2_ACOND |

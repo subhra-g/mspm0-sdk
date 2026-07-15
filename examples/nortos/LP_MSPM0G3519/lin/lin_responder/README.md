@@ -1,11 +1,15 @@
 ## Example Summary
 
-This example configures the UART as a LIN Responder, and demonstrates basic
-transmit and receive of LIN 2.0 packets using enhanced checksum. Additionally,
-the example has the ability to automatically reconfigure baud rate if the commander
-sends data at a rate within a 15% difference of what the responder expects.
+This example configures the UART as a LIN Responder node that implements a passive
+message reception and transmission handler using the LIN 2.0 protocol with enhanced
+checksum. The responder:
+- Receives data frames (SUBSCRIBE) from the commander and echoes them back with +1 offset
+- Transmits data frames (PUBLISH) to the commander
+- Supports responder-to-responder communication where the commander sends headers
+- Performs automatic baud rate detection and adjustment
+- Supports bus sleep/wake-up sequences with low-power operation
+
 LIN is a feature only usable with a UART Extend instance.
-This example is provided for reference purposes only.
 
 ## Peripherals & Pin Assignments
 
@@ -51,51 +55,73 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0G3519 User's Guide](https://www.ti.com/lit/slau947).
 
 ## Example Usage
-Connect the LIN Commander to a LIN BoosterPack with the following connections:
-- Commander GND         -> BoosterPack GND
-- Commander LIN_ENABLE  -> BoosterPack LIN_EN
-- Commander TX          -> BoosterPack UATX (LIN TX)
-- Commander RX          -> BoosterPack UARX (LIN RX)
 
-Connect the LIN Responder to a LIN BoosterPack with the following connections:
-- Responder GND         -> BoosterPack GND
-- Responder LIN_ENABLE  -> BoosterPack LIN_EN
-- Responder TX          -> BoosterPack UATX (LIN TX)
-- Responder RX          -> BoosterPack UARX (LIN RX)
+### Hardware Setup
 
-Note: the BOOSTXL-CANFD-LIN BoosterPack is not directly compatible with the LP_MSPM0G3519 LaunchPad since the pins on the UART connector don't support LIN. For this reason, the BoosterPack shouldn't be stacked on top of the LaunchPad.
+1. **Connect LaunchPad to LIN BoosterPack:**
+   - Responder GND         -> BoosterPack GND
+   - Responder LIN_ENABLE  -> BoosterPack LIN_EN
+   - Responder TX (PA10)   -> BoosterPack UATX (LIN TX)
+   - Responder RX (PA11)   -> BoosterPack UARX (LIN RX)
 
-Connect the LIN Commander BoosterPack and the LIN Responder BoosterPack using the LIN bus lines in J5.
+2. **Connect LIN Bus:**
+   - Connect the LIN Commander BoosterPack and the LIN Responder BoosterPack using the LIN bus lines in J5.
+   - The two LaunchPads will communicate via the LIN bus.
 
-NOTE: Alternatively, a Network Analyzer compatible with LIN 2.0 can be substituted for a LIN
-Responder. To use the Network Analyzer, make the following connections between
-the Network Analyzer and LIN BoosterPack:
-- Network Analyzer GND    -> BoosterPack GND
-- Network Analyzer LINbus -> BoosterPack LIN_TERM
+**Note:** The BOOSTXL-CANFD-LIN BoosterPack is not directly compatible with the LP_MSPM0G3519 LaunchPad since the pins on the UART connector don't support LIN. The BoosterPack should NOT be stacked on top of the LaunchPad.
 
-The LIN responder is configured to run at 32MHz at 19200 baud. These settings
-can be updated in SysConfig. If desired, an automatic baud rate synchronizer can be disabled,
-since it is enabled by default. This feature uses the sync field to determine a new baud rate
-given the responder receives data at a rate different than what it is expecting. The feature has
-a 15% tolerance. To turn off the automatic baud rate synchronization, in "lin_config.h", set "AUTO_BAUD_ENABLED" to false.
-The responder can transmit data either in polling mode or interrupt mode.
+**Alternative Setup:** A Network Analyzer compatible with LIN 2.0 can be substituted for the LIN Commander. Make the following connections:
+   - Network Analyzer GND    -> BoosterPack GND
+   - Network Analyzer LINbus -> BoosterPack LIN_TERM
 
-Compile, load and run the example.
+### Configuration
 
-Send the LIN 2.0 packets with enhanced checksum using the LIN Commander/Network Analyzer.
-The list of acceptable PID commands are:
-  - PID 0x08 / 0x09 / 0x0A
-      - Usage: LIN Commander tells the LIN Responder to respond with 5 bytes of data stored in gResponderTXMessageData
-      - Packet: [PID, DATA1, DATA2, DATA3, DATA4, DATA5, ENHANCED_CHECKSUM]
-      - Example Packet: [0x8, 0x01, 0x02, 0x03, 0x04, 0x05, 0xE8]
-  - PID 0x39 / 0x3A / 0x3B
-      - Usage: LIN Commander sends a packet containing 8 bytes for LIN Responder to receive. The LIN Responder will then save the 8 bytes of the received data and store it in gResponderTXMessageData, overwriting what was previously saved.
-      - Packet: [PID, DATA1, DATA2, DATA3, DATA4, DATA5, DATA6, DATA7, DATA8, ENHANCED_CHECKSUM]
-      - Example Packet: [0x39, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xA2]
+The LIN Responder is configured to run at 32MHz at 19200 baud. These settings can be updated in SysConfig.
 
-The PIDs, message size, and functionality of the callback handlers can be modified
-and customized in the "responderMessageTable" array in lin_responder.c.
+**Automatic Baud Rate Synchronization:**
+- Enabled by default. Measurements are taken from the SYNC field to determine and adjust the baud rate
+- Tolerance: ±5% (per LIN_AUTO_BAUD_MIN/MAX in lin_config.h)
+- To disable: In "lin_config.h", set "AUTO_BAUD_ENABLED" to false
+- Recalibration triggered after 3 SYNC measurements deviate from nominal
 
-When the LIN Responder receives a packet, LED1 will toggle.
+**Low-Power Operation:**
+- Responder enters sleep state on startup and waits for bus activity via wakeup detection
+- Uses Wait-For-Interrupt (__WFI()) in the main loop for minimal power consumption
+- Automatically transitions to sleep/wake states based on LIN bus commands
 
-When the LIN Responder transmits a packet, LED2 will toggle.
+### Running the Example
+
+1. Compile and load the example on both the LIN Commander and LIN Responder LaunchPads.
+2. Run the Responder first (enters sleep waiting for bus activity).
+3. Run the Commander (sends frames to wake up the Responder).
+
+### Responder Message Table
+
+The responder handles the following frame types:
+
+| MessageID | PID Range | Frame Type | Direction | Function |
+|-----------|-----------|-----------|-----------|----------|
+| 0x10 | Auto-calculated | SUBSCRIBE | RX (8 bytes) | Receives data from commander; echoes back with +1 offset to TX buffer |
+| 0x20 | Auto-calculated | PUBLISH | TX (8 bytes) | Transmits data frame to commander |
+| 0x30 | Auto-calculated | Responder-to-Responder | TX (8 bytes) | Commander sends header only; responder ignores |
+
+**Data Processing:**
+- When a SUBSCRIBE (RX) frame is received, the responder copies all 8 bytes to the TX buffer with +1 offset applied to each byte
+- When a PUBLISH (TX) frame is transmitted, the first data byte is automatically incremented for the next transmission
+- TX buffer is initialized with sequential values: [0x00, 0x01, 0x02, ..., 0x07]
+
+**Customization:**
+The message table, PID mappings, and callback handlers can be modified in the "responderMessageTable" array in [lin_responder.c](lin_responder.c).
+
+### Power Management
+
+- **LIN_TransitionToSleepState():** Transitions the responder to sleep mode
+- **Lin_EnableWakeupDetection():** Enables positive-edge interrupt detection for wakeup pulses
+- **Lin_TransitionToWakeUpState():** Restores operational status after wakeup
+- **DL_SYSCTL_enableSleepOnExit():** Automatically enters low-power mode when exiting ISR
+
+### LED Indicators
+
+- **LED1 (PB15):** Brief pulse each time a SUBSCRIBE (RX) frame is received
+- **LED2 (PB22/PB26):** Brief pulse each time a PUBLISH (TX) frame is transmitted
+- **Both LEDs:** 3 rapid blinks (50ms on/off) when an error is detected (checksum, framing, PID parity, etc.)

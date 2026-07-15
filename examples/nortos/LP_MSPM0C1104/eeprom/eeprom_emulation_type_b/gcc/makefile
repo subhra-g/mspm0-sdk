@@ -16,6 +16,8 @@ OBJECTS = ti_msp_dl_config.obj main.obj ti_eeprom_emulation_type_a_eeprom_emulat
 NAME = eeprom_emulation_type_b
 
 
+DFLAGS += -gstrict-dwarf
+
 CFLAGS += -I.. \
     -D__MSPM0C1104__ \
     -O2 \
@@ -29,10 +31,15 @@ CFLAGS += -I.. \
     -ffunction-sections \
     -fdata-sections \
     -g \
-    -gstrict-dwarf \
     -Wall \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include/newlib-nano" \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-L$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/gcc/m0p/mspm0c110x" \
     -nostartfiles \

@@ -74,21 +74,20 @@ extern "C" {
 
 
 
-#define CPUCLK_FREQ                                                     32000000
+#define CPUCLK_FREQ                                                     80000000
+/* Defines for SYSPLL_ERR_01 Workaround */
+/* Represent 1.000 as 1000 */
+#define FLOAT_TO_INT_SCALE                                               (1000U)
+#define FCC_EXPECTED_RATIO                                                  2500
+#define FCC_UPPER_BOUND                       (FCC_EXPECTED_RATIO * (1 + 0.003))
+#define FCC_LOWER_BOUND                       (FCC_EXPECTED_RATIO * (1 - 0.003))
 
-
-
-/* Defines for TIMER_0 */
-#define TIMER_0_INST                                                     (TIMA0)
-#define TIMER_0_INST_IRQHandler                                 TIMA0_IRQHandler
-#define TIMER_0_INST_INT_IRQN                                   (TIMA0_INT_IRQn)
-#define TIMER_0_INST_LOAD_VALUE                                             (0U)
-
+bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 
 
 /* Defines for LIN_0 */
 #define LIN_0_INST                                                         UART0
-#define LIN_0_INST_FREQUENCY                                            32000000
+#define LIN_0_INST_FREQUENCY                                             5000000
 #define LIN_0_INST_IRQHandler                                   UART0_IRQHandler
 #define LIN_0_INST_INT_IRQN                                       UART0_INT_IRQn
 #define GPIO_LIN_0_RX_PORT                                                 GPIOA
@@ -99,10 +98,10 @@ extern "C" {
 #define GPIO_LIN_0_IOMUX_TX                                      (IOMUX_PINCM21)
 #define GPIO_LIN_0_IOMUX_RX_FUNC                       IOMUX_PINCM22_PF_UART0_RX
 #define GPIO_LIN_0_IOMUX_TX_FUNC                       IOMUX_PINCM21_PF_UART0_TX
-#define LIN_0_BAUD_RATE                                                  (19200)
-#define LIN_0_IBRD_32_MHZ_19200_BAUD                                       (104)
-#define LIN_0_FBRD_32_MHZ_19200_BAUD                                        (11)
-#define LIN_0_TBIT_WIDTH                                                  (1666)
+#define LIN_0_BAUD_RATE                                                   (9600)
+#define LIN_0_IBRD_5_MHZ_9600_BAUD                                          (32)
+#define LIN_0_FBRD_5_MHZ_9600_BAUD                                          (35)
+#define LIN_0_TBIT_WIDTH                                                   (520)
 
 
 
@@ -124,16 +123,6 @@ extern "C" {
 #define GPIO_SWITCHES1_USER_SWITCH_1_IIDX                    (DL_GPIO_IIDX_DIO3)
 #define GPIO_SWITCHES1_USER_SWITCH_1_PIN                         (DL_GPIO_PIN_3)
 #define GPIO_SWITCHES1_USER_SWITCH_1_IOMUX                       (IOMUX_PINCM16)
-/* Port definition for Pin Group GPIO_SWITCHES2 */
-#define GPIO_SWITCHES2_PORT                                              (GPIOA)
-
-/* Defines for USER_SWITCH_2: GPIOA.18 with pinCMx 40 on package pin 70 */
-// pins affected by this interrupt request:["USER_SWITCH_2"]
-#define GPIO_SWITCHES2_INT_IRQN                                 (GPIOA_INT_IRQn)
-#define GPIO_SWITCHES2_INT_IIDX                 (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
-#define GPIO_SWITCHES2_USER_SWITCH_2_IIDX                   (DL_GPIO_IIDX_DIO18)
-#define GPIO_SWITCHES2_USER_SWITCH_2_PIN                        (DL_GPIO_PIN_18)
-#define GPIO_SWITCHES2_USER_SWITCH_2_IOMUX                       (IOMUX_PINCM40)
 /* Port definition for Pin Group GPIO_LEDS */
 #define GPIO_LEDS_PORT                                                   (GPIOB)
 
@@ -151,12 +140,11 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
-void SYSCFG_DL_TIMER_0_init(void);
+
+bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 void SYSCFG_DL_LIN_0_init(void);
 
 
-bool SYSCFG_DL_saveConfiguration(void);
-bool SYSCFG_DL_restoreConfiguration(void);
 
 #ifdef __cplusplus
 }

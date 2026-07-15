@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 /* Number of CPU cycles for 1ms delay */
-#define CYCLES_PER_MS          (32000)
+#define CYCLES_PER_MS          (80000)
 
 /* Macro to convert duration (ms) to hardware clock ticks */
 #define MS_TO_CYCLES(ms)       ((ms) * (CYCLES_PER_MS))
@@ -47,6 +47,9 @@ volatile uint8_t gDataReady_Acc_Gyro = 0;
 
 /* Flag to track data ready status */
 volatile uint8_t gDataReady_HallEffect = 0;
+
+/* Number of DMA Transfers to be done for I2S data */
+volatile uint32_t gDMA_I2S_dataTransfer = 0;
 
 /**
  * @brief Sends DAP Frame Header data over UART
@@ -111,16 +114,25 @@ static void Sensor_sendData(void *data , dataFormat format)
 
 /**
  * @brief Captures and streams PIR sensor data samples
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of samples to capture
  */
-static void Sensor_PIR_captureData(uint32_t numSamples)
+static void Sensor_PIR_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     DL_Timer_startCounter(SAMPLING_TIMER_INST);
 
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
 
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+           /* Halt if stop streaming command is received */
+           if (DAP_isStopStreamingReceived(UART_handle))
+           {
+               break;
+           }
+
            if(numSamples >= SamplesPerFrame)
            {
                countPerFrame = SamplesPerFrame;
@@ -151,9 +163,10 @@ static void Sensor_PIR_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures temperature data from HDC3020 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of temperature samples to capture
  */
-static void Sensor_Temperature_captureData(uint32_t numSamples)
+static void Sensor_Temperature_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     hdc3020_config_t config;
     hdc3020_data_t data;
@@ -177,7 +190,15 @@ static void Sensor_Temperature_captureData(uint32_t numSamples)
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
 
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+       /* Halt if stop streaming command is received */
+       if (DAP_isStopStreamingReceived(UART_handle))
+       {
+           break;
+       }
+
        if(numSamples >= SamplesPerFrame)
        {
            countPerFrame = SamplesPerFrame;
@@ -213,9 +234,10 @@ static void Sensor_Temperature_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures humidity data from HDC3020 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of humidity samples to capture
  */
-static void Sensor_Humidity_captureData(uint32_t numSamples)
+static void Sensor_Humidity_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     hdc3020_config_t config;
     hdc3020_data_t data;
@@ -240,7 +262,15 @@ static void Sensor_Humidity_captureData(uint32_t numSamples)
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
 
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+       /* Halt if stop streaming command is received */
+       if (DAP_isStopStreamingReceived(UART_handle))
+       {
+           break;
+       }
+
        if(numSamples >= SamplesPerFrame)
        {
            countPerFrame = SamplesPerFrame;
@@ -275,9 +305,10 @@ static void Sensor_Humidity_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures ambient light data from OPT4001 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of light samples to capture
  */
-static void Sensor_AmbientLight_captureData(uint32_t numSamples)
+static void Sensor_AmbientLight_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     int ret;
     opt4001_data_t data;
@@ -299,7 +330,15 @@ static void Sensor_AmbientLight_captureData(uint32_t numSamples)
 
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
+
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -335,9 +374,10 @@ static void Sensor_AmbientLight_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures pressure data from BMP384 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of pressure samples to capture
  */
-static void Sensor_Pressure_captureData(uint32_t numSamples)
+static void Sensor_Pressure_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     bmp384_config_t config;
     bmp384_data_t data;
@@ -357,9 +397,25 @@ static void Sensor_Pressure_captureData(uint32_t numSamples)
         __BKPT(0);
     }
 
+    data.valid = false;
+    while(data.valid == false)
+    {
+        ret = bmp384_get_data(&data);
+    }
+
+    delay_cycles(10000);
+
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
+
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -393,19 +449,58 @@ static void Sensor_Pressure_captureData(uint32_t numSamples)
 }
 
 /**
+ * @brief Configures and initializes DMA Channel for I2S to UART data streaming
+ */
+static void DMA_config_I2S_to_UART(void)
+{
+    DL_DMA_disableChannel(DMA, DMA_CH2_CHAN_ID);
+    DL_I2S_disableDMAReceiveEvent(I2S_0_INST, DL_I2S_DMA_INTERRUPT_RX_TRIGGER);
+
+    DL_I2S_disable(I2S_0_INST);
+
+    while (!DL_I2S_isRXFIFOEmpty(I2S_0_INST))
+    {
+        int32_t temp = DL_I2S_receiveData32(I2S_0_INST);
+    }
+
+    DMA->CPU_INT.ICLR = 0x04;
+    DMA->GEN_EVENT.ICLR = 0x04;
+
+    DL_DMA_setSrcAddr(DMA, DMA_CH2_CHAN_ID, ((uint32_t) (&I2S_0_INST->RXDATA)) + 3);
+    DL_DMA_setDestAddr(DMA, DMA_CH2_CHAN_ID, (uint32_t) (&UART_DAP_INST->uart->TXDATA));
+
+    DL_DMA_setTransferSize(DMA, DMA_CH2_CHAN_ID, 4);
+    DL_I2S_enableDMAReceiveEvent(I2S_0_INST, DL_I2S_DMA_INTERRUPT_RX_TRIGGER);
+
+    DL_DMA_clearInterruptStatus(DMA, DL_DMA_INTERRUPT_CHANNEL2);
+    DL_DMA_enableChannel(DMA, DMA_CH2_CHAN_ID);
+    DL_I2S_enable(I2S_0_INST);
+}
+
+/**
  * @brief Initializes and configures ICS43434 digital microphone
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of audio samples to capture
  */
-static void Sensor_DigitalMic_captureData(uint32_t numSamples)
+static void Sensor_DigitalMic_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
-    /* Enable I2S */
+    /* Enable I2S and set Data delay as 2 BCLK periods*/
+    DL_I2S_setDataDelay(I2S_0_INST, DL_I2S_DATA_DELAY_ONE);
+    DL_I2S_enableWBCLKGeneration(I2S_0_INST);
     DL_I2S_enable(I2S_0_INST);
 
     uint32_t rxData;
 
     uint8_t SamplesPerFrame = 20;
     uint8_t countPerFrame = 0;
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -421,28 +516,102 @@ static void Sensor_DigitalMic_captureData(uint32_t numSamples)
 
         Sensor_sendHeader(SENSOR_IDX_MIC_DIG, countPerFrame);
 
-        while(countPerFrame)
-        {
+        gDMA_I2S_dataTransfer = countPerFrame;
 
-            /* Read I2S Rx DATA */
-            /* Sending only 16 bits of data */
-            rxData = DL_I2S_receiveDataBlocking32(I2S_0_INST);
+        DMA_config_I2S_to_UART();
 
-            Sensor_sendData(&rxData, gSensors[SENSOR_IDX_MIC_DIG]->format);
-            countPerFrame--;
-
-        }
+        while(gDMA_I2S_dataTransfer > 0) {};
 
         /* Send End Byte */
         DL_UART_transmitDataBlocking(UART_DAP_INST, FRAME_END_BYTE);
     }
+
+    /* Disable I2S */
+    DL_I2S_disableWBCLKGeneration(I2S_0_INST);
+    DL_I2S_disable(I2S_0_INST);
+}
+
+/**
+ * @brief Captures audio data from TAA3020 analog microphone ADC
+ * @param[in] UART_handle  Pointer to UART_Instance
+ * @param[in] numSamples   Number of audio samples to capture
+ */
+static void Sensor_AnalogMic_captureData(UART_Instance *UART_handle, uint32_t numSamples)
+{
+    int ret;
+    taa3020_config_t config;
+
+    /* Configure TAA3020 with default settings */
+    config.word_length = TAA3020_WL_32BIT;
+    config.input_impedance = TAA3020_IMP_2K5;
+    config.pga_gain = 84;            /* 42 dB */
+    config.digital_volume = 201;    /* 0 dB */
+    config.decimation_filter = TAA3020_DECI_LINEAR;
+    config.hpf_cutoff = TAA3020_HPF_0_00025_FS;
+    config.tx_offset = 0;
+    config.enable_micbias = 1;  /* This should be enabled to power up ICS40740*/
+
+    /* Initialize the TAA3020 sensor */
+    ret = taa3020_init(&config);
+    if (ret != TAA3020_OK) {
+        __BKPT(0);
+    }
+
+    /* Enable I2S and set Data delay as 2 BCLK periods*/
+    DL_I2S_setDataDelay(I2S_0_INST, DL_I2S_DATA_DELAY_TWO);
+    DL_I2S_enableWBCLKGeneration(I2S_0_INST);
+    DL_I2S_enable(I2S_0_INST);
+
+
+    uint8_t SamplesPerFrame = 20;
+    uint8_t countPerFrame = 0;
+    
+    /* Stream until sample count is reached */
+    while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
+
+        if(numSamples >= SamplesPerFrame)
+        {
+            countPerFrame = SamplesPerFrame;
+            numSamples -= SamplesPerFrame;
+        }
+
+        else
+        {
+            countPerFrame = numSamples;
+            numSamples = 0;
+        }
+
+        Sensor_sendHeader(SENSOR_IDX_MIC_ANA, countPerFrame);
+
+        gDMA_I2S_dataTransfer = countPerFrame;
+
+        DMA_config_I2S_to_UART();
+
+        while(gDMA_I2S_dataTransfer > 0) {};
+
+        /* Send End Byte */
+        DL_UART_transmitDataBlocking(UART_DAP_INST, FRAME_END_BYTE);
+    }
+
+    /* Disable I2S */
+    DL_I2S_disableWBCLKGeneration(I2S_0_INST);
+    DL_I2S_disable(I2S_0_INST);
+
+    return;
 }
 
 /**
  * @brief Captures 3-axis accelerometer data from BMI270 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of accelerometer samples to capture
  */
-static void Sensor_Accelerometer_captureData(uint32_t numSamples)
+static void Sensor_Accelerometer_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     int ret;
     bmi270_config_t config;
@@ -470,7 +639,14 @@ static void Sensor_Accelerometer_captureData(uint32_t numSamples)
 
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -509,9 +685,10 @@ static void Sensor_Accelerometer_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures 3-axis gyroscope data from BMI270 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of gyroscope samples to capture
  */
-static void Sensor_Gyro_captureData(uint32_t numSamples)
+static void Sensor_Gyro_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     int ret;
     bmi270_config_t config;
@@ -540,7 +717,14 @@ static void Sensor_Gyro_captureData(uint32_t numSamples)
 
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -580,9 +764,10 @@ static void Sensor_Gyro_captureData(uint32_t numSamples)
 
 /**
  * @brief Captures magnetic field data from TMAG5170 sensor
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] numSamples   Number of magnetic field samples to capture
  */
-static void Sensor_MagneticField_captureData(uint32_t numSamples)
+static void Sensor_MagneticField_captureData(UART_Instance *UART_handle, uint32_t numSamples)
 {
     int ret;
     tmag5170_config_t config;
@@ -615,7 +800,15 @@ static void Sensor_MagneticField_captureData(uint32_t numSamples)
 
     uint8_t SamplesPerFrame = 1;
     uint8_t countPerFrame = 0;
+
+    /* Stream until sample count is reached */
     while (numSamples) {
+
+        /* Halt if stop streaming command is received */
+        if (DAP_isStopStreamingReceived(UART_handle))
+        {
+            break;
+        }
 
         if(numSamples >= SamplesPerFrame)
         {
@@ -658,42 +851,42 @@ static void Sensor_MagneticField_captureData(uint32_t numSamples)
 
 /**
  * @brief Configures appropriate sensor based on index and captures data
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] index        Sensor index 
  * @param[in] numSamples   Number of data samples to send
  */
-void Sensor_AcquireSamples(SensorIndex index, uint32_t numSamples)
+void Sensor_AcquireSamples(UART_Instance *UART_handle, SensorIndex index, uint32_t numSamples)
 {
     switch(index) {
     case SENSOR_IDX_PIR:
-             Sensor_PIR_captureData(numSamples);
+             Sensor_PIR_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_TEMP:
-             Sensor_Temperature_captureData(numSamples);
+             Sensor_Temperature_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_HUMID:
-             Sensor_Humidity_captureData(numSamples);
+             Sensor_Humidity_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_ALS:
-             Sensor_AmbientLight_captureData(numSamples);
+             Sensor_AmbientLight_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_PRESS:
-             Sensor_Pressure_captureData(numSamples);
+             Sensor_Pressure_captureData(UART_handle, numSamples);
              break;
-
-    /* Support for the following sensors will be added in the next release */        
     case SENSOR_IDX_MIC_DIG:
-              Sensor_DigitalMic_captureData(numSamples);
+              Sensor_DigitalMic_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_MIC_ANA:
+             Sensor_AnalogMic_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_ACCEL:
-              Sensor_Accelerometer_captureData(numSamples);
+              Sensor_Accelerometer_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_GYRO:
-              Sensor_Gyro_captureData(numSamples);
+              Sensor_Gyro_captureData(UART_handle, numSamples);
              break;
     case SENSOR_IDX_MAG:
-              Sensor_MagneticField_captureData(numSamples);
+              Sensor_MagneticField_captureData(UART_handle, numSamples);
              break;
 
     }

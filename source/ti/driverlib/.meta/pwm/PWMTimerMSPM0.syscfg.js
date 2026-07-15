@@ -598,7 +598,10 @@ function validatePinmux(inst, validation) {
             validation.logError("Prescaler is not available for 32-bit Timers. Select a prescale value of 1, or a different peripheral in PinMux section", inst, "clockPrescale");
         }
     } else {
-        if(inst.timerCount > (1 << 16) -1) {
+        if (inst.pwmMode == "CENTER_ALIGN" && inst.timerCount > (1 << 17) -1) {
+            validation.logError("Timer Count Exceeds non-TIMG12 bounds. If a larger count is desired and TIMG12 is on the device, specify TIMG12 in PinMux", inst, "timerCount");
+        }
+        else if(inst.pwmMode != "CENTER_ALIGN" && inst.timerCount > (1 << 16) -1) {
             validation.logError("Timer Count Exceeds non-TIMG12 bounds. If a larger count is desired and TIMG12 is on the device, specify TIMG12 in PinMux", inst, "timerCount");
         }
     }

@@ -32,5 +32,4 @@ GPIO1.associatedPins[0].initialValue        = "SET";
 
 NONMAIN.nonmainWarning = true;
 
-
 SYSCTL.clockTreeEn           = true;

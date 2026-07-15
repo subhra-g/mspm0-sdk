@@ -25,6 +25,8 @@ OBJECTS = bsl_uart.obj ticlang_startup_mspm0g351x_ticlang.obj $(patsubst %.c,%.o
 NAME = bsl_uart_flash_interface
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -34,12 +36,17 @@ CFLAGS += -I.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     -Iexamples/bsl/bsl_uart_flash_interface \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -Wl,--stack_size=0 \
     "-l$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/ticlang/m0p/mspm0gx51x/driverlib.a" \

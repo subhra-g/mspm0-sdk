@@ -49,6 +49,9 @@
 #define DRV8706Q1_CSA_DIV_OFS  (2)
 #define DRV8706Q1_CSA_DIV_MASK (1 << DRV8706Q1_CSA_DIV_OFS)
 
+#define DRV8706Q1_EN_DRV_OFS    (7)
+#define DRV8706Q1_EN_DRV_MASK   (1 << DRV8706Q1_EN_DRV_OFS)
+
 #define DRV8706_RESET_TIME_MS (100)
 typedef enum {
     DRV8706Q1_BRG_MODE_HALF_BRIDGE_MODE = 0,
@@ -416,5 +419,27 @@ _iq20 DRV8706Q1_getCurrent(DRV8706Q1_INSTANCE drv) {
      return _IQ20mpy(vRef-vSO,drv.csaSF);
 }
 
+void DRV8706Q1_setDrvOff(DRV8706Q1_INSTANCE drv,bool value) {
+    uint8_t mask;
+    uint8_t regValue;
+    HAL_setGPIOOutput(drv.drvOff,value);
+
+    /* If drv_off pin is set high set EN_DRV to 0,
+       If drv_off pin is set low set EN_DRV to 1*/
+    if(value)
+    {
+        regValue = (0 << DRV8706Q1_EN_DRV_OFS);
+    }
+    else
+    {
+        regValue = (1 << DRV8706Q1_EN_DRV_OFS);
+    }
+    mask = (DRV8706Q1_EN_DRV_MASK);
+    
+    DRV8706Q1_spiUpdateRegister(drv,
+                                    DRV8706Q1_SPI_ADDR_IC_CTRL,
+                                    mask,
+                                    regValue);
+}
 
 #endif

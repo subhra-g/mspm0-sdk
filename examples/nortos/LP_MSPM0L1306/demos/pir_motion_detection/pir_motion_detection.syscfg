@@ -48,8 +48,6 @@ ADC121.adcMem2chansel                           = "DL_ADC12_INPUT_CHAN_9";
 ADC121.peripheral.$assign                       = "ADC0";
 ADC121.peripheral.adcPin3.$assignAllowConflicts = "PA24/OPA0.IN0-";
 ADC121.peripheral.adcPin9.$assign               = "PA15";
-ADC121.adcPin3Config.$name                      = "ti_driverlib_gpio_GPIOPinGeneric5";
-ADC121.adcPin9Config.$name                      = "ti_driverlib_gpio_GPIOPinGeneric0";
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", ADC121.peripheral, "adcPin3");
 
 Board.peripheral.$assign          = "DEBUGSS";

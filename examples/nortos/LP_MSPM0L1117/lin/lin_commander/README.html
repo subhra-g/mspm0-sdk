@@ -35,7 +35,7 @@
 <div id="content">
   <h1>Readme</h1>
 <h2 id="example-summary">Example Summary</h2>
-<p>This example configures the UART as a LIN Commander, and demonstrates basic transmit and receive of LIN 2.0 packets using enhanced checksum. LIN is a feature only usable with a UART Extend instance. This example is provided for reference purposes only.</p>
+<p>This example demonstrates interrupt-based LIN Commander operation on the LP-MSPM0L1117 LaunchPad. It showcases PUBLISH frames (transmit), SUBSCRIBE frames (receive), and RESPONDER_TO_RESPONDER frames with interrupt-driven transmission and reception. The example also includes comprehensive LIN error scenario testing such as sync errors, checksum errors, PID parity errors, communication timeouts, and incomplete responses. Button-driven sequential operations allow cycling through all LIN frame types and error conditions.</p>
 <h2 id="peripherals-pin-assignments">Peripherals &amp; Pin Assignments</h2>
 <table>
 <thead>
@@ -185,62 +185,76 @@
 <p>This project was developed for a superset device included in the LP-MSPM0L1117 LaunchPad. Please visit the <a href="https://software-dl.ti.com/msp430/esd/MSPM0-SDK/latest/docs/english/tools/ccs_ide_guide/doc_guide/doc_guide-srcs/ccs_ide_guide.html#sysconfig-project-migration">CCS User’s Guide</a> for information about migrating to other MSPM0 devices.</p>
 <h3 id="low-power-recommendations">Low-Power Recommendations</h3>
 <p>TI recommends to terminate unused pins by setting the corresponding functions to GPIO and configure the pins to output low or input with internal pullup/pulldown resistor.</p>
-<p>SysConfig allows developers to easily configure unused pins by selecting <strong>Board</strong>→<strong>Configure Unused Pins</strong>.</p>
+<p>SysConfig allows developers to easily configure unused pins by selecting <strong>Board</strong>â†’<strong>Configure Unused Pins</strong>.</p>
 <p>For more information about jumper configuration to achieve low-power using the MSPM0 LaunchPad, please visit the <a href="https://www.ti.com/lit/slau953">LP-MSPM0L1117 User’s Guide</a>.</p>
 <h2 id="example-usage">Example Usage</h2>
-<p>Connect the LIN Commander to a LIN BoosterPack with the following connections:</p>
+<h3 id="hardware-setup">Hardware Setup</h3>
+<p>Connect the LP-MSPM0L1117 LaunchPad to a LIN Responder or Network Analyzer via jumper wires (the BOOSTXL-CANFD-LIN BoosterPack is not directly compatible):</p>
 <ul>
-<li>Commander GND -&gt; BoosterPack GND</li>
-<li>Commander LIN_ENABLE -&gt; BoosterPack LIN_EN</li>
-<li>Commander TX -&gt; BoosterPack UATX (LIN TX)</li>
-<li>Commander RX -&gt; BoosterPack UARX (LIN RX)</li>
+<li>LaunchPad GND -&gt; BoosterPack GND</li>
+<li>LaunchPad PB24 (J2_17) -&gt; BoosterPack LIN_ENABLE</li>
+<li>LaunchPad UART0 TX (PA10, J22_10) -&gt; BoosterPack UART TX (via J10/R62)</li>
+<li>LaunchPad UART0 RX (PA11, J22_8) -&gt; BoosterPack UART RX (via J12/R63)</li>
 </ul>
-<p>Connect a LIN Responder to a LIN BoosterPack with the following connections:</p>
+<p>Configure jumpers as indicated in the Peripherals &amp; Pin Assignments table for the desired connection method (J22 CAN/LIN connector, boosterpack connector, or XDS-110 backchannel).</p>
+<h3 id="message-configuration">Message Configuration</h3>
+<p>The LIN Commander message table defines 4 messages using enhanced checksum at 32MHz/19200 baud:</p>
 <ul>
-<li>Responder GND -&gt; BoosterPack GND</li>
-<li>Responder LIN_ENABLE -&gt; BoosterPack LIN_EN</li>
-<li>Responder TX -&gt; BoosterPack UATX (LIN TX)</li>
-<li>Responder RX -&gt; BoosterPack UARX (LIN RX)</li>
+<li><strong>Message 0 (ID 0x10)</strong>: PUBLISH - Commander sends 8 bytes to responder(s)</li>
+<li><strong>Message 1 (ID 0x20)</strong>: SUBSCRIBE - Commander requests 8-byte response from responder</li>
+<li><strong>Message 2 (ID 0x30)</strong>: RESPONDER_TO_RESPONDER - Header only (8 bytes)</li>
+<li><strong>Message 3 (ID 0x31)</strong>: RESPONDER_TO_RESPONDER - Header only (8 bytes)</li>
 </ul>
-<p>Note: the BOOSTXL-CANFD-LIN BoosterPack is not directly compatible with the LP_MSPM0L1117 LaunchPad since the pins on the UART connector don’t support LIN. For this reason, the BoosterPack shouldn’t be stacked on top of the LaunchPad.</p>
-<p>Connect the LIN Commander BoosterPack and the LIN Responder BoosterPack using the LIN bus lines in J5.</p>
-<p>NOTE: Alternatively, a Network Analyzer compatible with LIN 2.0 can be substituted for a LIN Responder. To use the Network Analyzer, make the following connections between the Network Analyzer and LIN BoosterPack:</p>
+<h3 id="operation-flow">Operation Flow</h3>
+<p>Press S1 button (PA18) to cycle through the following interrupt-driven operations sequentially:</p>
+<ol>
+<li><strong>OP_STATE_PUBLISH</strong>: Send PUBLISH frame with 8 bytes of data</li>
+</ol>
 <ul>
-<li>Network Analyzer GND -&gt; BoosterPack GND</li>
-<li>Network Analyzer LINbus -&gt; BoosterPack LIN_TERM</li>
+<li>LED1 (PB16 Blue) pulses briefly on transmission complete</li>
 </ul>
-<p>The LIN Commander is configured to run at 32MHz at 19200 baud. These settings can be modified in the application. The commander can transmit data either in polling mode or interrupt mode.</p>
-<p>The list of acceptable PID commands are:</p>
+<ol>
+<li><strong>OP_STATE_SUBSCRIBE</strong>: Send SUBSCRIBE header and wait for responder response</li>
+</ol>
 <ul>
-<li>PID 0x39 / 0x3A / 0x3B
-<ul>
-<li>Usage: LIN Commander sends a packet containing 8 bytes of data for LIN Responder to receive and store.</li>
-<li>Packet: [PID, DATA1, DATA2, DATA3, DATA4, DATA5, DATA6, DATA7, DATA8, ENHANCED_CHECKSUM]</li>
-<li>Example Packet: [0x39, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xA2]</li>
-</ul></li>
-<li>PID 0x08 / 0x09 / 0x0A
-<ul>
-<li>Usage: LIN Commander tells the LIN Responder to respond with 5 bytes of stored data.</li>
-<li>Packet: [PID]</li>
-<li>Example Packet: [0x8] The PIDs, message size, and functionality of the callback handlers can be modified and customized in the “gCommanderMessageTable” array in lin_commander.c.</li>
-</ul></li>
+<li>LED2 (PB17 Red) pulses on successful data reception (callback triggered)</li>
 </ul>
-<p>Compile, load and run the example.</p>
-<p>When S2 button is pressed, the following LIN 2.0 packet will be transmitted:</p>
+<ol>
+<li><strong>OP_STATE_RESP_TO_RESP_1</strong>: Send responder-to-responder header 1</li>
+</ol>
 <ul>
-<li>PID: 0x39</li>
-<li>Data: [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]</li>
-<li>Enhanced Checksum: 0xA2 Each time the S2 button is pressed, LED1 will toggle and the value of the first and last data bytes will be incremented by one.</li>
+<li>LED1 pulses briefly</li>
 </ul>
-<p>When S2 button is pressed, the following LIN 2.0 packet will be transmitted:</p>
+<ol>
+<li><strong>OP_STATE_RESP_TO_RESP_2</strong>: Send responder-to-responder header 2</li>
+</ol>
 <ul>
-<li>PID: 0x08</li>
-<li>Data: None</li>
-<li>Enhanced Checksum: None</li>
+<li>LED1 pulses briefly</li>
 </ul>
-<p>It is expected for the LIN Commander to receive 5 bytes of data after in response to PID 0x08.</p>
-<p>If the LIN Responder correctly sends a response, then LED2 will toggle and the variable “gDataReceived” will be set to true.</p>
-<p>The received bytes will be stored in “gCommanderRXBuffer”. Each time a new packet of data is received, it will overwrite what was previously stored in “gCommanderRXBuffer”.</p>
+<ol>
+<li><strong>OP_STATE_SLEEP</strong>: Transmit LIN sleep command</li>
+</ol>
+<ul>
+<li>Both LEDs light up briefly</li>
+</ul>
+<ol>
+<li><strong>OP_STATE_WAKEUP</strong>: Transmit LIN wakeup signal</li>
+</ol>
+<ul>
+<li>Both LEDs light up briefly</li>
+</ul>
+<ol>
+<li><p><strong>OP_STATE_SYNC_ERROR</strong>: Send frame with invalid sync byte (0xAA instead of 0x55)</p></li>
+<li><p><strong>OP_STATE_CHKSUM_ERROR</strong>: Send frame with incorrect enhanced checksum</p></li>
+<li><p><strong>OP_STATE_PID_PARITY_ERROR</strong>: Send PID with inverted parity bits</p></li>
+<li><p><strong>OP_STATE_COM_NO_RES_ERROR</strong>: Send unknown PID and wait for timeout using timer-based RX</p></li>
+<li><p><strong>OP_STATE_COM_INCMPLT_RES_ERROR</strong>: Request oversized response (9 bytes instead of 8)</p></li>
+<li><p><strong>OP_STATE_RES_NO_RES_ERROR</strong>: Send PUBLISH with zero data bytes</p></li>
+<li><p><strong>OP_STATE_RES_INCMPLT_RES_ERROR</strong>: Send PUBLISH with only 5 data bytes</p></li>
+</ol>
+<p>Error conditions trigger both LEDs to blink 3 times (error handler). The cycle repeats after the last operation.</p>
+<h3 id="customization">Customization</h3>
+<p>Modify the <code>commanderMessageTable</code> array in <a href="lin_commander.c" class="uri">lin_commander.c</a> to change message IDs, data sizes, checksum types, or frame directions.</p>
 <!-- Close div from before_body_template.html -->
 </div>
 <footer id="tiFooter">

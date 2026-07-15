@@ -57,6 +57,14 @@ const SYSOSCFreqOptions = {
         { name: 32000000, displayName: "32 MHz" },
         { name: 4000000,  displayName: "4 MHz"  },
     ],
+    "MSPM0GX70X_GX73X": [
+        { name: 32000000, displayName: "32 MHz" },
+        { name: 4000000,  displayName: "4 MHz"  },
+    ],
+    "MSPM0H821X": [
+        { name: 32000000, displayName: "32 MHz" },
+        { name: 4000000,  displayName: "4 MHz"  },
+    ],
     "MSPM0G122X": [
         { name: 32000000, displayName: "32 MHz" },
         { name: 4000000,  displayName: "4 MHz"  },
@@ -135,6 +143,16 @@ const LFCLKSourceOptions = {
         { name: "LFXT", displayName: "LF External XTAL" },
         { name: "LFCLK_IN", displayName: "LFCLK Digital In" }
     ],
+    "MSPM0GX70X_GX73X": [
+        { name: "LFOSC" },
+        { name: "LFXT", displayName: "LF External XTAL" },
+        { name: "LFCLK_IN", displayName: "LFCLK Digital In" }
+    ],
+    "MSPM0H821X": [
+        { name: "LFOSC" },
+        { name: "LFXT", displayName: "LF External XTAL" },
+        { name: "LFCLK_IN", displayName: "LFCLK Digital In" }
+    ],
     "MSPM0G122X": [
         { name: "LFOSC" },
         { name: "LFXT", displayName: "LF External XTAL" },
@@ -200,6 +218,14 @@ const MFPCLKSourceOptions = {
         { name: "HFCLK" },
     ],
     "MSPM0GX218_GX207": [
+        { name: "SYSOSC" },
+        { name: "HFCLK" },
+    ],
+    "MSPM0GX70X_GX73X": [
+        { name: "SYSOSC" },
+        { name: "HFCLK" },
+    ],
+    "MSPM0H821X": [
         { name: "SYSOSC" },
         { name: "HFCLK" },
     ],
@@ -283,6 +309,16 @@ const MCLKSourceOptions = {
         { name: "LFCLK" },
         { name: "HSCLK" },
     ],
+    "MSPM0GX70X_GX73X": [
+        { name: "SYSOSC" },
+        { name: "LFCLK" },
+        { name: "HSCLK" },
+    ],
+    "MSPM0H821X": [
+        { name: "SYSOSC" },
+        { name: "LFCLK" },
+        { name: "HSCLK" },
+    ],
     "MSPM0G122X": [
         { name: "SYSOSC" },
         { name: "LFCLK" },
@@ -346,6 +382,14 @@ const HFCLKSourceOptions = {
         {name: "HFCLK_IN", displayName: "HFCLK Digital In"}
     ],
     "MSPM0GX218_GX207": [
+        {name: "HFXT", displayName: "HF External XTAL"},
+        {name: "HFCLK_IN", displayName: "HFCLK Digital In"}
+    ],
+    "MSPM0GX70X_GX73X": [
+        {name: "HFXT", displayName: "HF External XTAL"},
+        {name: "HFCLK_IN", displayName: "HFCLK Digital In"}
+    ],
+    "MSPM0H821X": [
         {name: "HFXT", displayName: "HF External XTAL"},
         {name: "HFCLK_IN", displayName: "HFCLK Digital In"}
     ],
@@ -463,6 +507,22 @@ const EXCLKSourceOptions = {
         { name: "HFCLK" },
         { name: "SYSPLLOUT1", displayName: "SYSPLL Clock 1" },
     ],
+    "MSPM0GX70X_GX73X": [
+        { name: "SYSOSC" },
+        { name: "ULPCLK" },
+        { name: "LFCLK" },
+        { name: "MFPCLK" },
+        { name: "HFCLK" },
+        { name: "SYSPLLOUT1", displayName: "SYSPLL Clock 1" },
+    ],
+    "MSPM0H821X": [
+        { name: "SYSOSC" },
+        { name: "ULPCLK" },
+        { name: "LFCLK" },
+        { name: "MFPCLK" },
+        { name: "HFCLK" },
+        { name: "SYSPLLOUT1", displayName: "SYSPLL Clock 1" },
+    ],
     "MSPM0G122X": [
         { name: "SYSOSC" },
         { name: "ULPCLK" },
@@ -477,6 +537,7 @@ const EXCLKSourceOptions = {
         { name: "LFCLK" },
         { name: "MFPCLK" },
         { name: "HFCLK" },
+        { name: "USBFLL" },
     ],
 };
 
@@ -534,6 +595,16 @@ const HSCLKSourceOptions = {
         { name: "HFCLK" },
     ],
     "MSPM0GX218_GX207": [
+        { name: "SYSPLLCLK0" },
+        { name: "SYSPLLCLK2X" },
+        { name: "HFCLK" },
+    ],
+    "MSPM0GX70X_GX73X": [
+        { name: "SYSPLLCLK0" },
+        { name: "SYSPLLCLK2X" },
+        { name: "HFCLK" },
+    ],
+    "MSPM0H821X": [
         { name: "SYSPLLCLK0" },
         { name: "SYSPLLCLK2X" },
         { name: "HFCLK" },
@@ -631,6 +702,18 @@ const BORThreshOptions = {
         {name: "2"},
         {name: "3"},
     ],
+    "MSPM0GX70X_GX73X": [
+        {name: "0"},
+        {name: "1"},
+        {name: "2"},
+        {name: "3"},
+    ],
+    "MSPM0H821X": [
+        {name: "0"},
+        {name: "1"},
+        {name: "2"},
+        {name: "3"},
+    ],
     "MSPM0G122X": [
         {name: "0"},
         {name: "1"},
@@ -710,6 +793,16 @@ let WaitStateOptions = {
         {name: "1"},
         {name: "2"},
     ],
+    "MSPM0GX70X_GX73X": [
+        {name: "0"},
+        {name: "1"},
+        {name: "2"},
+    ],
+    "MSPM0H821X": [
+        {name: "0"},
+        {name: "1"},
+        {name: "2"},
+    ],
     "MSPM0G122X": [
         {name: "0"},
         {name: "1"},
@@ -737,6 +830,8 @@ let AutoTrimAvailable = {
     "MSPM0L211X_L112X"  : false,
     "MSPM0L210X"        : false,
     "MSPM0GX218_GX207"  : undefined,  // TBA
+    "MSPM0GX70X_GX73X"        : undefined,  // TBA
+    "MSPM0H821X"  : undefined,  // TBA
     "MSPM0G122X"        : undefined,  // TBA
     "MSPM0C511X"        : true,
 }

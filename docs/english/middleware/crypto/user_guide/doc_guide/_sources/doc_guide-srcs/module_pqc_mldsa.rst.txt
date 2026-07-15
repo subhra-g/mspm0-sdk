@@ -1,0 +1,248 @@
+################################################################################
+Module Lattice Digital Signature Algorithm (ML-DSA)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The Module Lattice Digital Signature Algorithm (ML-DSA) implementation provides 
+post-quantum resistant digital signatures based on the FIPS 204 standard 
+(also known as Crystals-Dilithium). 
+
+================================================================================
+Security Levels
+================================================================================
+
+This library supports three security levels: ML-DSA-44, ML-DSA-65, 
+and ML-DSA-87, with increasing security strength.  These levels correspond to
+the NIST security categories 2, 3, and 5, respectively.
+
+=============== ================ ================ =============== ==================
+Security Level  Secret Key Size  Public Key Size  Signature Size  Security Strength
+=============== ================ ================ =============== ==================
+ML-DSA-44       2560 bytes       1312 bytes       2420 bytes      NIST Level 2
+ML-DSA-65       4032 bytes       1952 bytes       3309 bytes      NIST Level 3
+ML-DSA-87       4896 bytes       2592 bytes       4627 bytes      NIST Level 5
+=============== ================ ================ =============== ==================
+
+================================================================================
+Memory Requirements
+================================================================================
+
+All ML-DSA operations require significant stack memory.  Devices with an SRAM
+of 128kB or larger are recommended when using ML-DSA.
+
+================================================================================
+Status Codes
+================================================================================
+
+The ML-DSA functions return status codes defined in the `crypto_mldsa_stat_t`
+enumeration to indicate the result of operations.
+
+=========================================== ====== ====================================================================
+Status Code                                 Value  Description
+=========================================== ====== ====================================================================
+`CRYPTO_MLDSA_STAT_INVALID_MODE`            -8     Mode was not a valid mode (pure, pre-hash)
+`CRYPTO_MLDSA_STAT_SIG_LEN_INVALID`         -7     Signature length was not valid for the specified security level
+`CRYPTO_MLDSA_STAT_RAND_TOO_SMALL`          -6     Randomized mode was selected, random data was less than 32 bytes
+`CRYPTO_MLDSA_STAT_CTX_TOO_LONG`            -5     The context string (ctx) was longer than the max 255 bytes
+`CRYPTO_MLDSA_STAT_SEED_TOO_SMALL`          -4     The seed was less than 32 bytes
+`CRYPTO_MLDSA_STAT_INVALID_SIGNATURE_FORM`  -3     The signature provided had an invalid form and was not used
+`CRYPTO_MLDSA_STAT_WORKZONE_TOO_SMALL`      -2     The workzone buffer was too small for the security level
+`CRYPTO_MLDSA_STAT_INVALID_SIGNATURE`       -1     The signature verification completed and the signature IS NOT valid
+`CRYPTO_MLDSA_STAT_OK`                      0      The operation completed successfully
+`CRYPTO_MLDSA_STAT_VALID_SIGNATURE`         65     The signature verification completed and the signature IS valid
+=========================================== ====== ====================================================================
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for ML-DSA is defined below.
+
+================================================================================
+Key Generation
+================================================================================
+
+Generate a key pair for ML-DSA at the specified security level:
+
+.. code-block:: c
+
+    crypto_mldsa_stat_t Crypto_MLDSA_44_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *pk, uint8_t *sk);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_65_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *pk, uint8_t *sk);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_87_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *pk, uint8_t *sk);
+
+**Parameters:**
+
+* `seed`: Pointer to the random seed (32 bytes minimum)
+* `seedLen`: Length of the seed in bytes
+* `pk`: Pointer to store the public verification key
+* `sk`: Pointer to store the secret signing key
+
+**Returns:**
+
+* `CRYPTO_MLDSA_STAT_OK`: Success
+* `CRYPTO_MLDSA_STAT_SEED_TOO_SMALL`: Seed length less than 32 bytes
+
+================================================================================
+Signing
+================================================================================
+
+Generate a digital signature for a message:
+
+.. code-block:: c
+
+    crypto_mldsa_stat_t Crypto_MLDSA_44_sign(
+        uint8_t *sig, size_t *sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *rand, size_t randLen,
+        const uint8_t *sk, crypto_mldsa_mode_t hashMode);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_65_sign(
+        uint8_t *sig, size_t *sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *rand, size_t randLen,
+        const uint8_t *sk, crypto_mldsa_mode_t hashMode);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_87_sign(
+        uint8_t *sig, size_t *sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *rand, size_t randLen,
+        const uint8_t *sk, crypto_mldsa_mode_t hashMode);
+
+**Parameters:**
+
+* `sig`: Output buffer for the signature
+* `sigLen`: Pointer to variable that will store signature length
+* `m`: Message to sign
+* `mLen`: Length of message in bytes
+* `ctx`: Context string (optional)
+* `ctxLen`: Length of context string in bytes
+* `rand`: Random bytes for non-deterministic signing (NULL for deterministic)
+* `randLen`: Length of random bytes (0 for deterministic signing)
+* `sk`: Secret key
+* `hashMode`: If `CRYPTO_MLDSA_SIG_MODE_PURE`, then the pure ML-DSA mode is used
+  and `m` is expected to point directly to the message content.
+  If `CRYPTO_MLDSA_SIG_MODE_PREHASH`, then the pre-hash ML-DSA mode is used and 
+  `m` is expected to be `OID || PH(M)` where OID is the DER-encoded hash object 
+  identifier and PH(M) is the pre-computed hash of the message.
+
+**Returns:**
+
+* `CRYPTO_MLDSA_STAT_OK`: Success
+* `CRYPTO_MLDSA_STAT_CTX_TOO_LONG`: Context exceeds 255 bytes
+* `CRYPTO_MLDSA_STAT_RAND_TOO_SMALL`: Random data less than 32 bytes when 
+  non-deterministic signing requested
+
+================================================================================
+Verification
+================================================================================
+
+Verify a digital signature:
+
+.. code-block:: c
+
+    crypto_mldsa_stat_t Crypto_MLDSA_44_verify(
+        const uint8_t *sig, size_t sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *pk, crypto_mldsa_mode_t hashMode);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_65_verify(
+        const uint8_t *sig, size_t sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *pk, crypto_mldsa_mode_t hashMode);
+
+    crypto_mldsa_stat_t Crypto_MLDSA_87_verify(
+        const uint8_t *sig, size_t sigLen,
+        const uint8_t *m, size_t mLen,
+        const uint8_t *ctx, size_t ctxLen,
+        const uint8_t *pk, crypto_mldsa_mode_t hashMode);
+
+**Parameters:**
+
+* `sig`: Signature to verify
+* `sigLen`: Length of signature in bytes
+* `m`: Message corresponding to signature
+* `mLen`: Length of message in bytes
+* `ctx`: Context string (must match signing context)
+* `ctxLen`: Length of context string in bytes
+* `pk`: Public key
+* `hashMode`: If `CRYPTO_MLDSA_SIG_MODE_PURE`, then the pure ML-DSA mode is used
+  and `m` is expected to point directly to the message content.
+  If `CRYPTO_MLDSA_SIG_MODE_PREHASH`, then the pre-hash ML-DSA mode is used and 
+  `m` is expected to be `OID || PH(M)` where OID is the DER-encoded hash object 
+  identifier and PH(M) is the pre-computed hash of the message.
+
+**Returns:**
+
+* `CRYPTO_MLDSA_STAT_VALID_SIGNATURE`: Signature is valid
+* `CRYPTO_MLDSA_STAT_INVALID_SIGNATURE`: Signature is invalid
+* `CRYPTO_MLDSA_STAT_CTX_TOO_LONG`: Context exceeds 255 bytes
+* `CRYPTO_MLDSA_STAT_SIG_LEN_INVALID`: Signature length is invalid
+* `CRYPTO_MLDSA_STAT_INVALID_SIGNATURE_FORM`: Signature values are not valid for 
+  verification
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for using the ML-DSA programming interface are given below.
+
+================================================================================
+Basic Key Generation, Sign, and Verify
+================================================================================
+
+.. code-block:: c
+
+    // Key generation
+    uint8_t seed[32] = {/* random bytes */};
+    uint8_t pk[CRYPTO_MLDSA_44_PK_LEN];
+    uint8_t sk[CRYPTO_MLDSA_44_SK_LEN];
+    crypto_mldsa_stat_t status = Crypto_MLDSA_44_keyGen(seed, sizeof(seed), pk, sk);
+
+    // Signing
+    uint8_t message[] = "Message to sign";
+    uint8_t signature[CRYPTO_MLDSA_44_SIG_LEN];
+    size_t sigLen;
+    status = Crypto_MLDSA_44_sign(
+        signature, &sigLen,
+        message, sizeof(message),
+        NULL, 0,  // No context
+        NULL, 0,  // Deterministic signing
+        sk, CRYPTO_MLDSA_SIG_MODE_PURE // Not pre-hashed
+    );
+
+    // Verification
+    status = Crypto_MLDSA_44_verify(
+        signature, sigLen,
+        message, sizeof(message),
+        NULL, 0,  // No context
+        pk, CRYPTO_MLDSA_SIG_MODE_PURE // Not pre-hashed
+    );
+
+    if (status == CRYPTO_MLDSA_STAT_VALID_SIGNATURE) {
+        // Signature is valid
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. All functions require significant stack space - refer to the user's guide 
+   for specific requirements.
+#. For highest security and CNSA 2.0 compatibility, use ML-DSA-87. For a 
+   balance of security and performance, use ML-DSA-65.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2026, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,233 +30,613 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * LIN Commander Configuration Header
- *
- * This header defines the data structures, constants, and function prototypes
- * for implementing a LIN 2.2A commander on MSPM0 microcontrollers.
- * Supports both standard UART Extended and UNICOMM UART peripherals.
- */
-
+/* Header guard: prevents multiple inclusions of this header file */
 #ifndef LIN_CONFIG_H_
 #define LIN_CONFIG_H_
 
+/* MSP device register definitions */
 #include <ti/devices/msp/msp.h>
+/* TI DriverLib API for peripheral control */
 #include <ti/driverlib/driverlib.h>
+/* Core M0+ CPU support functions */
 #include <ti/driverlib/m0p/dl_core.h>
+/* Auto-generated SysConfig peripheral initialization header */
 #include "ti_msp_dl_config.h"
+/* Standard boolean type */
+#include <stdbool.h>
+/* Standard fixed-width integer types */
+#include <stdint.h>
+/* memcpy and string utilities */
+#include <string.h>
 
-/*! MACRO to switch between TX INT and polling mode */
-#define Transmit_INT
+/* Number of CPU cycles for timeout*/
+#define LIN_TIMEOUT_DURATION            (65535)
 
-/*!< Maximum data payload size per LIN frame (LIN spec: 1-8 bytes) */
-#define LIN_DATA_MAX_BUFFER_SIZE    (8)
+/* Number of CPU cycles to delay between operations for settling time */
+#define OPERATION_DELAY_CYCLES          (1000)
 
-/*!< Number of bit cycles used for sync field validation */
-#define LIN_RESPONDER_SYNC_CYCLES   (5)
+/* Auto-baud rate detection: set to true to enable runtime baud rate measurement from SYNC field */
+#define AUTO_BAUD_ENABLED               (true)
 
-/*!< LIN sync byte value (alternating 1s and 0s: 0b01010101) */
-#define LIN_SYNC_BYTE               (0x55)
+/* Number of CPU clock cycles equivalent to 1 millisecond delay */
+#define DELAY_1MS                       (CPUCLK_FREQ / 1000)
 
-/*!< Return value when PID is not found in message table */
-#define LIN_MESSAGE_NOT_FOUND       (0xFF)
+/* Number of LIN frames handled by the responder node message table */
+#define LIN_RESPONDER_NUM_MSGS          (3U)
 
-/*!< Number of messages in the commander message table */
-#define LIN_COMMANDER_NUM_MSGS      (0x07)
+/* Maximum number of data bytes in a single LIN frame (RX or TX buffer size) */
+#define LIN_DATA_MAX_BUFFER_SIZE        (8)
 
-/*
- * Break field duration in CPU cycles.
- * LIN 2.x requires minimum 13 Tbit for break field.
- * Calculated for 19200 baud at 32MHz CPU frequency:
- *   13 bits * (32MHz / 19200) = 21666 cycles
- */
-#define LIN_BREAK_LENGTH            (21666)
+/* Number of LIN frames in the commander node message table */
+#define LIN_COMMANDER_NUM_MSGS          (4U)
 
-/*
- * Frame timeout period in LFCLK ticks.
- * Used to detect incomplete frame reception.
- * 32 ticks @ 32kHz LFCLK = 1ms timeout
- */
-#define TIMEOUT                     (32)
+/* Minimum valid signal frame ID (0x00) */
+#define LIN_FRAME_ID_MIN_SIGNAL         (0x00U)
+/* Maximum valid signal frame ID (0x3B) */
+#define LIN_FRAME_ID_MAX_SIGNAL         (0x3BU)
+/* Frame ID for commander diagnostic request (master request frame) */
+#define LIN_FRAME_ID_COMMANDER_REQ      (0x3CU)
+/* Frame ID for responder diagnostic response (slave response frame) */
+#define LIN_FRAME_ID_RESPONDER_RESP     (0x3DU)
+/* Reserved frame ID 1 - not used for normal communication */
+#define LIN_FRAME_ID_RESERVED_1         (0x3EU)
+/* Reserved frame ID 2 - not used for normal communication */
+#define LIN_FRAME_ID_RESERVED_2         (0x3FU)
 
-/*!
- * @enum LIN_RX_STATE
- * @brief Commander receive state machine states
- *
- * Tracks the current field being received in a LIN frame response.
- */
-typedef enum
+/* Index into the message table for the publish (commander TX) frame */
+#define MSG_IDX_PUBLISH (0U)
+/* Index into the message table for the subscribe (commander RX) frame */
+#define MSG_IDX_SUBSCRIBE (1U)
+/* Index into the message table for responder-to-responder frame 1 */
+#define MSG_IDX_R2R_1 (2U)
+/* Index into the message table for responder-to-responder frame 2 */
+#define MSG_IDX_R2R_2 (3U)
+
+/* Application-level operation state machine used in the example main loop */
+typedef enum {
+  /* Commander is publishing (transmitting) data to the bus */
+  OP_STATE_PUBLISH = 0,
+  /* Commander is subscribing (receiving) data from the bus */
+  OP_STATE_SUBSCRIBE,
+  /* Responder-to-responder communication, first phase */
+  OP_STATE_RESP_TO_RESP_1,
+  /* Responder-to-responder communication, second phase */
+  OP_STATE_RESP_TO_RESP_2,
+  /* Node is entering or in bus sleep mode */
+  OP_STATE_SLEEP,
+  /* Node is performing or completed a wakeup sequence */
+  OP_STATE_WAKEUP,
+  /* A checksum error was detected on a received frame */
+  OP_STATE_CHKSUM_ERROR,
+  /* Incomplete response received from responder (partial data) */
+  OP_STATE_RES_INCMPLT_RES_ERROR,
+  /* Sentinel value: total number of operation states */
+  OP_STATE_MAX
+} OperationState_t;
+
+/* Number of dominant (low) bits transmitted for a LIN break field */
+#define LIN_BREAK_BIT_COUNT (13U)
+
+/* Maximum break field duration in bit times used for upper-bound timeout detection (27.6 rounded up) */
+#define LIN_TBIT_COUNTER_COEFFICIENT_MAX        (28)
+
+/* Minimum break field duration in bit times used for lower-bound timeout detection */
+#define LIN_TBIT_COUNTER_COEFFICIENT_MIN        (11)
+
+/* Number of SYNC field bit-pair measurements used for baud rate validation */
+#define LIN_RESPONDER_SYNC_CYCLES       (4)
+
+/* Standard LIN SYNC byte value (alternating bits, 0x55) used for baud rate measurement */
+#define LIN_SYNC_BYTE                   (0x55U)
+
+/* Half-bit delay in peripheral clock cycles between PID stop bit and first response data start bit */
+#define LIN_RESPONSE_LAPSE              (LIN_0_INST_FREQUENCY / (2 * LIN_0_BAUD_RATE))
+
+/* Frequency of the low-frequency clock (LFCLK) in Hz, used for inter-byte timeout tick calculation */
+#define LIN_LFCLK_FREQ                  (32768U)
+
+/* Number of byte times (each = 10 bit times) to allow as inter-byte timeout margin */
+#define LIN_TIMEOUT_BYTE_TIMES          (3U)
+
+/* Default inter-byte timeout in LFCLK ticks, calculated from nominal baud rate */
+#define LIN_TIMEOUT_TICKS_DEFAULT       ((LIN_TIMEOUT_BYTE_TIMES * 10U * LIN_LFCLK_FREQ) / LIN_0_BAUD_RATE)
+
+/* Macro to compute inter-byte timeout in LFCLK ticks for a given baud rate */
+#define LIN_CALC_TIMEOUT_TICKS(baud)    ((LIN_TIMEOUT_BYTE_TIMES * 10U * LIN_LFCLK_FREQ) / (baud))
+
+/* Number of SYNC measurement cycles that may deviate before triggering auto-baud recalibration */
+#define AUTO_BAUD_THRESHOLD             (3U)
+
+/* Enable automatic bus sleep after detecting a go-to-sleep command */
+#define AUTO_SLEEP_ENABLED              (true)
+
+/* Number of peripheral clock cycles to wait after reconfiguring UART for new baud rate */
+#define AUTO_BAUD_CONFIG_DELAY          (10U)
+
+/* Upper tolerance percentage for auto-baud measured bit time (5% above nominal) */
+#define LIN_AUTO_BAUD_MAX               (105)
+/* Lower tolerance percentage for auto-baud measured bit time (5% below nominal) */
+#define LIN_AUTO_BAUD_MIN               (95)
+
+/* Maximum baud rate supported by auto-baud detection (20 kbps per LIN spec) */
+#define LIN_MAX_SUPPORTED_BAUD          (20000U)
+/* Minimum baud rate supported by auto-baud detection (1 kbps per LIN spec) */
+#define LIN_MIN_SUPPORTED_BAUD          (1000U)
+
+/* Minimum break field counter compare value: minimum valid bit times at maximum baud rate */
+#define LIN_BREAK_COMPARE_MIN_CYCLES    (LIN_TBIT_COUNTER_COEFFICIENT_MIN * (LIN_0_INST_FREQUENCY/LIN_MAX_SUPPORTED_BAUD))
+/* Maximum break field counter compare value: maximum valid bit times at minimum baud rate */
+#define LIN_BREAK_COMPARE_MAX_CYCLES    (LIN_TBIT_COUNTER_COEFFICIENT_MAX * (LIN_0_INST_FREQUENCY/LIN_MIN_SUPPORTED_BAUD))
+
+/* Duplicate definitions retained for compatibility - minimum valid signal frame ID */
+#define LIN_FRAME_ID_MIN_SIGNAL         (0x00U)
+/* Duplicate definitions retained for compatibility - maximum valid signal frame ID */
+#define LIN_FRAME_ID_MAX_SIGNAL         (0x3BU)
+/* Duplicate definitions retained for compatibility - commander diagnostic request ID */
+#define LIN_FRAME_ID_COMMANDER_REQ      (0x3CU)
+/* Duplicate definitions retained for compatibility - responder diagnostic response ID */
+#define LIN_FRAME_ID_RESPONDER_RESP     (0x3DU)
+/* Duplicate definitions retained for compatibility - reserved frame ID 1 */
+#define LIN_FRAME_ID_RESERVED_1         (0x3EU)
+/* Duplicate definitions retained for compatibility - reserved frame ID 2 */
+#define LIN_FRAME_ID_RESERVED_2         (0x3FU)
+
+/* Minimum wakeup pulse duration in microseconds per LIN specification */
+#define LIN_WAKE_UP_MIN_TIME_IN_US      (250U)
+/* Maximum wakeup pulse duration in microseconds per LIN specification */
+#define LIN_WAKE_UP_MAX_TIME_IN_US      (5000U)
+/* Scaling factor to convert Hz to MHz for cycles-per-microsecond calculation */
+#define LIN_SCALE_IN_MHZ                (1000000U)
+/* Number of peripheral clock cycles per microsecond */
+#define LIN_CYCLES_PER_US               (LIN_0_INST_FREQUENCY / LIN_SCALE_IN_MHZ)
+/* Counter compare value corresponding to minimum valid wakeup pulse width */
+#define LIN_WAKEUP_COMPARE_VALUE        (LIN_WAKE_UP_MIN_TIME_IN_US * LIN_CYCLES_PER_US)
+
+/* First data byte of the go-to-sleep command frame (must be 0x00) */
+#define LIN_SLEEP_CMD_BYTE1             (0x00U)
+/* Filler byte for remaining data bytes of the go-to-sleep frame (must be 0xFF) */
+#define LIN_SLEEP_CMD_FILL              (0xFFU)
+
+/* Maximum 16-bit counter value (used for counter rollover/limit checks) */
+#define LIN_MAX_CNTR_VAL                (65535)
+
+/* Maximum break field length multiplier for timeout boundary calculations */
+#define LIN_MAX_BREAK_MULTIPLIER        (14)
+
+/* Maximum number of data bytes per LIN frame per LIN 2.x specification */
+#define LIN_MAX_DATA_LENGTH             (8)
+
+/* AUTOSAR SWS_Std_00007: logical high physical voltage level (5V or 3.3V) */
+#define STD_HIGH    (1)
+/* AUTOSAR SWS_Std_00007: logical low physical voltage level (0V) */
+#define STD_LOW     (0)
+
+/* Select peripheral pointer type based on whether the MCU has a UNICOMM UART */
+#if defined(__MCU_HAS_UNICOMMUART__)
+/* UNICOMM peripheral register pointer type for LIN instance */
+typedef UNICOMM_Inst_Regs *LIN_Peripheral_t;
+
+#else
+/* Standard UART Extended peripheral register pointer type for LIN instance */
+typedef UART_Regs *LIN_Peripheral_t;
+#endif
+
+/*! @enum LIN_STATE - Protocol state machine states */
+typedef enum 
 {
-    /*!< Waiting for/receiving PID byte */
-    LIN_RX_STATE_ID = 0,
-
-    /*!< Receiving data bytes */
+    /*! LIN RX state wait for Break field of tyhe RX packet */
+    LIN_RX_STATE_WAIT_FOR_BREAK = 0,
+    /*! LIN RX state in Break field of tyhe RX packet */
+    LIN_RX_STATE_BREAK_FIELD,
+     /*! UART LIN state of waiting for the negative edge of the sync field */
+    LIN_RX_STATE_SYNC_FIELD_NEG_EDGE = 2,
+    /*! UART LIN state of waiting for the positive edge of the sync field */
+    LIN_RX_STATE_SYNC_FIELD_POS_EDGE = 3,
+    /*! LIN RX state for the Sync byte of the RX packet */
+    LIN_RX_STATE_SYNC,
+    /*! LIN RX state for the ID byte of the RX packet */
+    LIN_RX_STATE_ID,
+    /*! LIN RX state for the data bytes of the RX packet */
     LIN_RX_STATE_DATA,
-
-    /*!< Receiving checksum byte */
+    /*! LIN RX state for the checksum byte of the RX packet */
     LIN_RX_STATE_CHECKSUM,
-} LIN_RX_STATE;
-
-/*!
- * @enum LIN_STATE
- * @brief LIN frame state machine states
- *
- * Used for tracking the overall LIN frame progress.
- */
-typedef enum
-{
-    /*!< Idle state: waiting for break field */
-    LIN_STATE_WAIT_FOR_BREAK = 0,
-
-    /*!< Break field in progress */
-    LIN_STATE_BREAK_FIELD = 1,
-
-    /*!< Sync field: waiting for falling edge */
-    LIN_STATE_SYNC_FIELD_NEG_EDGE = 2,
-
-    /*!< Sync field: waiting for rising edge */
-    LIN_STATE_SYNC_FIELD_POS_EDGE = 3,
-
-    /*!< PID field: receiving Protected Identifier */
-    LIN_STATE_PID_FIELD = 4,
-
-    /*!< Data field: receiving/transmitting data and checksum */
-    LIN_STATE_DATA_FIELD = 5
+    /*! LIN RX state for the RX packet received */
+    LIN_RX_STATE_COMPLETE,
+    /*! LIN TX state waiting for sendframe api call */
+    LIN_TX_STATE_WAIT_FOR_SEND_FRAME,
+    /*! LIN TX state for sending Break field */
+    LIN_TX_STATE_BREAK,
+    /*! LIN TX state for sending Sync byte */
+    LIN_TX_STATE_SYNC,
+    /*! LIN TX state for sending PID byte */
+    LIN_TX_STATE_PID,
+    /*! LIN TX state for sending data bytes */
+    LIN_TX_STATE_DATA,
+    /*! LIN TX state for sending checksum byte */
+    LIN_TX_STATE_CHECKSUM,
+    /*! LIN TX state for transmission complete */
+    LIN_TX_STATE_COMPLETE,
+    /*! LIN state to wait for wake-up */
+    LIN_STATE_WAIT_FOR_WAKEUP,
+    /*! LIN transition state after error */
+    LIN_STATE_RESET_TRANSITION
+    
 } LIN_STATE;
 
-/*!
- * @brief Union for byte/word access to 16-bit values
- *
- * Used for checksum calculation where byte-level access is needed
- * to handle carry addition.
- */
-typedef union
-{
-    /*!< Access as 16-bit word */
-    uint16_t word;
+/*! @enum LIN_ERROR - Error codes for diagnostics */
+typedef enum {
+    /* No error has occurred */
+    LIN_ERROR_NO_ERROR = 0,
+    /* Break field was shorter than the minimum allowed duration */
+    LIN_ERROR_BREAK_SHORT,
+    /* Break field was longer than the maximum allowed duration */
+    LIN_ERROR_BREAK_LONG,
+    /* SYNC byte value or timing did not match expected pattern */
+    LIN_ERROR_SYNC,
+    /* A bit error was detected during transmission (transmitted != received) */
+    LIN_ERROR_BIT,
+    /* Received checksum did not match the calculated checksum */
+    LIN_ERROR_CHECKSUM,
+    /* UART framing error detected (missing or incorrect stop bit) */
+    LIN_ERROR_FRAMING,
+    /* PID parity bits P0 or P1 do not match the frame ID */
+    LIN_ERROR_PID_PARITY,
+    /* No response data received after the PID when one was expected */
+    LIN_ERROR_NO_RESPONSE,
+    /* Response started but did not complete (fewer bytes than expected) */
+    LIN_ERROR_INCOMPLETE_RESPONSE,
+    /* Stop bit error detected on a response data byte */
+    LIN_ERROR_RESP_STOPBIT,
+    /* General header error (break, sync, or PID validation failure) */
+    LIN_ERROR_HEADER,
+    /* Data bit mismatch between transmitted and looped-back received byte */
+    LIN_ERROR_RESP_DATABIT
+} LIN_ERROR;
 
-    /*!< Access as array of 2 bytes */
+/* LIN channel status type indicating the current frame transfer result or channel state */
+typedef enum Lin_StatusTag
+{
+   /* Operation failed or channel is in an undefined state */
+   LIN_NOT_OK,
+   /* Transmission completed successfully */
+   LIN_TX_OK,
+   /* Transmission is currently in progress */
+   LIN_TX_BUSY,
+   /* An error occurred while transmitting the LIN header (break/sync/PID) */
+   LIN_TX_HEADER_ERROR,
+   /* An error occurred during data transmission */
+   LIN_TX_ERROR,
+   /* Reception completed successfully with valid checksum */
+   LIN_RX_OK,
+   /* Reception is currently in progress */
+   LIN_RX_BUSY,
+   /* Reception completed but checksum validation failed */
+   LIN_RX_ERROR,
+   /* No response data received from the responder */
+   LIN_RX_NO_RESPONSE,
+   /* Channel is active and operational (not sleeping) */
+   LIN_OPERATIONAL,
+   /* Channel is in the bus sleep state */
+   LIN_CH_SLEEP
+} Lin_StatusType;
+
+/*! @enum LIN_NODE_STATE - Node operational state */
+typedef enum Lin_ChannelActivityStatusTag
+{
+    /* Channel is idle: no frame is currently being transmitted or received */
+    LIN_CHANNEL_IDLE,
+    /* Channel is busy: a frame transmission or reception is in progress */
+    LIN_CHANNEL_BUSY,
+} Lin_ChannelActivityStatusType;
+
+/* Union allowing a 16-bit checksum accumulator to be accessed as two individual bytes for carry folding */
+typedef union {
+    uint16_t word;
     uint8_t byte[2];
 } LIN_word_t;
 
-/*!
- * @brief Function pointer type for LIN message callbacks
- *
- * Invoked when a specific PID's data is successfully received or transmitted.
- */
+/* Function pointer type for LIN frame RX/TX completion callback with no arguments and no return value */
 typedef void (*LIN_function_ptr_t)(void);
 
-/*!
- * @brief LIN message table record
- *
- * Defines a single entry in the commander's message table.
- * Maps a PID to its data length and optional completion callback.
- */
-typedef struct
+/* LIN node role: commander initiates frames; responder reacts to headers */
+typedef enum Lin_NodeTag
 {
-    /*!< Protected Identifier (PID) with parity bits */
+   /* This node acts as the LIN commander (bus master) */
+   LIN_COMMANDER,
+   /* This node acts as a LIN responder (bus slave) */
+   LIN_RESPONDER
+} Lin_NodeType;
+
+/* LIN checksum model selection per LIN 2.x specification */
+typedef enum Lin_FrameCsModelTag
+{
+   /* Enhanced checksum: includes PID in checksum calculation (LIN 2.x frames) */
+   LIN_ENHANCED_CS,
+   /* Classic checksum: covers data bytes only (LIN 1.x frames and diagnostic frames) */
+   LIN_CLASSIC_CS
+} Lin_FrameCsModelType;
+
+/* Direction of a LIN frame response relative to this node */
+typedef enum Lin_FrameResponseTag
+{
+   /* This node transmits the response data bytes */
+   LIN_FRAMERESPONSE_TX,
+   /* This node receives the response data bytes */
+   LIN_FRAMERESPONSE_RX,
+   /* This node neither transmits nor receives the response (header only) */
+   LIN_FRAMERESPONSE_IGNORE
+} Lin_FrameResponseType;
+
+/**
+ * @brief Frame configuration record
+ */
+typedef struct {
+    /* 6-bit frame ID */
     uint8_t msgID;
-
-    /*!< Data field length (1-8 bytes) */
+    /* Protected ID (with parity) */
+    uint8_t msgPID;
+    /* Data field length (1-8 bytes) */
     uint8_t msgSize;
-
-    /*!< Callback invoked on message completion (NULL if not needed) */
+    /* CLASSIC or ENHANCED */
+    Lin_FrameCsModelType checksumType;
+    /* PUBLISH/SUBSCRIBE/NONE */
+    Lin_FrameResponseType direction;
+    /* RX callback (NULL for PUBLISH) */
     LIN_function_ptr_t callbackFunction;
 } LIN_table_record_t;
 
-/*!
- * @brief Sync field bit timing measurement
- *
- * Stores timer capture values for measuring bit periods during sync field.
- */
-typedef struct
-{
-    /*!< Timer value captured at falling edge */
+/* Captured hardware timer values for a single SYNC field bit-pair (falling and rising edges) */
+typedef struct {
+    /* Counter value captured at the falling edge of the SYNC bit */
     uint16_t negEdge;
-
-    /*!< Timer value captured at rising edge */
+    /* Counter value captured at the rising edge of the SYNC bit */
     uint16_t posEdge;
-} LIN_Sync_Bits;
-
-/*
- * UART Extended peripheral API (MSPM0 devices with UART_EXTD)
- */
-#if defined(__MSPM0_HAS_UART_EXTD__)
+} LIN_sync_bits_t;
 
 /**
- * @brief   Initiate a LIN frame transmission
+ * @brief LIN timing and auto-baud rate context
  *
- * Sends the break field, sync byte, and PID. If the message table entry
- * has no callback (transmit message), also sends the data and checksum.
- * If callback exists (receive message), waits for responder data.
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  tableIndex    Index into messageTable for the PID to send
- * @param[in]  TXmsgBuffer   Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * Contains all timing-related measurements and auto-baud state.
  */
-void LIN_Commander_sendPID(UART_Regs *uart, uint8_t tableIndex, uint8_t *TXmsgBuffer, LIN_table_record_t *messageTable);
+typedef struct {
+    /* Break field timing */
+    /* Measured break field width in peripheral clock cycles */
+    uint32_t brkW;
+    /* Hardware counter compare value for minimum valid break field detection */
+    uint16_t brkCmp;
+
+    /* Sync field measurements */
+    /* Flag set true at the start of SYNC field measurement to indicate first edge expected */
+    bool syncStart;
+    /* Array of captured falling/rising edge pairs for each of the 4 SYNC bit intervals */
+    LIN_sync_bits_t syncBt[LIN_RESPONDER_SYNC_CYCLES];
+    /* Count of SYNC bit measurements that passed the tolerance check */
+    uint8_t syncOkCnt;
+    /* Count of SYNC bit measurements that failed the tolerance check */
+    uint8_t syncErrCnt;
+
+    /* Bit time calculations */
+    /* Accumulated sum of all measured SYNC bit widths for averaging */
+    uint32_t btSum;
+    /* Computed average bit time across all valid SYNC measurements */
+    uint16_t btAvg;
+    /* Current operating bit time in peripheral clock cycles */
+    uint32_t btWidth;
+
+    /* Bit time width captured at startup or after last successful auto-baud calibration */
+    uint32_t intialBtWidth;
+
+    /* Bit time threshold used to select between btWidth and btWidthLimit for break validation */
+    uint32_t btWidthLimit;
+    /* Minimum acceptable measured bit time (btWidth * LIN_AUTO_BAUD_MIN / 100) */
+    uint16_t btWMin;
+    /* Maximum acceptable measured bit time (btWidth * LIN_AUTO_BAUD_MAX / 100) */
+    uint16_t btWMax;
+
+    /* Baud rate tracking */
+    /* Most recently measured baud rate derived from SYNC field timing */
+    uint16_t brMeas;
+    /* Baud rate used in the previous frame */
+    uint16_t brPrev;
+    /* Baud rate currently configured in the UART peripheral */
+    uint16_t brCurr;
+
+    /* Auto-baud state */
+    /* True while an auto-baud recalibration cycle is in progress */
+    bool autoBaud;
+
+    /* Response timing */
+    /* Half-bit delay in peripheral clock cycles inserted between PID and first response byte */
+    uint16_t respDelay;
+
+    /* Timeout ticks */
+    /* Inter-byte timeout value in LFCLK ticks used for the LIN counter compare register */
+    uint16_t timeoutTicks;
+
+    /* Number of falling edge captures accumulated during current SYNC measurement pass */
+    uint16_t numCyclesNeg;
+    /* Number of rising edge captures accumulated during current SYNC measurement pass */
+    uint16_t numCyclesPos;
+    /* Set to true after the very first successful SYNC field validation completes */
+    volatile bool firstSyncDone;
+
+} Lin_timing_t;
+
+/* LIN Protocol Data Unit: holds all fields of a single LIN frame for TX or RX */
+typedef struct Lin_PduTag
+{
+   /* Protected Identifier byte (6-bit ID + 2 parity bits) */
+   uint8_t Pid;
+   /* Checksum model to apply: LIN_ENHANCED_CS or LIN_CLASSIC_CS */
+   Lin_FrameCsModelType Cs;
+   /* Frame response direction: TX, RX, or IGNORE */
+   Lin_FrameResponseType Drc;
+   /* Data length: number of bytes in the data field (1–8) */
+   uint8_t Dl;
+   /* Current index into the data buffer during byte-by-byte TX or RX */
+   uint8_t byteCounter;
+   /* Pointer to the application-supplied data buffer */
+   uint8_t * SduPtr;
+   /* Internal shadow copy of data used during transmission to allow safe loopback checking */
+   uint8_t shadowBuffer[LIN_MAX_DATA_LENGTH];
+} Lin_PduType;
+
+/* Controls whether SYNC field tolerance validation is applied to every frame or only the first */
+typedef enum {
+   /* Perform SYNC tolerance check only on the first received frame after reset or sleep */
+   LIN_SYNC_CHECK_FIRST_FRAME,
+   /* Perform SYNC tolerance check on every received frame */
+   LIN_SYNC_CHECK_ALL_FRAMES
+} LIN_SYNC_CHECK_FRAME_TYPE;
+
+/* LIN channel network-level power state */
+typedef enum Lin_ChannelNetworkStatusTag
+{
+    /* Channel is fully powered and communicating normally */
+    LIN_CHANNEL_OPERATIONAL,
+    /* A go-to-sleep command has been sent but sleep state is not yet confirmed */
+    LIN_CHANNEL_SLEEP_PENDING,
+    /* Channel has entered bus sleep mode */
+    LIN_CHANNEL_SLEEP
+} Lin_ChannelNetworkStatusType;
 
 /**
- * @brief   Process received data byte
+ * @brief LIN transmit/receive context
  *
- * Accumulates received bytes into the message buffer and validates
- * the checksum when complete. Invokes the callback on successful reception.
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  rxByte        Received data byte
- * @param[out] msgBuffer     Pointer to receive buffer for storing data
- * @param[in]  messageTable  Pointer to commander message table
+ * Main structure containing the LIN state machine, buffers, and configuration.
  */
-void LIN_Commander_receiveMessage(UART_Regs *uart, uint8_t rxByte, uint8_t *msgBuffer, LIN_table_record_t *messageTable);
+typedef struct {
+    /* Current state of the LIN protocol state machine; volatile because modified in ISR */
+    volatile LIN_STATE state;
+
+    /* Role of this node on the bus: LIN_COMMANDER or LIN_RESPONDER */
+    Lin_NodeType node;
+
+    /* True when the inter-byte timeout counter is active and monitoring for the next byte */
+    volatile bool timeoutEnabledForInterByte;
+
+    /* True when an error requires the state machine to be reset on the next falling edge */
+    volatile bool errorResetScenario;
+
+    /* True when a rising edge (stop bit) has been detected after a falling edge during data phase */
+    volatile bool checkPosEdgeDetected;
+
+    /* True when a falling edge arrived before the expected stop bit rising edge (framing suspect) */
+    volatile bool checkStopBitErrorOccured;
+
+    /* Pointer to the message table used for PID-to-frame lookup */
+    LIN_table_record_t *msgTbl;
+    /* Index of the last matched entry in the message table */
+    uint8_t msgTblIdx;
+
+    /* Last byte transmitted, used for loopback bit-error detection */
+    uint8_t Tx_LAST_BYTE;
+
+    /* Current channel status reported to the application layer */
+    Lin_StatusType status;
+
+    /* PID of the frame currently being processed, retained for checksum calculation */
+    uint8_t currentPID;
+
+    /* Pointer to the shared timing/auto-baud context; volatile because modified in ISR */
+    volatile Lin_timing_t *timing;
+
+    /* Activity state of the channel: idle or busy */
+    Lin_ChannelActivityStatusType channelStatus;
+
+    /* Network-level power state: operational, sleep pending, or sleep */
+    Lin_ChannelNetworkStatusType networkStatus;
+
+    /* Most recent error code set by LIN_SetError */
+    LIN_ERROR lastError;
+    /* Running count of all errors detected since initialization */
+    uint32_t errorCount;
+    /* Running count of successfully completed frames since initialization */
+    uint32_t successCount;
+    /* True if a response error flag is pending for the application */
+    bool responseError;
+
+    /* True when currently receiving a diagnostic (0x3C/0x3D) frame */
+    bool receivingDiagnosticFrame;
+    /* Expected number of data bytes for the current frame */
+    uint8_t expectedDataLength;
+
+    /* PDU context for the currently received frame */
+    Lin_PduType rxPdu;
+    /* PDU context for the currently transmitted frame */
+    Lin_PduType txPdu;
+
+    /* Selects whether SYNC check applies to first frame only or all frames */
+    LIN_SYNC_CHECK_FRAME_TYPE syncCheckType;
+    /* Running checksum accumulator word during data byte processing */
+    LIN_word_t tempChksum;
+    /* Callback function pointer for the current frame, set during PID lookup */
+    LIN_function_ptr_t callbackFunction;
+    /* True if an external wakeup pulse meeting timing requirements was detected */
+    bool extWakeUpStatus;
+    
+} Lin_TxRxCtx_t;
+
+/* Responder message table array, defined in the application source file */
+extern LIN_table_record_t responderMessageTable[LIN_RESPONDER_NUM_MSGS];
+
+/* Global LIN transmit/receive context */
+extern Lin_TxRxCtx_t gLIN;
+
+/* Global LIN timing context */
+extern volatile Lin_timing_t gLINT;
 
 /**
- * @brief   Transmit next data byte (interrupt-driven)
- *
- * Called from TX interrupt to send subsequent data bytes and checksum.
- * Used when interrupt-driven transmission is enabled.
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  msgBuffer     Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Calculate protected identifier (ID + parity)
+ * @param frameID 6-bit frame identifier
+ * @return 8-bit PID
  */
-void LIN_Commander_transmitMessage(UART_Regs *uart, uint8_t *msgBuffer, LIN_table_record_t *messageTable);
-
-#endif /* __MSPM0_HAS_UART_EXTD__ */
-
-/*
- * UNICOMM UART peripheral API (devices with unified communication module)
- */
-#if defined(__MCU_HAS_UNICOMMUART__)
-/**
- * @brief   Initiate a LIN frame transmission (UNICOMM)
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  tableIndex    Index into messageTable for the PID to send
- * @param[in]  TXmsgBuffer   Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
- */
-void LIN_Commander_sendPID(UNICOMM_Inst_Regs *unicomm, uint8_t tableIndex, uint8_t *TXmsgBuffer, LIN_table_record_t *messageTable);
+extern uint8_t LIN_calculatePID(uint8_t frameID);
 
 /**
- * @brief   Process received data byte (UNICOMM)
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  rxByte        Received data byte
- * @param[out] msgBuffer     Pointer to receive buffer for storing data
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Called after successful TX transmission (implemented in lin_responder.c)
  */
-void LIN_Commander_receiveMessage(UNICOMM_Inst_Regs *unicomm, uint8_t rxByte, uint8_t *msgBuffer, LIN_table_record_t *messageTable);
+extern void LIN_processMessage_Tx(void);
 
 /**
- * @brief   Transmit next data byte (UNICOMM, interrupt-driven)
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  msgBuffer     Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Called after successful wake-up (implemented in lin_responder.c)
  */
-void LIN_Commander_transmitMessage(UNICOMM_Inst_Regs *unicomm, uint8_t *msgBuffer, LIN_table_record_t *messageTable);
+extern void LIN_processWakeUp(void);
 
-#endif /* __MCU_HAS_UNICOMMUART__ */
+/**
+ * @brief Called after successful sleep (implemented in lin_responder.c)
+ */
+extern void LIN_processSleep(void);
 
+/**
+ * @brief Called when an error is detected (implemented in lin_responder.c)
+ * @param error The error type that occurred
+ */
+extern void LIN_processError(LIN_ERROR error);
+
+/* Configure the LIN peripheral and context for responder (slave) node operation */
+extern void Lin_ConfigResponder();
+
+/* Configure the LIN peripheral and context for commander (master) node operation */
+extern void Lin_ConfigCommander();
+
+/* Initiate transmission of a LIN frame from the commander; returns true on success */
+extern uint8_t LIN_SendData(Lin_PduType *txPdu);
+
+/* Update network and channel status to sleep and reconfigure peripheral accordingly */
+extern void LIN_TransitionToSleepState(Lin_TxRxCtx_t *lin);
+
+/* Arm the positive-edge interrupt to detect an incoming wakeup pulse */
+extern void Lin_EnableWakeupDetection();
+
+/* Restore operational status and reconfigure peripheral after a wakeup event */
+extern void Lin_TransitionToWakeUpState();
+
+/* Transmit the LIN go-to-sleep master request frame (0x3C with 0x00 first byte) */
+extern void LIN_SendGoToSleepSignal();
+
+/* Transmit a LIN wakeup pulse (dominant pulse of 250 µs–5 ms) */
+extern void Lin_SendWakeupSignal();
+
+/* End of header guard */
 #endif /* LIN_CONFIG_H_ */

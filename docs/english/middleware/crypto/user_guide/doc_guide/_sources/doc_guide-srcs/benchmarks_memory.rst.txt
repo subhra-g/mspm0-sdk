@@ -1,0 +1,74 @@
+################################################################################
+Memory Requirements
+################################################################################
+
+The memory requirements for various modules of the library are given below
+as a reference for estimating the memory impact of including a given primitive.
+
+**NOTE:** Some primitives share subroutines.  In these cases, the code (flash)
+size for including two algorithms (for example, a sign and verify algorithm) may
+be lower than the simple sum of the code size of each algorithm on its own.
+
+**NOTE:** Some primitives require a minimum stack space to be available.  Be
+sure to budget the stack usage for your application, considering call sequences.
+
+**NOTE:** This library does not use any dynamic memory allocation (no heap).
+All SRAM memory required by the library is taken from the call stack itself.
+
+********************************************************************************
+SRAM (Stack and Data) Requirements - MSPM0 (Arm Cortex-M0+)
+********************************************************************************
+
+The SRAM requirements including stack usage and expected associated data
+for buffers which are generally required to use a given function are 
+given in the table below.
+
+========== ================================ ========== ========== =========== ============================================================================
+Module     Function                         Stack (B)  Data (B)   Tot RAM (B) Notes
+========== ================================ ========== ========== =========== ============================================================================
+Cipher     Crypto_AES_setSessionKey         40         0          0           Assumes the key to load was in flash or stored separately.
+Cipher     Crypto_AES_encrypt               48         16         64          Data is SRAM buffer to hold the resulting ciphertext.
+Cipher     Crypto_AES_decrypt               48         16         64	      Data is SRAM buffer to hold the resulting plaintext.
+Cipher     Crypto_AES_CBC_encrypt           96         32         128         Data is SRAM buffer to hold the IV and the resulting minimum ciphertext.
+Cipher     Crypto_AES_CBC_decrypt           96         32         128         Data is SRAM buffer to hold the IV and the resulting minimum plaintext.
+Cipher     Crypto_AES_CMAC_genTag           184        16         200         Data is SRAM buffer to hold CMAC output.
+Cipher     Crypto_AES_CMAC_verTag           208        0          208         Assumes the key to load and tag were in flash or stored separately.
+Cipher     Crypto_AES_CCM_encryptAndGen     168        16         184         Data is SRAM buffer to hold tag output.
+Cipher     Crypto_AES_CCM_decryptAndVer     168        0          168         Assumes the key to load and tag were in flash or stored separately.
+Hash       Crypto_SHA224                    312        28         340         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA256                    312        32         344         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA384                    456        48         504         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA512                    456        64         520         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA3_224                  416        28         444         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA3_256                  416        32         448         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA3_384                  416        48         464         Data is SRAM buffers to hold the resulting md.
+Hash       Crypto_SHA3_512                  416        64         480         Data is SRAM buffers to hold the resulting md.
+EC         Crypto_ECDSA_P256_sign           1304       64         1368        Data is SRAM buffer for resulting signature.
+EC         Crypto_ECDSA_P384_sign           1688	   96	      1784	      Data is SRAM buffer for resulting signature.
+EC         Crypto_ECDSA_P521_sign           2168	   136        2304        Data is SRAM buffer for resulting signature.
+EC         Crypto_ECDSA_P256_verify         1648       0          1648        Assumes the message, signature, and public key are in flash.
+EC         Crypto_ECDSA_P384_verify         2176       0          2176        Assumes the message, signature, and public key are in flash.
+EC         Crypto_ECDSA_P521_verify         2840       0          2840        Assumes the message, signature, and public key are in flash.
+PQC        Crypto_MLDSA_44_keyGen           24032      3872       27904       Data is SRAM buffers to hold the resulting pk and sk.
+PQC        Crypto_MLDSA_65_keyGen           32224      5984       38208       Data is SRAM buffers to hold the resulting pk and sk.
+PQC        Crypto_MLDSA_87_keyGen           42472      7488       49960       Data is SRAM buffers to hold the resulting pk and sk.
+PQC        Crypto_MLDSA_44_sign             37704      2420       40124       Data is SRAM buffer for resulting signature.
+PQC        Crypto_MLDSA_65_sign             51016      3309       54325       Data is SRAM buffer for resulting signature.
+PQC        Crypto_MLDSA_87_sign             67392      4627       72019	      Data is SRAM buffer for resulting signature.
+PQC        Crypto_MLDSA_44_verify           21928      0          21928       Assumes the message, signature, and public key are in flash.
+PQC        Crypto_MLDSA_65_verify           29128      0          29128       Assumes the message, signature, and public key are in flash.
+PQC        Crypto_MLDSA_87_verify           37608	   0          37608       Assumes the message, signature, and public key are in flash.
+PQC        Crypto_KEM_512_keygen            15672	   2432       18104       Data is SRAM buffers to hold the resulting ek, dk.
+PQC        Crypto_KEM_512_encaps            19272	   800        20072       Data is SRAM buffers to hold the resulting ct, ss.
+PQC        Crypto_KEM_512_decaps            21072	   32         21104       Data is SRAM buffers to hold the resulting ss.
+PQC        Crypto_KEM_768_keygen            15672	   3584       19256       Data is SRAM buffers to hold the resulting ek, dk.
+PQC        Crypto_KEM_768_encaps            19272	   1120       20392       Data is SRAM buffers to hold the resulting ct, ss.
+PQC        Crypto_KEM_768_decaps            21072	   32         21104       Data is SRAM buffers to hold the resulting ss.
+PQC        Crypto_KEM_1024_keygen           15672	   4736       20408       Data is SRAM buffers to hold the resulting ek, dk.
+PQC        Crypto_KEM_1024_encaps           19272	   1600       20408       Data is SRAM buffers to hold the resulting ct, ss.
+PQC        Crypto_KEM_1024_decaps           21072	   32         21104       Data is SRAM buffers to hold the resulting ss.
+rand       Crypto_getEntropy                36         0          36          User must add the buffer space needed to store the entropy.
+rand       Crypto_DRBG_initialize           368        104        472         Data is the DRBG structure and 48 bytes to hold the seed and nonce inputs.
+rand       Crypto_DRBG_generate             216        56         272         Data is the DRBG structure.  User must add space to store the random output.
+rsa        Crypto_RSA_PSS_verify            3560       0          3560        Assumes the message, signature, and public key are in flash.
+========== ================================ ========== ========== =========== ============================================================================

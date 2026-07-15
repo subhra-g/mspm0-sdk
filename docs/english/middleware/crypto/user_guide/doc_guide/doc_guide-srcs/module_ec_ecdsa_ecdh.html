@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.1. Elliptic Curve Digital Signature Algorithm (ECDSA) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Curve25519 and Ed25519 Cryptography" href="module_curve25519.html" />
+    <link rel="prev" title="4. Elliptic Curve Cryptography Module" href="module_ec.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.1. Elliptic Curve Digital Signature Algorithm (ECDSA)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">4.1.1. Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#security-levels">4.1.1.1. Security Levels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-requirements">4.1.1.2. Memory Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#hardware-support">4.1.2. Hardware Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-codes">4.1.3. Status Codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#curve-definitions-and-selection">4.1.4. Curve Definitions and Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-functions">4.1.5. API Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#key-generation">4.1.5.1. Key Generation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ecdsa-sign-operations">4.1.5.2. ECDSA Sign Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ecdsa-verify-operations">4.1.5.3. ECDSA Verify Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-examples">4.1.6. Usage Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ecdsa-signing-with-p-256">4.1.6.1. ECDSA Signing with P-256</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ecdsa-verification-with-generic-api">4.1.6.2. ECDSA Verification with Generic API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes">4.1.7. Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_ec.html"><span class="section-number">4. </span>Elliptic Curve Cryptography Module</a> &raquo;</li>
+      <li><span class="section-number">4.1. </span>Elliptic Curve Digital Signature Algorithm (ECDSA)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="elliptic-curve-digital-signature-algorithm-ecdsa">
+<h1><span class="section-number">4.1. </span>Elliptic Curve Digital Signature Algorithm (ECDSA)<a class="headerlink" href="#elliptic-curve-digital-signature-algorithm-ecdsa" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">4.1.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The elliptic curve module implements cryptographic operations over elliptic
+curves defined over prime fields (Fp). It provides functionality for:</p>
+<ul class="simple">
+<li><p>ECDSA (Elliptic Curve Digital Signature Algorithm) for digital signatures</p></li>
+<li><p>ECDH (Elliptic Curve Diffie-Hellman) for key agreement</p></li>
+<li><p>Key pair generation for use with elliptic curve cryptography</p></li>
+</ul>
+<p>The implementation supports standard curves, including:</p>
+<ul class="simple">
+<li><p>NIST P-256 (secp256r1)</p></li>
+<li><p>NIST P-384 (secp384r1)</p></li>
+<li><p>NIST P-521 (secp521r1)</p></li>
+</ul>
+<section id="security-levels">
+<h3><span class="section-number">4.1.1.1. </span>Security Levels<a class="headerlink" href="#security-levels" title="Permalink to this heading">¶</a></h3>
+<p>This library supports three security levels based on the selected curve.
+In general, the security strength for an elliptic curve is directly related to
+the base point order (security strength is approximately 1/2 the bit length of
+the base point order).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Security Level</p></th>
+<th class="head"><p>Secret Key Size</p></th>
+<th class="head"><p>Public Key Size</p></th>
+<th class="head"><p>Signature Size</p></th>
+<th class="head"><p>Security Strength</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NIST P-256</p></td>
+<td><p>32 bytes</p></td>
+<td><p>64 bytes</p></td>
+<td><p>64 bytes</p></td>
+<td><p>Apprx. 128 bits</p></td>
+</tr>
+<tr class="row-odd"><td><p>NIST P-384</p></td>
+<td><p>48 bytes</p></td>
+<td><p>96 bytes</p></td>
+<td><p>96 bytes</p></td>
+<td><p>Apprx. 192 bits</p></td>
+</tr>
+<tr class="row-even"><td><p>NIST P-521</p></td>
+<td><p>68 bytes</p></td>
+<td><p>136 bytes</p></td>
+<td><p>136 bytes</p></td>
+<td><p>Apprx. 256 bits</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="memory-requirements">
+<h3><span class="section-number">4.1.1.2. </span>Memory Requirements<a class="headerlink" href="#memory-requirements" title="Permalink to this heading">¶</a></h3>
+<p>The EC module functions typically require between 1000-3000 bytes of stack space
+depending on the selected curve and API choice.  Refer to the memory
+requirements section of this guide for more information.</p>
+</section>
+</section>
+<section id="hardware-support">
+<h2><span class="section-number">4.1.2. </span>Hardware Support<a class="headerlink" href="#hardware-support" title="Permalink to this heading">¶</a></h2>
+<p>The library supports the PKA hardware accelerator module on compatible
+MSPM33 devices. Currently supported device families include:</p>
+<ul class="simple">
+<li><p>MSPM33C32xx (MSPM33C321A), supporting ECDSA P-256 and P-384 sign and verify</p></li>
+</ul>
+</section>
+<section id="status-codes">
+<h2><span class="section-number">4.1.3. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h2>
+<p>Elliptic curve (EC) functions return status codes to indicate the result of
+requested operations.  The EC functions return status codes defined by
+the <cite>crypto_ec_stat_t</cite> enumeration.  Commonly used status codes for the EC
+module are given in the table below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE</cite></p></td>
+<td><p>0xA5</p></td>
+<td><p>ECDSA signature verification result: signature valid</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE</cite></p></td>
+<td><p>0x5A</p></td>
+<td><p>ECDSA signature verification result: siganture not valid</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_EC_STAT_ECDSA_SIGN_OK</cite></p></td>
+<td><p>0x32</p></td>
+<td><p>ECDSA signature was generated successfully</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_EC_STAT_ECDSA_SIGN_PKA_ERROR</cite></p></td>
+<td><p>0x34</p></td>
+<td><p>ECDSA signature was not generated due to PKA error</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_EC_STAT_KEYGEN_OK</cite></p></td>
+<td><p>0x99</p></td>
+<td><p>EC keys were generated successfully</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_EC_STAT_SHARED_KEY_OK</cite></p></td>
+<td><p>0x99</p></td>
+<td><p>ECDH shared key was generated successfully</p></td>
+</tr>
+</tbody>
+</table>
+<p>Additional error codes exist for various error causes, including invalid
+parameters.  Review the <cite>crypto_ec_stat_t</cite> structure for a compelte list.</p>
+</section>
+<section id="curve-definitions-and-selection">
+<h2><span class="section-number">4.1.4. </span>Curve Definitions and Selection<a class="headerlink" href="#curve-definitions-and-selection" title="Permalink to this heading">¶</a></h2>
+<p>The library provides predefined curve parameter data structures for the
+standard NIST P-curves in the <cite>ec_curves.h</cite> file.  The data structure
+<cite>crypto_ec_curve_t</cite> is used to hold pointers to vectors that contain all of the
+information need to define a curve, including:</p>
+<ul class="simple">
+<li><p>Prime modulus</p></li>
+<li><p>R-value</p></li>
+<li><p>A coefficient</p></li>
+<li><p>B coefficient</p></li>
+<li><p>X-coordinate of the base point</p></li>
+<li><p>Y-coordinate of the base point</p></li>
+<li><p>Size of the data buffers, in 32-bit words</p></li>
+</ul>
+<p>A generic API for ECDSA key generation, sign, and verify operations is provbied
+that can take a pointer to one of the three pre-defined NIST P-curves below.
+Alternate curves may also be defined.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* NIST P-256 (secp256r1) */</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="n">Crypto_EC_Curve_NIST256</span><span class="p">;</span>
+<span class="cm">/* NIST P-384 (secp384r1) */</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="n">Crypto_EC_Curve_NIST384</span><span class="p">;</span>
+<span class="cm">/* NIST P-521 (secp521r1) */</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="n">Crypto_EC_Curve_NIST521</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The generic API supports up to P-521 but uses more stack space than is required
+for smaller curves like P-256.  To enable the smallest stack usage, dedicated
+functions for ECDSA sign and verify are also provided for each curve type.
+These dedicated functions provide the same functionality as the
+generic function but they only support the named curve, and they use only
+the amount of stack space that is required for that specific curve.</p>
+</section>
+<section id="api-functions">
+<h2><span class="section-number">4.1.5. </span>API Functions<a class="headerlink" href="#api-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for EC is defined below.</p>
+<section id="key-generation">
+<h3><span class="section-number">4.1.5.1. </span>Key Generation<a class="headerlink" href="#key-generation" title="Permalink to this heading">¶</a></h3>
+<p>The module supports key generation with the <cite>Crypto_EC_keyGen</cite> function.
+This function supports all curves and takes a pointer to the curve as a
+parameter.  It generates a private/public key pair for the specified curve
+using a random seed value.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_EC_keyGen</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="o">*</span><span class="n">curve</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">rand</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_x</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_y</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>curve</cite>: The elliptic curve to use for key pair generation</p></li>
+<li><p><cite>rand</cite>: Pointer to cryptographically random data</p></li>
+<li><p><cite>sk</cite>: Output buffer for the secret (private) key</p></li>
+<li><p><cite>pk_x</cite>: Output buffer for the public key X-coordinate</p></li>
+<li><p><cite>pk_y</cite>: Output buffer for the public key Y-coordinate</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_EC_STAT_KEYGEN_OK</cite> on success, other status codes indicate
+specific errors.</p></li>
+</ul>
+</section>
+<section id="ecdsa-sign-operations">
+<h3><span class="section-number">4.1.5.2. </span>ECDSA Sign Operations<a class="headerlink" href="#ecdsa-sign-operations" title="Permalink to this heading">¶</a></h3>
+<p>A curve-agnostic sign function and curve specific (optimnized) sign functions
+are provided.</p>
+<p><strong>Generic ECDSA Sign</strong></p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_sign</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="o">*</span><span class="n">curve</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">k</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Computes an ECDSA digital signature for a message digest using a private key <cite>sk</cite>
+and random signing nonce <cite>k</cite>.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>curve</cite>: The elliptic curve to use</p></li>
+<li><p><cite>sk</cite>: Private key for signing</p></li>
+<li><p><cite>md</cite>: Message digest to sign</p></li>
+<li><p><cite>k</cite>: Secret random nonce for this signature</p></li>
+<li><p><cite>sig_r</cite>: Output buffer for signature r-value</p></li>
+<li><p><cite>sig_s</cite>: Output buffer for signature s-value</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_EC_STAT_ECDSA_SIGN_OK</cite> on success, or an error code.</p></li>
+</ul>
+<p><strong>Curve-Specific Sign Operations</strong></p>
+<p>The library provides optimized implementations for specific NIST curves that
+reduce the SRAM (stack) usage to the minimum needed for the specific curve:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P256_sign</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">k</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P384_sign</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">k</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P521_sign</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">k</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>These APIs are optimized for their respective curves with greater SRAM stack
+optimization than the generic signing API.</p>
+</section>
+<section id="ecdsa-verify-operations">
+<h3><span class="section-number">4.1.5.3. </span>ECDSA Verify Operations<a class="headerlink" href="#ecdsa-verify-operations" title="Permalink to this heading">¶</a></h3>
+<p>A curve-agnostic verify function and curve specific (optimnized) verify
+functions are provided.</p>
+<p><strong>Generic ECDSA Verify</strong></p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_verify</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">crypto_ec_curve_t</span><span class="w"> </span><span class="o">*</span><span class="n">curve</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_y</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Verifies an ECDSA digital signature for a message digest using a public key.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>curve</cite>: The elliptic curve to use</p></li>
+<li><p><cite>pk_x</cite>: Public key X-coordinate</p></li>
+<li><p><cite>pk_y</cite>: Public key Y-coordinate</p></li>
+<li><p><cite>md</cite>: Message digest</p></li>
+<li><p><cite>sig_r</cite>: Signature r-value to verify</p></li>
+<li><p><cite>sig_s</cite>: Signature s-value to verify</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE</cite> if the signature is valid,</p></li>
+<li><p><cite>CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE</cite> if the signature is invalid but
+the operation completed, or other status codes for error conditions.</p></li>
+</ul>
+<p><strong>Curve-Specific Verify Operations</strong></p>
+<p>Like with signing, the library provides optimized implementations for
+specific curves:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P256_verify</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_y</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P384_verify</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_y</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="nf">Crypto_ECDSA_P521_verify</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pk_y</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_r</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sig_s</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>These APIs are optimized for their respective curves with greater SRAM stack
+optimization than the generic signing API.</p>
+</section>
+</section>
+<section id="usage-examples">
+<h2><span class="section-number">4.1.6. </span>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this heading">¶</a></h2>
+<p>Examples for signing and verification are shown below.  Code examples are
+are also provided in the <cite>/examples</cite> directory of the installation.</p>
+<section id="ecdsa-signing-with-p-256">
+<h3><span class="section-number">4.1.6.1. </span>ECDSA Signing with P-256<a class="headerlink" href="#ecdsa-signing-with-p-256" title="Permalink to this heading">¶</a></h3>
+<p>Generate a signature for a given message digest, secret key, and signing
+secret nonce:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/msp-crypto-lib.h&quot;</span>
+
+<span class="c1">// Key and message data</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">privateKey</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// 256-bit private key</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">messageDigest</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// SHA-256 digest</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">randomNonce</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// Random nonce (must be cryptographically secure)</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">signature_r</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// Output for r component</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">signature_s</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// Output for s component</span>
+
+<span class="c1">// Generate signature using P-256 curve</span>
+<span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_ECDSA_P256_sign</span><span class="p">(</span>
+<span class="w">    </span><span class="n">privateKey</span><span class="p">,</span>
+<span class="w">    </span><span class="n">messageDigest</span><span class="p">,</span>
+<span class="w">    </span><span class="n">randomNonce</span><span class="p">,</span>
+<span class="w">    </span><span class="n">signature_r</span><span class="p">,</span><span class="w"> </span><span class="n">signature_s</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_EC_STAT_ECDSA_SIGN_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Signature created successfully</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Error condition</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="ecdsa-verification-with-generic-api">
+<h3><span class="section-number">4.1.6.2. </span>ECDSA Verification with Generic API<a class="headerlink" href="#ecdsa-verification-with-generic-api" title="Permalink to this heading">¶</a></h3>
+<p>Verify a signature for a given message digest, signature, and public key:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/msp-crypto-lib.h&quot;</span>
+
+<span class="c1">// Public key and signature data</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">publicKey_x</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// Public key x-coordinate</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">publicKey_y</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// Public key y-coordinate</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">messageDigest</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// SHA-256 digest</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">signature_r</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// r component of signature</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">signature_s</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">  </span><span class="c1">// s component of signature</span>
+
+<span class="c1">// Verify signature using the generic API</span>
+<span class="n">crypto_ec_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_ECDSA_verify</span><span class="p">(</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">Crypto_EC_Curve_NIST256</span><span class="p">,</span><span class="w">  </span><span class="c1">// Use P-256 curve</span>
+<span class="w">    </span><span class="n">publicKey_x</span><span class="p">,</span><span class="w"> </span><span class="n">publicKey_y</span><span class="p">,</span>
+<span class="w">    </span><span class="n">messageDigest</span><span class="p">,</span>
+<span class="w">    </span><span class="n">signature_r</span><span class="p">,</span><span class="w"> </span><span class="n">signature_s</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Signature is valid</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Signature is invalid</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Other error condition</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="important-notes">
+<h2><span class="section-number">4.1.7. </span>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Ensure that the buffers passed to the functions are of the proper lengths
+based on the selected curve and its parameters.  For P-256, buffers for
+parameters are expected to be 32 bytes in length.  For P-384, buffers for
+parameters are expected to be 48 bytes in length.  For P-521, buffers for
+parameters are expected to be 68 bytes in length.</p></li>
+<li><p>For ECDSA, messages are generally pre-hashed, and the resulting hash is
+taken as the message digest for sign and verify operations.</p></li>
+<li><p>If using a standard NIST curve (P-256, P-384), the lowest stack
+size requirement is obtained with the curve specific sign and verify
+functions.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_ec.html" class="btn btn-neutral float-left" title="4. Elliptic Curve Cryptography Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_curve25519.html" class="btn btn-neutral float-right" title="5. Curve25519 and Ed25519 Cryptography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

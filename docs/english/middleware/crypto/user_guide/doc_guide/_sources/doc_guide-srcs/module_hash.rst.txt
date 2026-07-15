@@ -1,0 +1,10 @@
+################################################################################
+Hash Module
+################################################################################
+
+The hash module provides implementations of cryptographic hash functions.
+
+.. toctree::
+   :maxdepth: 1
+
+   module_hash_sha

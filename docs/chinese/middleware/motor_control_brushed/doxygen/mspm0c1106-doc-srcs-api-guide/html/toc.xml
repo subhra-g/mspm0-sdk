@@ -156,7 +156,7 @@
       <topic label="DRV8706Q1_reset" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gadf57d1431824d1d01f3b13ca320e99fb"/>
       <topic label="DRV8706Q1_powerOnResetVal" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaa60458c6b32d88364b830781989d887b"/>
       <topic label="DRV8706Q1_setNSleep" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0de0c501fa01964c9081c50fea483e2f"/>
-      <topic label="DRV8706Q1_setDrvOff" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga42f1e7f51dc897e193417166fae3ecc1"/>
+      <topic label="DRV8706Q1_setDrvOff" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0274f30bd4838b0f227cd9a0a701d79d"/>
       <topic label="DRV8706Q1_setNHiZ1" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga6aeb321103928449c50a7f7a26d60b02"/>
       <topic label="DRV8706Q1_setNHiZ2" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga5f2bff21b52be2af63d82c4e5256586c"/>
       <topic label="DRV8706Q1_setAnalogReference" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga39204b387693c86df30f4a8084b52ebb"/>
@@ -267,7 +267,7 @@
         <topic label="DRV8706Q1_reset" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gadf57d1431824d1d01f3b13ca320e99fb"/>
         <topic label="DRV8706Q1_powerOnResetVal" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaa60458c6b32d88364b830781989d887b"/>
         <topic label="DRV8706Q1_setNSleep" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0de0c501fa01964c9081c50fea483e2f"/>
-        <topic label="DRV8706Q1_setDrvOff" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga42f1e7f51dc897e193417166fae3ecc1"/>
+        <topic label="DRV8706Q1_setDrvOff" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0274f30bd4838b0f227cd9a0a701d79d"/>
         <topic label="DRV8706Q1_setNHiZ1" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga6aeb321103928449c50a7f7a26d60b02"/>
         <topic label="DRV8706Q1_setNHiZ2" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga5f2bff21b52be2af63d82c4e5256586c"/>
         <topic label="DRV8706Q1_setAnalogReference" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga39204b387693c86df30f4a8084b52ebb"/>

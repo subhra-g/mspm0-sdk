@@ -83,7 +83,10 @@ int main(void){
                DL_UART_transmitDataBlocking(UART_DAP_INST, Serial_Resp_receiveData | Resp_CMD_Channel_sensor_signal);
 
                /* 2 Axis current + voltage */
-               uint8_t numAxes = 2;
+               uint8_t numAxes = 1;
+               if(gPipelineConfig.sensorIndex[0] == SENSOR_IDX_CURR_VOLTAGE){
+                   numAxes = 2;
+               }
                uint32_t payloadLen = numAxes * (gProperties[0]->value.u32) * getDataLen(gSensors[gPipelineConfig.sensorIndex[0]]->format);
 
                /* Send Payload length */               
@@ -145,13 +148,17 @@ void ADC12_0_INST_IRQHandler(void)
 
                 if(gSendAdcData > 0)
                 {
-                    /* Transmit X data (high byte then low byte).*/
+
+                    /* Transmit current data (high byte then low byte).*/
                     DL_UART_transmitDataBlocking(UART_DAP_INST, (dataX >> 8) & 0xFF);
                     DL_UART_transmitDataBlocking(UART_DAP_INST, dataX & 0xFF);
 
-                    /*Transmit X data (high byte then low byte).*/
-                    DL_UART_transmitDataBlocking(UART_DAP_INST, (dataY >> 8) & 0xFF);
-                    DL_UART_transmitDataBlocking(UART_DAP_INST, dataY & 0xFF);
+                    if(gPipelineConfig.sensorIndex[0] == SENSOR_IDX_CURR_VOLTAGE){
+                        /*Transmit voltage data (high byte then low byte).*/
+                        DL_UART_transmitDataBlocking(UART_DAP_INST, (dataY >> 8) & 0xFF);
+                        DL_UART_transmitDataBlocking(UART_DAP_INST, dataY & 0xFF);
+                    }
+
                     gSendAdcData--;
 
                     /* Send Frame End Byte after sending last data */

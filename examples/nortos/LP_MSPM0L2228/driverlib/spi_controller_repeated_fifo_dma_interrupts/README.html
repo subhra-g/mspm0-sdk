@@ -200,7 +200,7 @@
 </ul>
 <p>Compile, load and run the example.</p>
 <p>Ensure that the SPI Peripheral example is running <strong>before</strong> starting the SPI Controller example. Once the example is started, the SPI Controller will automatically start to transmit data every 1s. The transmitted data packet is {‘M’, ‘S’, ‘P’, ‘x’}, where ‘x’ starts at ‘0’ and will increment with each new transfer. LED0 will toggle every time a new transmission starts.</p>
-<p>An optional SW breakpoint can be uncommented in the application to check the results of the received data. If this example is used with the spi_peripheral_repeated_multibyte_fifo_dma_interruptsexample, the expected data that will be received in gRxPacket is {‘x’, 0x2, 0x3, 0x4}, where ‘x’ starts at 0x0 and should increment every time the Peripheral example sends a new data packet.</p>
+<p>An optional SW breakpoint can be uncommented in the application to check the results of the received data. If this example is used with the spi_peripheral_repeated_multibyte_fifo_dma_interrupts example, the expected data that will be received in gRxPacket is {‘x’, 0x2, 0x3, 0x4}, where ‘x’ starts at 0x0 and should increment every time the Peripheral example sends a new data packet.</p>
 <p>The SPI is initialized with the following configuration:</p>
 <ul>
 <li>SPI Controller</li>

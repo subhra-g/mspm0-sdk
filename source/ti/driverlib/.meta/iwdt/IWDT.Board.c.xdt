@@ -99,9 +99,10 @@ SYSCONFIG_WEAK void SYSCFG_DL_IWDT_init(void)
     /* Enables the IWDT to continue counting during a debug state */
     DL_IWDT_enableFreeRun(`instName`);
     % }
+
+    DL_IWDT_enableModule(`instName`);
     % if(stat.enableWriteProtect) {
     DL_IWDT_enableWriteProtect(`instName`);
     % }
-    DL_IWDT_enableModule(`instName`);
 }
 % }

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deploying Machine Learning Models on TI MSPM0 Microcontrollers Using CLI Tools &mdash; MSPM0 EdgeAI User Guide 1.3.0 documentation</title>
+  <title>Deploying Machine Learning Models on TI MSPM0 Microcontrollers Using CLI Tools &mdash; MSPM0 EdgeAI User Guide 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="index.html" class="icon icon-home"> MSPM0 EdgeAI User Guide
           </a>
               <div class="version">
-                1.3.0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -271,7 +271,7 @@ power of the deployed model. The techniques demonstrated here may be easily appl
 <td><p>Installed via Python PIP</p></td>
 </tr>
 <tr class="row-even"><td><p>TI Neural Network Compiler for MCUs</p></td>
-<td><p>2.0.0 RC4 (minimum)</p></td>
+<td><p>2.1.2 (minimum)</p></td>
 <td><p>Compilation of ONNX trained model into an executable library</p></td>
 <td><p>Installed via Python PIP, supplied by TI</p></td>
 </tr>
@@ -285,9 +285,9 @@ power of the deployed model. The techniques demonstrated here may be easily appl
 <td><p>Integrated development environment for MSPM0 MCUs</p></td>
 <td><p>Available at <a class="reference external" href="https://www.ti.com/tool/CCSTUDIO">CCS Link</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>TI EdgeAI studio CLI tools (tinyml-tensorlab)</p></td>
-<td><p>r1.3 (minimum)</p></td>
-<td><p>TI provided CLI tools for developing ML models on TI MCUs</p></td>
+<tr class="row-odd"><td><p>TI Tiny ML Tensorlab (tinyml-tensorlab)</p></td>
+<td><p>v1.4.0 (minimum)</p></td>
+<td><p>TI provided CLI tools for developing ML models on TI MCUs (Classification, Regression, Forecasting, Anomaly Detection, Image Classification)</p></td>
 <td><p>Available at <a class="reference external" href="https://github.com/TexasInstruments/tinyml-tensorlab">tinyml-tensorlab github</a></p></td>
 </tr>
 </tbody>
@@ -348,11 +348,12 @@ $ source ti-ml-venv/bin/activate
 <ol class="arabic simple" start="4">
 <li><p><strong>Install the TI Neural Network Compiler (NNC) for MCUs</strong></p></li>
 </ol>
-<p>TI provides an advanced neural network compiler (NNC) for MCUs, available as a Python wheel package for easy installation into the Python virtual environment. Install the TI NNC using the steps shown below. Note that it is important to remain within the Python virtual environment (venv) when executing this step.</p>
-<p>Windows (PowerShell)/ Linux:</p>
+<p>TI provides an advanced neural network compiler (NNC) for MCUs (v2.1.2), available as a Python wheel package for Linux, Windows, and macOS. Install the TI NNC using the steps shown below. Note that it is important to remain within the Python virtual environment (venv) when executing this step.</p>
+<p>Windows (PowerShell) / Linux / macOS:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">ti</span><span class="o">-</span><span class="n">ml</span><span class="o">-</span><span class="n">venv</span><span class="p">)</span> <span class="n">PS</span> <span class="o">&gt;</span> <span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">index</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">software</span><span class="o">-</span><span class="n">dl</span><span class="o">.</span><span class="n">ti</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mctools</span><span class="o">/</span><span class="n">esd</span><span class="o">/</span><span class="n">tvm</span><span class="o">/</span><span class="n">mcu</span> <span class="n">ti_mcu_nnc</span>
 </pre></div>
 </div>
+<p>To install a specific version: <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--extra-index-url</span> <span class="pre">https://software-dl.ti.com/mctools/esd/tvm/mcu</span> <span class="pre">ti_mcu_nnc==2.1.2</span></code></p>
 <ol class="arabic simple" start="5">
 <li><p><strong>Install the TI MSPM0-SDK</strong></p></li>
 </ol>
@@ -540,20 +541,23 @@ $ git clone https://github.com/TexasInstruments/mspm0-sdk.git
 </ul>
 <p>These files are the outputs which are taken into the MSPM0 software development project for inclusion in the application software build.</p>
 <p><strong>Learning More about TI’s Neural Network Compiler for MCUs</strong></p>
-<p>For a complete detailed description of TI’s neural network compiler for MCUs, including additional configuration options and guidelines for use, visit the <a class="reference external" href="https://software-dl.ti.com/mctools/nnc/mcu/users_guide/">TI NNC for MCUs User’s Guide</a>.</p>
+<p>For a complete description of TI’s neural network compiler for MCUs, including configuration options, supported device families, performance options, and inference integration, refer to the <a class="reference external" href="https://software-dl.ti.com/mctools/nnc/mcu/users_guide/">TI NNC for MCUs User’s Guide (v2.1.2)</a>.</p>
 </section>
 </section>
 <section id="train-your-own-model-using-edgeai-studio-cli-tinyml-tensorlab">
 <h2>4. Train Your Own Model (Using EdgeAI Studio CLI: tinyml-tensorlab)<a class="headerlink" href="#train-your-own-model-using-edgeai-studio-cli-tinyml-tensorlab" title="Permalink to this heading">¶</a></h2>
 <section id="tinyml-tensorlab">
 <h3>4.1 tinyml-tensorlab<a class="headerlink" href="#tinyml-tensorlab" title="Permalink to this heading">¶</a></h3>
-<p>The Tiny ML Tensorlab repository available on <a class="reference external" href="https://github.com/TexasInstruments/tinyml-tensorlab/">GitHub</a> is meant to be a starting point to install and explore TI’s AI offering for MCUs. It helps to install all the required repositories to get started. Currently, it can handle Image Classification, Time Series Classification, Regression and Anomaly Detection tasks.</p>
+<p>The Tiny ML Tensorlab repository available on <a class="reference external" href="https://github.com/TexasInstruments/tinyml-tensorlab/">GitHub</a> is the starting point to install and explore TI’s AI offering for MCUs. It provides all the required repositories to get started with Time Series Classification, Regression, Forecasting, Anomaly Detection, and Image Classification tasks across 40+ TI microcontrollers with 31 example applications.</p>
 <p>Once you clone this repository, you will find the following repositories present within the tinyml-tensorlab directory:</p>
 <ul class="simple">
-<li><p>tinyml-modelmaker: Based on user configuration (yaml files), stitches a flow with relevant scripts to call from tinyverse. This stitches the scripts into a flow of data loading/training/compilation <strong>This is your home repo. Most of your work will be taking place from this directory.</strong></p></li>
-<li><p>tinyml-tinyverse: Individual scripts to load data, do preprocessing, AI training, compilation (using NNC/TVM)</p></li>
-<li><p>tinyml-modeloptimization: Model optimization toolkit that is necessary for quantization for 2bit/4bit/8bit weights in QAT (Quantization Aware Training)/PTQ (Post Training Quantization) flows for TI devices with or without NPU. As a customer developing models/flows, it is highly likely that you would not have to edit files in this repo.</p></li>
+<li><p>tinyml-modelzoo: Contains the supported devices, a variety of models, and all example applications. Browse here to find examples and model configurations for your target device and task type.</p></li>
+<li><p>tinyml-modelmaker: Based on user configuration (yaml files), stitches a flow with relevant scripts to call from tinyverse. This stitches the scripts into a flow of data loading/training/compilation. <strong>This is your home repo. Most of your work will be taking place from this directory.</strong></p></li>
+<li><p>tinyml-tinyverse: Individual scripts to load data, do preprocessing, AI training, and compilation (using NNC/TVM).</p></li>
+<li><p>tinyml-modeloptimization: Model optimization toolkit for quantization with 2-bit/4-bit/8-bit weights in QAT (Quantization Aware Training)/PTQ (Post Training Quantization) flows for TI devices with or without NPU. Supports Hessian Aware Quantization for automatic recommendation of quantization bitwidths. As a customer developing models/flows, it is highly likely that you would not have to edit files in this repo.</p></li>
 </ul>
+<p><strong>Installation Options</strong></p>
+<p>tinyml-tensorlab supports two install modes: - <strong>User Install</strong> (recommended for most users): <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tinyml-modelmaker</span></code> installs a ready-to-use package with bundled examples. See <a class="reference external" href="https://software-dl.ti.com/C2000/esd/mcu_ai/user_guide/index.html">User Installation Guide</a> for steps. - <strong>Developer Install</strong>: Clone the repository and install from source (steps below). Required if you intend to modify tinyverse or modeloptimization internals.</p>
 <p><strong>Python Environment</strong></p>
 <ul class="simple">
 <li><p><strong>Note</strong>: Irrespective of being a <code class="docutils literal notranslate"><span class="pre">Linux</span></code> or a <code class="docutils literal notranslate"><span class="pre">Windows</span></code> user, it is ideal to use virtual environments on Python rather than operating without one.</p>
@@ -585,12 +589,13 @@ $ git clone https://github.com/TexasInstruments/mspm0-sdk.git
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>NOTE: MSPM0 Customers:</strong></p></li>
+<li><p><strong>NOTE:</strong></p></li>
 <li><p>Please download and install <a class="reference external" href="https://www.ti.com/tool/download/ARM-CGT-CLANG">TI Arm Codegen Tools (TI Arm CGT Clang)</a></p>
 <ul>
 <li><p>Please set the installed path in your terminal:</p></li>
-<li><p>Linux: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">ARM_LLVM_CGT_PATH=&quot;/path/to/ti-cgt-armllvm_4.0.3.LTS&quot;</span></code></p></li>
-<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">$env:ARM_LLVM_CGT_PATH=&quot;C:\path\to\wherever\present\ti-cgt-armllvm_4.0.3.LTS&quot;</span></code></p></li>
+<li><p>Linux / macOS: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">ARM_CGT_PATH=&quot;/path/to/ti-cgt-armllvm_4.0.3.LTS&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PATH=$ARM_CGT_PATH/bin:$PATH</span></code></p></li>
+<li><p>Windows PowerShell: <code class="docutils literal notranslate"><span class="pre">$env:ARM_CGT_PATH=&quot;C:\path\to\ti-cgt-armllvm_4.0.3.LTS&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">$env:PATH=$env:ARM_CGT_PATH</span> <span class="pre">+</span> <span class="pre">&quot;\bin;&quot;</span> <span class="pre">+</span> <span class="pre">$env:PATH</span></code></p></li>
+<li><p>Windows Git BASH: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">ARM_CGT_PATH=&quot;\path\to\ti-cgt-armllvm_4.0.3.LTS&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PATH=$ARM_CGT_PATH/bin:$PATH</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -730,10 +735,22 @@ $ git clone https://github.com/TexasInstruments/mspm0-sdk.git
 <section id="executing-the-workflow">
 <h3>4.3 Executing the Workflow<a class="headerlink" href="#executing-the-workflow" title="Permalink to this heading">¶</a></h3>
 <p>Once the YAML is configured, execute the command below to start the full training → quantization → compilation pipeline:</p>
+<p><strong>Linux (Bash):</strong></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./run_tinyml_modelmaker.sh<span class="w"> </span>./examples/MNIST_image_classification/config_image_classification_mnist.yaml
 </pre></div>
 </div>
+<p><strong>Windows (PowerShell):</strong></p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="p">.\</span><span class="n">tinyml_modelmaker</span><span class="p">\</span><span class="n">run_tinyml_modelmaker</span><span class="p">.</span><span class="n">py</span> <span class="p">.\</span><span class="n">examples</span><span class="p">\</span><span class="n">MNIST_image_classification</span><span class="p">\</span><span class="n">config_image_classification_mnist</span><span class="p">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
 <p>At the end of the run, both the trained model and compiled artifacts (for deployment on MSPM0 devices) will be generated.</p>
+<p><strong>Other Task Types</strong></p>
+<p>The same workflow applies to all supported task types. Example configs for each task type are available under <code class="docutils literal notranslate"><span class="pre">tinyml-modelmaker/examples/</span></code> in the cloned repository:</p>
+<ul class="simple">
+<li><p><strong>Time Series Classification</strong>: <code class="docutils literal notranslate"><span class="pre">examples/dc_arc_fault/config_dsk.yaml</span></code></p></li>
+<li><p><strong>Time Series Regression</strong>, <strong>Forecasting</strong>, <strong>Anomaly Detection</strong>, and additional <strong>Image Classification</strong> examples are included in <code class="docutils literal notranslate"><span class="pre">tinyml-modelzoo</span></code></p></li>
+</ul>
+<p>For the full list of example configs and task-specific configuration options, refer to the <a class="reference external" href="https://software-dl.ti.com/C2000/esd/mcu_ai/user_guide/index.html">TI Tiny ML Tensorlab User Guide</a> and browse the <code class="docutils literal notranslate"><span class="pre">tinyml-modelmaker/examples/</span></code> directory after cloning.</p>
 </section>
 </section>
 <section id="bring-your-own-model">
@@ -746,7 +763,7 @@ $ git clone https://github.com/TexasInstruments/mspm0-sdk.git
 <section id="installation-instructions">
 <h3>5.1 Installation Instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this heading">¶</a></h3>
 <p>If you want to use the repository as it is, i.e a Python package, then you can simply install this as a pip installable package:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/TexasInstruments/tinyml-tensorlab.git@r1.3#subdirectory<span class="o">=</span>tinyml-modeloptimization/torchmodelopt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/TexasInstruments/tinyml-tensorlab.git@r1.4#subdirectory<span class="o">=</span>tinyml-modeloptimization/torchmodelopt
 </pre></div>
 </div>
 <p>To setup the repository for development, this python package and the dependencies can be installed by using the setup file.</p>

@@ -177,6 +177,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_IWDT_init(void)
     DL_IWDT_setClockDivider(IWDT_INST, DL_IWDT_CLOCK_DIVIDE_4);
     DL_IWDT_setTimerPeriod(IWDT_INST, DL_IWDT_TIMER_PERIOD_12_BITS);
 
+
     DL_IWDT_enableModule(IWDT_INST);
 }
 

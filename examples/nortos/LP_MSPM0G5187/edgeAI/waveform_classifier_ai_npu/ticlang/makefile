@@ -25,6 +25,8 @@ OBJECTS = waveform_classifier_ai_npu.obj ti_edgeAI_feature_extract_feature_extra
 NAME = waveform_classifier_ai_npu
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -35,12 +37,17 @@ CFLAGS += -I.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/feature_extract" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/npu" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -lmodel/model.a \
     -ldevice.cmd.genlibs \
@@ -88,11 +95,11 @@ waveform_classifier_ai_npu.obj: ../waveform_classifier_ai_npu.c $(SYSCFG_H_FILES
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_feature_extract_feature_extract.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/1891/execroot/__main__/source/ti/edgeAI/feature_extract/feature_extract.c $(SYSCFG_H_FILES)
+ti_edgeAI_feature_extract_feature_extract.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/6644/execroot/__main__/source/ti/edgeAI/feature_extract/feature_extract.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_npu_npu.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/1891/execroot/__main__/source/ti/edgeAI/npu/npu.c $(SYSCFG_H_FILES)
+ti_edgeAI_npu_npu.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/6644/execroot/__main__/source/ti/edgeAI/npu/npu.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

@@ -25,6 +25,8 @@ OBJECTS = pir_detection_ai.obj ti_edgeAI_feature_extract_feature_extract.obj $(p
 NAME = pir_detection_ai
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -34,12 +36,17 @@ CFLAGS += -I.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/DSP/Include" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/feature_extract" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -lmodel/model.a \
     -ldevice.cmd.genlibs \
@@ -87,7 +94,7 @@ pir_detection_ai.obj: ../pir_detection_ai.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_feature_extract_feature_extract.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/1866/execroot/__main__/source/ti/edgeAI/feature_extract/feature_extract.c $(SYSCFG_H_FILES)
+ti_edgeAI_feature_extract_feature_extract.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/7662/execroot/__main__/source/ti/edgeAI/feature_extract/feature_extract.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

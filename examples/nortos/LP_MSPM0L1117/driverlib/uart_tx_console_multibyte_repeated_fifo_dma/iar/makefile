@@ -35,6 +35,8 @@ AFLAGS += -I.. \
     "-I$(IAR_ARMCOMPILER)/inc/c" \
     --cpu Cortex-M0+
 
+DFLAGS += --debug
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix -f,$(SYSCFG_OPT_FILES)) \
@@ -42,7 +44,6 @@ CFLAGS += -I.. \
     -Om \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    --debug \
     --silent \
     -e \
     --aeabi \
@@ -51,13 +52,19 @@ CFLAGS += -I.. \
     --cpu=Cortex-M0+ \
     --vla
 
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
+
 LFLAGS += "$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/iar/m0p/mspm0l111x/driverlib.a" \
     "-L$(MSPM0_SDK_INSTALL_DIR)/source" \
     -L.. \
     --config ../iar/mspm0l1117.icf \
     --map "$(NAME).map" \
     --silent \
-    --semihosting=iar_breakpoint \
+    "$(if $(filter RELEASE,$(CONFIG)),,--semihosting=iar_breakpoint)" \
     --cpu=Cortex-M0+
 
 all: $(NAME).out

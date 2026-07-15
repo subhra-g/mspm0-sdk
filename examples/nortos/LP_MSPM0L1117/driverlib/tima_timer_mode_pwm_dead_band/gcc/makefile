@@ -25,6 +25,8 @@ OBJECTS = tima_timer_mode_pwm_dead_band.obj $(patsubst %.c,%.obj,$(notdir $(SYSC
 NAME = tima_timer_mode_pwm_dead_band
 
 
+DFLAGS += -gstrict-dwarf
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -40,10 +42,15 @@ CFLAGS += -I.. \
     -ffunction-sections \
     -fdata-sections \
     -g \
-    -gstrict-dwarf \
     -Wall \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include/newlib-nano" \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-L$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/gcc/m0p/mspm0l111x" \
     -nostartfiles \

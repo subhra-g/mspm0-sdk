@@ -75,7 +75,7 @@ In IAR, we need to add the latest MSPM0 SDK version. This step only has to be do
 5. Install SysConfig for MSPM0
 ------------------------------
 
-The SDK includes a preliminary version of SysConfig metadata which can be used to evaluate the user experience of MSPM0 SDK.
+The MSPM0 SDK can also be used with the SysConfig GUI, which can be used to greatly enhance the user experience with the SDK.
 
 For more general information about using SysConfig with MSPM0, please refer to `Using SysConfig with MSPM0 <../../../tools/sysconfig_guide/doc_guide/doc_guide-srcs/sysconfig_guide.html>`__ available in the SDK's Tools Guide.
 

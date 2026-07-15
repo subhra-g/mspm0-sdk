@@ -25,6 +25,8 @@ OBJECTS = flash_map_backend_flash_map_backend.obj mcuboot_config_trace.obj boot_
 NAME = boot_application
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -38,12 +40,17 @@ CFLAGS += -I.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/boot_manager/sha2sw/inc" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-l$(MSPM0_SDK_INSTALL_DIR)/source/ti/boot_manager/lib/ticlang/m0p/bimsupport.a" \
     -Wl,--stack_size=256 \

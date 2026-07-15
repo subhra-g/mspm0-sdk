@@ -1,0 +1,11 @@
+################################################################################
+Elliptic Curve Cryptography Module
+################################################################################
+
+The elliptic curve cryptography module provides implementations of 
+elliptic curve functions including ECDSA for the common NIST P-curves.
+
+.. toctree::
+   :maxdepth: 1
+
+   module_ec_ecdsa_ecdh

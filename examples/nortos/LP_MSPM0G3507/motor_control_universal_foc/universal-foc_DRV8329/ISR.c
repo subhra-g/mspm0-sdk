@@ -134,6 +134,9 @@ void DMA_IRQHandler(void)
 /* Handles DAC output, Handles the motor inputs and runs the MC application */
 void FOC_ADC_ISR(void)
 {
+    /* Data Sequencer Conversion has occurred.
+     * Current information is available
+     * Execute FOC and any other test algorithms */
 
     HAL_ReadMotorInputs(g_pMotorInputs);
 
@@ -141,10 +144,8 @@ void FOC_ADC_ISR(void)
 
     HAL_SelectShuntMeasure(g_pMotorInputs);
 
-    /* Data Sequencer Conversion has occurred.
-     * Current information is available
-     * Execute FOC and any other test algorithms */
-
+    /* dacCtrl is output through DAC12 if the DAC12 is available in the device */
+#if defined(__MSPM0_HAS_DAC12__)
     if(pUserCtrlRegs->dacCtrl.dacEn != 0)
     {
         if(pUserCtrlRegs->dacCtrl.dacScalingFactor != 0)
@@ -169,6 +170,7 @@ void FOC_ADC_ISR(void)
         }
         DL_DAC12_output12(DAC0, dacWriteData);
     }
+#endif
 }
 
 /* Timer ISR, used for running the low priority tasks */

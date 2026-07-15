@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.1. Secure Hash Algorithm (SHA2, SHA3, SHAKE) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Elliptic Curve Cryptography Module" href="module_ec.html" />
+    <link rel="prev" title="3. Hash Module" href="module_hash.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_hash.html">3. Hash Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.1. Secure Hash Algorithm (SHA2, SHA3, SHAKE)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">3.1.1. Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#status-codes">3.1.1.1. Status Codes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sha-2-functions">3.1.2. SHA-2 Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#one-shot-hashing">3.1.2.1. One-shot Hashing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#streaming-hash-api">3.1.2.2. Streaming Hash API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sha-3-functions">3.1.3. SHA-3 Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">3.1.3.1. One-shot Hashing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">3.1.3.2. Streaming Hash API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#shake-functions">3.1.4. SHAKE Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#one-shot-xof">3.1.4.1. One-shot XOF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#streaming-xof-api">3.1.4.2. Streaming XOF API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-examples">3.1.5. Usage Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#one-shot-sha-256-example">3.1.5.1. One-shot SHA-256 Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#streaming-sha-256-example">3.1.5.2. Streaming SHA-256 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes">3.1.6. Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_hash.html"><span class="section-number">3. </span>Hash Module</a> &raquo;</li>
+      <li><span class="section-number">3.1. </span>Secure Hash Algorithm (SHA2, SHA3, SHAKE)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="secure-hash-algorithm-sha2-sha3-shake">
+<h1><span class="section-number">3.1. </span>Secure Hash Algorithm (SHA2, SHA3, SHAKE)<a class="headerlink" href="#secure-hash-algorithm-sha2-sha3-shake" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">3.1.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The SHA module implements secure hash algorithms according to FIPS standards:</p>
+<ul class="simple">
+<li><p>SHA-224, SHA-256, SHA-384, and SHA-512 (FIPS 180-4)</p></li>
+<li><p>SHA3-224, SHA3-256, SHA3-384, and SHA3-512 (FIPS 202)</p></li>
+<li><p>SHAKE128 and SHAKE256 eXtendable Output Functions (XOF), also from FIPS 202</p></li>
+</ul>
+<p>These functions provide cryptographic hashing capabilities for data integrity
+verification and other security applications.</p>
+<section id="status-codes">
+<h3><span class="section-number">3.1.1.1. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h3>
+<p>The hash functions return status codes defined in the <cite>crypto_hash_stat_t</cite>
+enumeration to indicate the result of operations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_HASH_STAT_NULL_INPUT</cite></p></td>
+<td><p>-104</p></td>
+<td><p>Null pointer parameter was passed (invalid pointer)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_HASH_STAT_LENGTH_TOO_LARGE</cite></p></td>
+<td><p>-103</p></td>
+<td><p>512MiB max length exceeded for SHA2</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_HASH_STAT_ERROR</cite></p></td>
+<td><p>-100</p></td>
+<td><p>General hash error was encountered</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_HASH_STAT_OK</cite></p></td>
+<td><p>0</p></td>
+<td><p>The operation completed successfully</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="sha-2-functions">
+<h2><span class="section-number">3.1.2. </span>SHA-2 Functions<a class="headerlink" href="#sha-2-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for SHA-2 is defined below.</p>
+<section id="one-shot-hashing">
+<h3><span class="section-number">3.1.2.1. </span>One-shot Hashing<a class="headerlink" href="#one-shot-hashing" title="Permalink to this heading">¶</a></h3>
+<p>Compute a hash in a single function call when all data is available:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA224</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA256</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA384</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA512</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>data</cite>: Pointer to input data</p></li>
+<li><p><cite>len</cite>: Length of input data in bytes</p></li>
+<li><p><cite>md</cite>: Output buffer for message digest (hash result)</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_HASH_STAT_OK</cite>: Success</p></li>
+<li><p><cite>CRYPTO_HASH_STAT_ERROR</cite>: Operation failed</p></li>
+<li><p><cite>CRYPTO_HASH_STAT_LENGTH_TOO_LARGE</cite>: Input exceeds 512MiB</p></li>
+<li><p><cite>CRYPTO_HASH_STAT_NULL_INPUT</cite>: A parameter was NULL</p></li>
+</ul>
+</section>
+<section id="streaming-hash-api">
+<h3><span class="section-number">3.1.2.2. </span>Streaming Hash API<a class="headerlink" href="#streaming-hash-api" title="Permalink to this heading">¶</a></h3>
+<p>Compute a hash <cite>len</cite> bytes at a time.  SHA-256 is shown below.  The sequence
+is init, update, and final, with init called to set up the context,
+update called to add bytes to the hash, and final called after all bytes are
+digested and the message digest is to be output.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA256_init</span><span class="p">(</span><span class="n">crypto_sha256_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA256_update</span><span class="p">(</span><span class="n">crypto_sha256_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA256_final</span><span class="p">(</span><span class="n">crypto_sha256_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sha-3-functions">
+<h2><span class="section-number">3.1.3. </span>SHA-3 Functions<a class="headerlink" href="#sha-3-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for SHA-3 is defined below.</p>
+<section id="id1">
+<h3><span class="section-number">3.1.3.1. </span>One-shot Hashing<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<p>Compute a hash in a single function call when all data is available:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_224</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_256</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_384</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_512</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3><span class="section-number">3.1.3.2. </span>Streaming Hash API<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<p>Compute a hash <cite>len</cite> bytes at a time.  SHA3-256 is shown below.  The sequence
+is init, update, and final, with init called to set up the context,
+update called to add bytes to the hash, and final called after all bytes are
+digested and the message digest is to be output.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_256_init</span><span class="p">(</span><span class="n">crypto_sha3_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_update</span><span class="p">(</span><span class="n">crypto_sha3_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHA3_final</span><span class="p">(</span><span class="n">crypto_sha3_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">md</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="shake-functions">
+<h2><span class="section-number">3.1.4. </span>SHAKE Functions<a class="headerlink" href="#shake-functions" title="Permalink to this heading">¶</a></h2>
+<p>SHAKE functions are eXtendable Output Functions (XOF) that can produce
+variable-length output:</p>
+<section id="one-shot-xof">
+<h3><span class="section-number">3.1.4.1. </span>One-shot XOF<a class="headerlink" href="#one-shot-xof" title="Permalink to this heading">¶</a></h3>
+<p>Absorb <cite>inLen</cite> bytes of data and squeeze <cite>outLen</cite> bytes of data when the input
+data is available and the output buffer is available.  SHAKE-128 is shown
+below.  SHAKE-256 is also supported.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHAKE128</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">outLen</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">inLen</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="streaming-xof-api">
+<h3><span class="section-number">3.1.4.2. </span>Streaming XOF API<a class="headerlink" href="#streaming-xof-api" title="Permalink to this heading">¶</a></h3>
+<p>Absorb <cite>len</cite> bytes at a time, and squeeze <cite>len</cite> bytes at a time.
+SHAKE-128 is shown below.  The sequence is init, absorb (can be called multiple
+times), xof (to switch to squeeze state), and squeeze to output data (can be
+called multiple times).</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHAKE128_init</span><span class="p">(</span><span class="n">crypto_shake_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHAKE128_absorb</span><span class="p">(</span><span class="n">crypto_shake_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHAKE128_xof</span><span class="p">(</span><span class="n">crypto_shake_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="nf">Crypto_SHAKE128_squeeze</span><span class="p">(</span><span class="n">crypto_shake_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage-examples">
+<h2><span class="section-number">3.1.5. </span>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this heading">¶</a></h2>
+<p>Examples for using the SHA programming interfaces are given below.</p>
+<section id="one-shot-sha-256-example">
+<h3><span class="section-number">3.1.5.1. </span>One-shot SHA-256 Example<a class="headerlink" href="#one-shot-sha-256-example" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">digest</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w"> </span><span class="c1">// SHA-256 produces a 256-bit (32-byte) hash</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello, world!&quot;</span><span class="p">;</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_SHA256</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">message</span><span class="p">),</span><span class="w"> </span><span class="n">digest</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_HASH_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Hash computed successfully</span>
+<span class="w">    </span><span class="c1">// digest now contains the SHA-256 hash of &quot;Hello, world!&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="streaming-sha-256-example">
+<h3><span class="section-number">3.1.5.2. </span>Streaming SHA-256 Example<a class="headerlink" href="#streaming-sha-256-example" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">digest</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+<span class="n">crypto_sha256_ctx_t</span><span class="w"> </span><span class="n">ctx</span><span class="p">;</span>
+<span class="n">crypto_hash_stat_t</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+
+<span class="c1">// Initialize the context</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_SHA256_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_HASH_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle error</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Process first chunk</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">chunk1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello, &quot;</span><span class="p">;</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_SHA256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">chunk1</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">chunk1</span><span class="p">));</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_HASH_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle error</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Process second chunk</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">chunk2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;world!&quot;</span><span class="p">;</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_SHA256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">chunk2</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">chunk2</span><span class="p">));</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_HASH_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle error</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Finalize and get the digest</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_SHA256_final</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">digest</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_HASH_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Hash computed successfully</span>
+<span class="w">    </span><span class="c1">// digest now contains the SHA-256 hash of &quot;Hello, world!&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="important-notes">
+<h2><span class="section-number">3.1.6. </span>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>SHA-224/256 implementations can process a maximum of 512MiB.</p></li>
+<li><p>Input data may be 8-bit aligned, but output digest must be 32-bit aligned.</p></li>
+<li><p>Intermediate values, input data, and final digest value may be left behind
+on the stack.</p></li>
+<li><p>For security-critical applications, ensure sensitive data is properly cleared
+from memory after use.</p></li>
+<li><p>The SHA implementation is optimized for embedded systems, but hash operations
+are computationally intensive. For time-critical applications, consider
+using streaming API for large data to avoid blocking, or selecting the
+appropriate hash algorithm for your security needs.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_hash.html" class="btn btn-neutral float-left" title="3. Hash Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_ec.html" class="btn btn-neutral float-right" title="4. Elliptic Curve Cryptography Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

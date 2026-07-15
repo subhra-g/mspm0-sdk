@@ -16,6 +16,8 @@ OBJECTS = ti_msp_dl_config.obj empty_non_sysconfig.obj gcc_startup_mspm0h321x_gc
 NAME = empty_non_sysconfig
 
 
+DFLAGS += -gstrict-dwarf
+
 CFLAGS += -I.. \
     -D__MSPM0H3216__ \
     -O2 \
@@ -29,10 +31,15 @@ CFLAGS += -I.. \
     -ffunction-sections \
     -fdata-sections \
     -g \
-    -gstrict-dwarf \
     -Wall \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include/newlib-nano" \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-L$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/gcc/m0p/mspm0h321x" \
     -nostartfiles \

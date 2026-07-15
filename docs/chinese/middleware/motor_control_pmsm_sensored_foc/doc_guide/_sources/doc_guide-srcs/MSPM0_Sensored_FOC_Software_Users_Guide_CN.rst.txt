@@ -80,6 +80,7 @@ Starting the Project
 The Sensored FOC API guide provides a detailed description of files, variables, and APIs for the MSPM0 FOC motor control library
 
 -  `MSPM0G3507 Sensorless FOC API Guide <../../doxygen/mspm0g3507-doc-srcs-api-guide/html/index.html>`__
+-  `MSPM0G3218 Sensorless FOC API Guide <../../doxygen/mspm0g3218-doc-srcs-api-guide/html/index.html>`__
 -  `MSPM0G3519 Sensorless FOC API Guide <../../doxygen/mspm0g3519-doc-srcs-api-guide/html/index.html>`__
 
 3. Supported Devices
@@ -91,6 +92,7 @@ DRV8316
 Supported MSPM0 LaunchPads
 
 -  `LP-MSPM0G3507 <https://www.ti.com/tool/LP-MSPM0G3507>`__
+-  `LP-MSPM0G3218 <https://www.ti.com/tool/LP-MSPM0G3218>`__
 -  `LP-MSPM0G3519 <https://www.ti.com/tool/LP-MSPM0G3519>`__
 
 Links

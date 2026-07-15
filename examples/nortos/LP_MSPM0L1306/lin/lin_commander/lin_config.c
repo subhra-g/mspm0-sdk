@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2026, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,55 +30,182 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * LIN Commander Implementation
- *
- * This file implements the LIN 2.2A commander functionality including:
- *   - Frame header transmission (break, sync, PID)
- *   - Data transmission with enhanced checksum
- *   - Response reception and checksum validation
- *   - Frame timeout handling
- *
- * Supports both blocking and interrupt-driven transmission modes.
- * Compatible with UART Extended and UNICOMM UART peripherals.
- */
-
 #include "lin_config.h"
-#include <stdio.h>
 
-/*!< Current message table index for active frame */
-uint8_t gMessageTableIndex = 0;
+/* LIN commander context with default values */
+Lin_TxRxCtx_t gLIN = {
+    .rxState = LIN_RX_STATE_DATA,
+    .state = LIN_STATE_WAIT_FOR_BREAK,
+    .cmdMsgTbl = commanderMessageTable,
+    .msgTblIdx = 0,
+    .rxIdx = 0,
+    .txIdx = 1,
+    .rxBuf = { 0 },
+    .txBuf = { 0 },
+    .chkSum.word = 0,
+    .txChkSum.word = 0,
+    .currentPID = 0,
+    .nodeState = LIN_NODE_STATE_OPERATIONAL,
+    .lastError = LIN_ERROR_NO_ERROR,
+    .errorCount = 0,
+    .successCount = 0,
+    .transactionCompleted = false
+};
 
-/*!< Receive state machine current state */
-LIN_RX_STATE LIN_state = LIN_RX_STATE_DATA;
+uint8_t LIN_calculatePID(uint8_t frameID)
+{
+    uint8_t p0, p1;
+    uint8_t id0 = (frameID >> 0) & 0x01;
+    uint8_t id1 = (frameID >> 1) & 0x01;
+    uint8_t id2 = (frameID >> 2) & 0x01;
+    uint8_t id3 = (frameID >> 3) & 0x01;
+    uint8_t id4 = (frameID >> 4) & 0x01;
+    uint8_t id5 = (frameID >> 5) & 0x01;
 
-/*!< Byte counter for data field reception */
-uint8_t byteCounter = 0;
+    /* P0 = ID0 XOR ID1 XOR ID2 XOR ID4 */
+    p0 = id0 ^ id1 ^ id2 ^ id4;
 
-/*!< Running checksum accumulator for reception */
-LIN_word_t tempChksum;
+    /* P1 = NOT(ID1 XOR ID3 XOR ID4 XOR ID5) */
+    p1 = ~(id1 ^ id3 ^ id4 ^ id5) & 0x01;
 
-#if defined(__MSPM0_HAS_UART_EXTD__)
+    return (frameID & 0x3F) | (p0 << 6) | (p1 << 7);
+}
+
+bool LIN_validatePID(uint8_t pid)
+{
+    uint8_t frameID = pid & 0x3F;
+    uint8_t expectedPID = LIN_calculatePID(frameID);
+    return (pid == expectedPID);
+}
+
+uint8_t LIN_getFrameIDFromPID(uint8_t pid)
+{
+    return pid & 0x3F;
+}
+
+uint8_t LIN_calculateChecksum(uint8_t *data, uint8_t length, uint8_t pid, LIN_CHECKSUM_TYPE type)
+{
+    LIN_word_t chksum;
+    uint8_t i;
+
+    chksum.word = 0;
+
+    for (i = 0; i < length; i++)
+    {
+        chksum.word += data[i];
+    }
+
+    if (type == LIN_CHECKSUM_ENHANCED)
+    {
+        chksum.word += pid;
+    }
+
+    chksum.word = chksum.byte[0] + chksum.byte[1];
+    chksum.word = chksum.byte[0] + chksum.byte[1];
+
+    return (uint8_t)(0xFF - chksum.byte[0]);
+}
+
+void LIN_Commander_setError(Lin_TxRxCtx_t *lin, LIN_ERROR error)
+{
+    lin->lastError = error;
+    lin->errorCount++;
+
+    /* Notify application of error */
+    LIN_processError(error);
+}
+
+void LIN_Commander_clearError(Lin_TxRxCtx_t *lin)
+{
+    lin->lastError = LIN_ERROR_NO_ERROR;
+}
+
+void LIN_Commander_sendGoToSleep(LIN_Peripheral_t peripheral)
+{
+    uint8_t sleepData[8];
+    uint8_t checksum;
+    uint8_t i;
+    uint8_t pid;
+
+    gLIN.transactionCompleted = false;
+
+    /* Prepare sleep command data: 0x00, 0xFF, 0xFF, ... */
+    sleepData[0] = LIN_SLEEP_CMD_BYTE1;
+    for (i = 1; i < 8; i++)
+    {
+        sleepData[i] = LIN_SLEEP_CMD_FILL;
+    }
+
+    /* Calculate PID for COMMANDER Request frame (0x3C) */
+    pid = LIN_calculatePID(LIN_FRAME_ID_COMMANDER_REQ);
+
+    /* Transmit break field */
+    DL_UART_enableLINSendBreak(peripheral);
+    delay_cycles(LIN_BREAK_LENGTH);
+    DL_UART_disableLINSendBreak(peripheral);
+
+    /* Transmit sync byte and PID */
+    DL_UART_Extend_transmitDataBlocking(peripheral, LIN_SYNC_BYTE);
+    DL_UART_Extend_transmitDataBlocking(peripheral, pid);
+
+    /* Wait for PID transmission to complete */
+    while (DL_UART_isBusy(peripheral));
+
+    /* Transmit sleep command data */
+    for (i = 0; i < 8; i++)
+    {
+        DL_UART_Extend_transmitDataBlocking(peripheral, sleepData[i]);
+    }
+
+    /* Calculate and transmit CLASSIC checksum (diagnostic frames use CLASSIC) */
+    checksum = LIN_calculateChecksum(sleepData, 8, pid, LIN_CHECKSUM_CLASSIC);
+    DL_UART_Extend_transmitDataBlocking(peripheral, checksum);
+
+    /* Wait for transmission to complete */
+    while (DL_UART_isBusy(peripheral));
+
+    /* Flush RX FIFO (TX echo) */
+    while (!DL_UART_isRXFIFOEmpty(peripheral))
+    {
+        (void)DL_UART_Extend_receiveData(peripheral);
+    }
+
+    /* Update node state */
+    gLIN.nodeState = LIN_NODE_STATE_BUS_SLEEP;
+    gLIN.transactionCompleted = true;
+}
+
+void LIN_Commander_sendWakeup(LIN_Peripheral_t peripheral)
+{
+
+    gLIN.transactionCompleted = false;
+    /* Send wake-up signal (dominant pulse 250us - 5ms) */
+    DL_UART_enableLINSendBreak(peripheral);
+    delay_cycles(LIN_WAKEUP_PULSE_CYCLES);
+    DL_UART_disableLINSendBreak(peripheral);
+
+    /* Update node state */
+    gLIN.nodeState = LIN_NODE_STATE_OPERATIONAL;
+    gLIN.transactionCompleted = true;
+}
+
+bool LIN_Commander_isBusSleeping(Lin_TxRxCtx_t *lin)
+{
+    return (lin->nodeState == LIN_NODE_STATE_BUS_SLEEP);
+}
 
 /**
- * @brief   Initiate a LIN frame transmission
- *
- * Sends the complete frame header (break field, sync byte, PID) and then
- * either transmits data or prepares to receive a response based on whether
- * a callback function is registered for the PID.
- *
- * Frame structure:
- *   [BREAK] [SYNC=0x55] [PID] [DATA0..DATAn] [CHECKSUM]
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  tableIndex    Index into messageTable for the PID to send
- * @param[in]  TXmsgBuffer   Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Send LIN frame header and optional data
  */
-void LIN_Commander_sendPID(UART_Regs *uart, uint8_t tableIndex, uint8_t *TXmsgBuffer, LIN_table_record_t *messageTable)
+void LIN_Commander_sendFrame(LIN_Peripheral_t peripheral, void *timer, uint8_t tableIndex, uint8_t *txBuffer, LIN_table_record_t *messageTable)
 {
     /* Disable RX interrupt during header transmission */
-    DL_UART_Extend_disableInterrupt(uart, DL_UART_EXTEND_INTERRUPT_RX);
+    DL_UART_Extend_disableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_RX);
+
+    /* Store table index and PID for subsequent data handling */
+    gLIN.msgTblIdx = tableIndex;
+    gLIN.currentPID = messageTable[tableIndex].msgPID;
+    gLIN.transactionCompleted = false;
 
     /*
      * Transmit LIN frame header:
@@ -86,491 +213,307 @@ void LIN_Commander_sendPID(UART_Regs *uart, uint8_t tableIndex, uint8_t *TXmsgBu
      *   2. Sync byte (0x55)
      *   3. Protected Identifier (PID)
      */
-    DL_UART_enableLINSendBreak(uart);
+    DL_UART_enableLINSendBreak(peripheral);
     delay_cycles(LIN_BREAK_LENGTH);
-    DL_UART_disableLINSendBreak(uart);
+    DL_UART_disableLINSendBreak(peripheral);
 
-    DL_UART_Extend_transmitDataBlocking(uart, LIN_SYNC_BYTE);
-    DL_UART_Extend_transmitDataBlocking(uart, messageTable[tableIndex].msgID);
+    DL_UART_Extend_transmitDataBlocking(peripheral, LIN_SYNC_BYTE);
+    DL_UART_Extend_transmitDataBlocking(peripheral, messageTable[tableIndex].msgPID);
 
     /* Wait for PID transmission to complete */
-    while(DL_UART_isBusy(uart));
+    while (DL_UART_isBusy(peripheral));
 
-    /* Store table index for subsequent data handling */
-    gMessageTableIndex = tableIndex;
+    /* Flush RX FIFO to clear echo data */
+    while (!DL_UART_isRXFIFOEmpty(peripheral))
+    {
+        DL_UART_Extend_receiveData(peripheral);
+    }
 
     /*
-     * Determine frame direction based on callback presence:
-     *   - Callback exists: Receive response from responder
-     *   - No callback: Transmit data to responder
+     * Direction-based processing:
+     *   - PUBLISH: Commander sends data
+     *   - SUBSCRIBE: Commander receives data (callback present)
+     *   - NONE: Header only (RESPONDER-to-RESPONDER)
      */
-    if (messageTable[tableIndex].callbackFunction != NULL)
+    switch (messageTable[tableIndex].direction)
     {
-        /* Receive mode: Prepare to receive response data */
+    case LIN_DIRECTION_PUBLISH:
+        /* Transmit mode: Commander sends data to responder */
+        gLIN.txIdx = 1;
+        gLIN.txChkSum.word = 0;
+
+        /* TX interrupt mode: Send first byte, ISR handles rest */
+        if(messageTable[tableIndex].msgSize >= 1)
+        {
+            DL_UART_Extend_clearInterruptStatus(peripheral, DL_UART_EXTEND_INTERRUPT_TX);
+            DL_UART_Extend_enableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_TX);
+            DL_UART_Extend_transmitData(peripheral, txBuffer[0]);
+        }
+        else
+        {
+            gLIN.transactionCompleted = true;
+        }
+        break;
+
+    case LIN_DIRECTION_SUBSCRIBE:
+        /* Receive mode: Prepare to receive response data from responder */
+        gLIN.rxIdx = 0;
+        gLIN.chkSum.word = 0;
+        gLIN.rxState = LIN_RX_STATE_DATA;
 
         /* Flush RX buffer and clear pending interrupts */
-        DL_UART_Extend_receiveData(uart);
-        DL_UART_Extend_clearInterruptStatus(uart, DL_UART_EXTEND_INTERRUPT_RX);
-        DL_UART_Extend_enableInterrupt(uart, DL_UART_EXTEND_INTERRUPT_RX);
+        while (!DL_UART_isRXFIFOEmpty(peripheral))
+        {
+            DL_UART_Extend_receiveData(peripheral);
+        }
+        DL_UART_Extend_clearInterruptStatus(peripheral, DL_UART_EXTEND_INTERRUPT_RX);
+        DL_UART_Extend_enableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_RX);
 
         /* Start frame timeout timer */
-        DL_Timer_setLoadValue(TIMER_0_INST, TIMEOUT);
-        DL_Timer_startCounter(TIMER_0_INST);
-    }
-    else
-    {
-        /* Transmit mode: Send data to responder */
+        DL_Timer_setLoadValue((GPTIMER_Regs *)timer, TIMEOUT);
+        DL_Timer_startCounter((GPTIMER_Regs *)timer);
+        break;
 
-#ifdef Transmit_INT
-          /* Interrupt-driven: Send first byte, ISR handles rest */
-          DL_UART_Extend_transmitData(uart, TXmsgBuffer[0]);
-          DL_UART_Extend_clearInterruptStatus(uart, DL_UART_EXTEND_INTERRUPT_TX);
-          DL_UART_Extend_enableInterrupt(uart, DL_UART_EXTEND_INTERRUPT_TX);
-  #else
-        /* Blocking mode: Send entire packet */
-        LIN_Commander_transmitMessage(uart, TXmsgBuffer, messageTable);
-#endif
+    default:
+        gLIN.transactionCompleted = true;
+        break;
     }
 }
 
 /**
- * @brief   Process received response data byte
- *
- * State machine that accumulates received bytes into the message buffer,
- * maintains a running checksum, and validates the frame when complete.
- * Invokes the registered callback on successful checksum validation.
- *
- * Uses enhanced checksum (LIN 2.x): includes PID in checksum calculation.
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  rxByte        Received data byte
- * @param[out] msgBuffer     Pointer to receive buffer for storing data
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Process received response data byte
  */
-void LIN_Commander_receiveMessage(UART_Regs *uart, uint8_t rxByte, uint8_t *msgBuffer, LIN_table_record_t *messageTable)
+void LIN_Commander_receiveMessage(LIN_Peripheral_t peripheral, void *timer, uint8_t rxByte, uint8_t *rxBuffer, LIN_table_record_t *messageTable)
 {
     uint8_t checksum;
     uint8_t rxChecksum;
     LIN_function_ptr_t callbackFunction;
+    LIN_CHECKSUM_TYPE checksumType;
+    uint8_t frameID;
 
-    switch (LIN_state)
+    switch (gLIN.rxState)
     {
     /*
      * DATA state: Accumulate data bytes
      */
     case LIN_RX_STATE_DATA:
         /* Store byte in receive buffer */
-        msgBuffer[byteCounter] = rxByte;
+        rxBuffer[gLIN.rxIdx] = rxByte;
 
         /* Accumulate checksum (16-bit to handle carry) */
-        tempChksum.word += msgBuffer[byteCounter];
+        gLIN.chkSum.word += rxBuffer[gLIN.rxIdx];
 
         /* Check if all data bytes received */
-        byteCounter++;
-        if (byteCounter >= messageTable[gMessageTableIndex].msgSize)
+        gLIN.rxIdx++;
+        if (gLIN.rxIdx >= messageTable[gLIN.msgTblIdx].msgSize)
         {
             /* Transition to checksum state */
-            LIN_state = LIN_RX_STATE_CHECKSUM;
+            gLIN.rxState = LIN_RX_STATE_CHECKSUM;
         }
 
         /* Restart timeout timer for next byte */
-        DL_Timer_startCounter(TIMER_0_INST);
+        DL_Timer_stopCounter((GPTIMER_Regs *)timer);
+        DL_Timer_setLoadValue((GPTIMER_Regs *)timer, TIMEOUT);
+        DL_Timer_startCounter((GPTIMER_Regs *)timer);
         break;
 
-        /*
-         * CHECKSUM state: Validate frame checksum
-         */
+    /*
+     * CHECKSUM state: Validate frame checksum
+     */
     case LIN_RX_STATE_CHECKSUM:
         rxChecksum = rxByte;
 
+        /* Stop timeout timer */
+        DL_Timer_stopCounter((GPTIMER_Regs *)timer);
+
         /* Disable RX until next frame */
-        DL_UART_Extend_disableInterrupt(uart, DL_UART_EXTEND_INTERRUPT_RX);
+        DL_UART_Extend_disableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_RX);
+
+        /* Determine checksum type */
+        checksumType = messageTable[gLIN.msgTblIdx].checksumType;
+
+        /* Diagnostic frames always use CLASSIC checksum */
+        frameID = LIN_getFrameIDFromPID(gLIN.currentPID);
+        if (frameID == LIN_FRAME_ID_COMMANDER_REQ || frameID == LIN_FRAME_ID_RESPONDER_RESP)
+        {
+            checksumType = LIN_CHECKSUM_CLASSIC;
+        }
 
         /*
-         * Enhanced checksum calculation (LIN 2.x):
-         *   1. Add PID to running sum
+         * Enhanced checksum calculation:
+         *   1. Add PID to running sum (if enhanced)
          *   2. Fold carry into lower byte
          *   3. Invert result
          */
-        tempChksum.word += messageTable[gMessageTableIndex].msgID;
-        tempChksum.word = tempChksum.byte[0] + tempChksum.byte[1];
-        checksum = tempChksum.byte[0];
-        checksum += tempChksum.byte[1];
+        if (checksumType == LIN_CHECKSUM_ENHANCED)
+        {
+            gLIN.chkSum.word += gLIN.currentPID;
+        }
+        gLIN.chkSum.word = gLIN.chkSum.byte[0] + gLIN.chkSum.byte[1];
+        checksum = gLIN.chkSum.byte[0];
+        checksum += gLIN.chkSum.byte[1];
         checksum = 0xFF - checksum;
 
         /* Reset state for next frame */
-        byteCounter = 0;
-        tempChksum.word = 0;
-        LIN_state = LIN_RX_STATE_DATA;
+        gLIN.rxIdx = 0;
+        gLIN.chkSum.word = 0;
+        gLIN.rxState = LIN_RX_STATE_DATA;
+        gLIN.transactionCompleted = true;
 
         /* Validate checksum and invoke callback */
         if (rxChecksum == checksum)
         {
-            callbackFunction = messageTable[gMessageTableIndex].callbackFunction;
-            callbackFunction();
+            callbackFunction = messageTable[gLIN.msgTblIdx].callbackFunction;
+            if (callbackFunction != NULL)
+            {
+                callbackFunction();
+            }
+            gLIN.successCount++;
+            LIN_Commander_clearError(&gLIN);
+        }
+        else
+        {
+            LIN_Commander_setError(&gLIN, LIN_ERROR_CHECKSUM);
         }
         break;
 
     default:
         /* Reset to data state on unexpected condition */
-        LIN_state = LIN_RX_STATE_DATA;
+        gLIN.rxState = LIN_RX_STATE_DATA;
+        gLIN.transactionCompleted = true;
         break;
     }
 }
 
 /**
- * @brief   Transmit data bytes and checksum
- *
- * Two modes of operation:
- *   - Interrupt-driven (Transmit_INT defined): Called from TX ISR,
- *     sends one byte per call, calculates checksum after last data byte
- *   - Blocking mode: Sends all data bytes and checksum in one call
- *
- * Uses enhanced checksum (LIN 2.x): includes PID in checksum calculation.
- *
- * @param[in]  uart          Pointer to UART register overlay
- * @param[in]  msgBuffer     Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Transmit data bytes and checksum (TX interrupt mode)
  */
-void LIN_Commander_transmitMessage(UART_Regs *uart, uint8_t *msgBuffer, LIN_table_record_t *messageTable)
+void LIN_Commander_transmitMessage(LIN_Peripheral_t peripheral, uint8_t *txBuffer, LIN_table_record_t *messageTable)
 {
+
     uint8_t checksum;
+    LIN_CHECKSUM_TYPE checksumType;
+    uint8_t frameID;
 
-#ifdef Transmit_INT
-      /*
-       * Interrupt-driven transmission mode
-       * Static variables maintain state between ISR calls
-       */
-      /*!< Current byte index (starts at 1, byte 0 sent in sendPID) */
-      static uint8_t locIndex = 1;
-      /*!< Running checksum accumulator */
-      static LIN_word_t tempChksum_TX;
-
-      /* Accumulate checksum and transmit current byte */
-      tempChksum_TX.word += msgBuffer[locIndex];
-      DL_UART_Extend_transmitData(uart, msgBuffer[locIndex++]);
-
-      /* Check if all data bytes sent */
-      if (locIndex >= messageTable[gMessageTableIndex].msgSize) {
-          /*
-           * Calculate enhanced checksum:
-           * Include PID and first byte (sent before interrupt mode started)
-           */
-          tempChksum_TX.word = tempChksum_TX.word + messageTable[gMessageTableIndex].msgID + msgBuffer[0];
-          tempChksum_TX.word = tempChksum_TX.byte[0] + tempChksum_TX.byte[1];
-          checksum = tempChksum_TX.byte[0];
-          checksum += tempChksum_TX.byte[1];
-          checksum = 0xFF - checksum;
-
-          /* Transmit checksum (blocking to ensure completion) */
-          DL_UART_Extend_transmitDataBlocking(uart, checksum);
-
-          /* Disable TX interrupt */
-          DL_UART_Extend_disableInterrupt(uart, DL_UART_EXTEND_INTERRUPT_TX);
-
-          /* Reset state for next transmission */
-          locIndex = 1;
-          tempChksum_TX.word = 0;
-
-          /* Clear echo data from RX buffer */
-          DL_UART_Extend_receiveData(uart);
-
-          /* Wait for transmission to complete */
-          while (DL_UART_Extend_isBusy(uart));
-      }
-
-  #else
-    /*
-     * Blocking transmission mode
-     * Sends all data bytes and checksum in single function call
-     */
-    uint8_t locIndex;
-    LIN_word_t tempChksum_TX;
-
-    tempChksum_TX.word = 0;
-
-    /* Transmit all data bytes */
-    for (locIndex = 0; locIndex < messageTable[gMessageTableIndex].msgSize; locIndex++)
+    /* More data bytes to send */
+    if (gLIN.txIdx < messageTable[gLIN.msgTblIdx].msgSize)
     {
-        DL_UART_Extend_transmitDataBlocking(uart, msgBuffer[locIndex]);
-        tempChksum_TX.word += msgBuffer[locIndex];
+        delay_cycles(LIN_0_TBIT_WIDTH*2);
+        gLIN.txChkSum.word += txBuffer[gLIN.txIdx];
+        DL_UART_Extend_transmitData(peripheral, txBuffer[gLIN.txIdx++]);
+        return;
     }
 
-    /* Calculate enhanced checksum (including PID) */
-    tempChksum_TX.word += messageTable[gMessageTableIndex].msgID;
-    tempChksum_TX.word = tempChksum_TX.byte[0] + tempChksum_TX.byte[1];
-    checksum = tempChksum_TX.byte[0];
-    checksum += tempChksum_TX.byte[1];
-    checksum = 0xFF - checksum;
+    /* All data bytes sent - transmit checksum */
+    if (gLIN.txIdx == messageTable[gLIN.msgTblIdx].msgSize)
+    {
+        /* Determine checksum type */
+        checksumType = messageTable[gLIN.msgTblIdx].checksumType;
 
-    /* Transmit checksum */
-    DL_UART_Extend_transmitDataBlocking(uart, checksum);
+        /* Diagnostic frames always use CLASSIC checksum */
+        frameID = LIN_getFrameIDFromPID(gLIN.currentPID);
+        if (frameID == LIN_FRAME_ID_COMMANDER_REQ || frameID == LIN_FRAME_ID_RESPONDER_RESP)
+        {
+            checksumType = LIN_CHECKSUM_CLASSIC;
+        }
 
-    /* Clear echo data from RX buffer */
-    DL_UART_Extend_receiveData(uart);
+        /* Calculate checksum */
+        gLIN.txChkSum.word = gLIN.txChkSum.word + txBuffer[0];
+        if (checksumType == LIN_CHECKSUM_ENHANCED)
+        {
+            gLIN.txChkSum.word += gLIN.currentPID;
+        }
+        gLIN.txChkSum.word = gLIN.txChkSum.byte[0] + gLIN.txChkSum.byte[1];
+        checksum = gLIN.txChkSum.byte[0];
+        checksum += gLIN.txChkSum.byte[1];
+        checksum = 0xFF - checksum;
+
+        gLIN.txIdx++;
+        DL_UART_Extend_transmitData(peripheral, checksum);
+        return;
+    }
+
+    /* Checksum sent - transmission complete */
+    DL_UART_Extend_disableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_TX);
 
     /* Wait for transmission to complete */
-    while (DL_UART_Extend_isBusy(uart))
-        ;
-#endif
+    while (DL_UART_Extend_isBusy(peripheral));
+    /* Clear RX FIFO (TX echo) */
+    while (!DL_UART_isRXFIFOEmpty(peripheral))
+    {
+        (void)DL_UART_Extend_receiveData(peripheral);
+    }
+    gLIN.successCount++;
+
+    /* Reset state */
+    gLIN.txIdx = 1;
+    gLIN.txChkSum.word = 0;
+    gLIN.transactionCompleted = true;
 }
 
-#endif /* __MSPM0_HAS_UART_EXTD__ */
-
-#if defined(__MCU_HAS_UNICOMMUART__)
 /**
- * @brief   Initiate a LIN frame transmission (UNICOMM variant)
- *
- * Sends the complete frame header and either transmits data or prepares
- * to receive a response. Includes FIFO flush for UNICOMM peripheral.
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  tableIndex    Index into messageTable for the PID to send
- * @param[in]  TXmsgBuffer   Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
+ * @brief Handle RX timeout
  */
-void LIN_Commander_sendPID(UNICOMM_Inst_Regs *unicomm, uint8_t tableIndex, uint8_t *TXmsgBuffer, LIN_table_record_t *messageTable)
+void LIN_Commander_handleTimeout(LIN_Peripheral_t peripheral, void *timer)
 {
-    /* Disable RX interrupt during header transmission */
-    DL_UART_Extend_disableInterrupt(unicomm, DL_UART_EXTEND_INTERRUPT_RX);
+    /* Disable RX interrupt */
+    DL_UART_Extend_disableInterrupt(peripheral, DL_UART_EXTEND_INTERRUPT_RX);
 
-    /*
-     * Transmit LIN frame header:
-     *   1. Break field (dominant for >= 13 Tbit)
-     *   2. Sync byte (0x55)
-     *   3. Protected Identifier (PID)
-     */
-    DL_UART_enableLINSendBreak(unicomm);
-    delay_cycles(LIN_BREAK_LENGTH);
-    DL_UART_disableLINSendBreak(unicomm);
+    /* Stop timeout timer */
+    DL_Timer_stopCounter((GPTIMER_Regs *)timer);
 
-    DL_UART_Extend_transmitDataBlocking(unicomm, LIN_SYNC_BYTE);
-    DL_UART_Extend_transmitDataBlocking(unicomm, messageTable[tableIndex].msgID);
-
-    /* Wait for PID transmission to complete */
-    while (DL_UART_isBusy(unicomm));
-
-    /* Flush RX FIFO to clear echo data */
-    while (!DL_UART_isRXFIFOEmpty(unicomm))
+    /* Set appropriate error based on bytes received */
+    if (gLIN.rxIdx > 0)
     {
-        DL_UART_Extend_receiveData(unicomm);
-    }
-
-    /* Store table index for subsequent data handling */
-    gMessageTableIndex = tableIndex;
-
-    /*
-     * Determine frame direction based on callback presence
-     */
-    if (messageTable[tableIndex].callbackFunction != NULL)
-    {
-        /* Receive mode: Prepare to receive response data */
-
-        /* Clear pending RX interrupts */
-        DL_UART_Extend_receiveData(unicomm);
-        DL_UART_Extend_clearInterruptStatus(unicomm, DL_UART_EXTEND_INTERRUPT_RX);
-        DL_UART_Extend_enableInterrupt(unicomm, DL_UART_EXTEND_INTERRUPT_RX);
-
-        /* Start frame timeout timer */
-        DL_Timer_setLoadValue(TIMER_0_INST, TIMEOUT);
-        DL_Timer_startCounter(TIMER_0_INST);
+        LIN_Commander_setError(&gLIN, LIN_ERROR_INCOMPLETE_RESPONSE);
     }
     else
     {
-        /* Transmit mode: Send data to responder */
-
-#ifdef Transmit_INT
-          /* Interrupt-driven: Send first byte, ISR handles rest */
-          DL_UART_Extend_transmitData(unicomm, TXmsgBuffer[0]);
-          DL_UART_Extend_clearInterruptStatus(unicomm, DL_UART_EXTEND_INTERRUPT_TX);
-          DL_UART_Extend_enableInterrupt(unicomm, DL_UART_EXTEND_INTERRUPT_TX);
-  #else
-        /* Blocking mode: Send entire packet */
-        LIN_Commander_transmitMessage(unicomm, TXmsgBuffer, messageTable);
-#endif
+        LIN_Commander_setError(&gLIN, LIN_ERROR_NO_RESPONSE);
     }
+
+    /* Reset state for next frame */
+    gLIN.rxIdx = 0;
+    gLIN.chkSum.word = 0;
+    gLIN.rxState = LIN_RX_STATE_DATA;
+    gLIN.transactionCompleted = true;
 }
 
-/**
- * @brief   Process received response data byte (UNICOMM variant)
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  rxByte        Received data byte
- * @param[out] msgBuffer     Pointer to receive buffer for storing data
- * @param[in]  messageTable  Pointer to commander message table
- */
-void LIN_Commander_receiveMessage(UNICOMM_Inst_Regs *unicomm, uint8_t rxByte, uint8_t *msgBuffer, LIN_table_record_t *messageTable)
+void LIN_0_INST_IRQHandler(void)
 {
-    uint8_t checksum;
-    uint8_t rxChecksum;
-    LIN_function_ptr_t callbackFunction;
+    uint8_t rxByte;
 
-    switch (LIN_state)
+    switch (DL_UART_Extend_getPendingInterrupt(LIN_0_INST))
     {
     /*
-     * DATA state: Accumulate data bytes
+     * RX DATA HANDLING - Receive response data from responder
      */
-    case LIN_RX_STATE_DATA:
-        /* Store byte in receive buffer */
-        msgBuffer[byteCounter] = rxByte;
-
-        /* Accumulate checksum */
-        tempChksum.word += msgBuffer[byteCounter];
-
-        /* Check if all data bytes received */
-        byteCounter++;
-        if (byteCounter >= messageTable[gMessageTableIndex].msgSize)
-        {
-            LIN_state = LIN_RX_STATE_CHECKSUM;
-        }
-
-        /* Restart timeout timer */
-        DL_Timer_startCounter(TIMER_0_INST);
+    case DL_UART_EXTEND_IIDX_RX:
+        rxByte = DL_UART_Extend_receiveData(LIN_0_INST);
+        LIN_Commander_receiveMessage(LIN_0_INST, TIMER_0_INST, rxByte, gLIN.rxBuf, gLIN.cmdMsgTbl);
         break;
 
-        /*
-         * CHECKSUM state: Validate frame checksum
-         */
-    case LIN_RX_STATE_CHECKSUM:
-        rxChecksum = rxByte;
-
-        /* Disable RX until next frame */
-        DL_UART_Extend_disableInterrupt(unicomm, DL_UART_EXTEND_INTERRUPT_RX);
-
-        /* Calculate enhanced checksum */
-        tempChksum.word += messageTable[gMessageTableIndex].msgID;
-        tempChksum.word = tempChksum.byte[0] + tempChksum.byte[1];
-        checksum = tempChksum.byte[0];
-        checksum += tempChksum.byte[1];
-        checksum = 0xFF - checksum;
-
-        /* Reset state for next frame */
-        byteCounter = 0;
-        tempChksum.word = 0;
-        LIN_state = LIN_RX_STATE_DATA;
-
-        /* Validate checksum and invoke callback */
-        if (rxChecksum == checksum)
-        {
-            callbackFunction = messageTable[gMessageTableIndex].callbackFunction;
-            callbackFunction();
-        }
+    /*
+     * TX INTERRUPT - Transmit next data byte
+     */
+    case DL_UART_EXTEND_IIDX_TX:
+        LIN_Commander_transmitMessage(LIN_0_INST, gLIN.txBuf, gLIN.cmdMsgTbl);
         break;
 
     default:
-        LIN_state = LIN_RX_STATE_DATA;
         break;
     }
 }
 
-/**
- * @brief   Transmit data bytes and checksum (UNICOMM variant)
- *
- * @param[in]  unicomm       Pointer to UNICOMM register overlay
- * @param[in]  msgBuffer     Pointer to transmit data buffer
- * @param[in]  messageTable  Pointer to commander message table
- */
-void LIN_Commander_transmitMessage(UNICOMM_Inst_Regs *unicomm, uint8_t *msgBuffer, LIN_table_record_t *messageTable)
-{
-    uint8_t checksum;
-
-#ifdef Transmit_INT
-      /*
-       * Interrupt-driven transmission mode
-       */
-      /*!< Current byte index */
-      static uint8_t locIndex = 1;
-      /*!< Running checksum accumulator */
-      static LIN_word_t tempChksum_TX;
-
-      /* Accumulate checksum and transmit current byte */
-      tempChksum_TX.word += msgBuffer[locIndex];
-      DL_UART_Extend_transmitData(unicomm, msgBuffer[locIndex++]);
-
-      /* Check if all data bytes sent */
-      if (locIndex >= messageTable[gMessageTableIndex].msgSize) {
-          /* Calculate enhanced checksum */
-          tempChksum_TX.word = tempChksum_TX.word + messageTable[gMessageTableIndex].msgID + msgBuffer[0];
-          tempChksum_TX.word = tempChksum_TX.byte[0] + tempChksum_TX.byte[1];
-          checksum = tempChksum_TX.byte[0];
-          checksum += tempChksum_TX.byte[1];
-          checksum = 0xFF - checksum;
-
-          /* Transmit checksum */
-          DL_UART_Extend_transmitDataBlocking(unicomm, checksum);
-
-          /* Disable TX interrupt */
-          DL_UART_Extend_disableInterrupt(unicomm, DL_UART_EXTEND_INTERRUPT_TX);
-
-          /* Flush RX FIFO to clear echo data */
-          while (!DL_UART_isRXFIFOEmpty(unicomm)) {
-              DL_UART_Extend_receiveData(unicomm);
-          }
-
-          /* Reset state for next transmission */
-          locIndex = 1;
-          tempChksum_TX.word = 0;
-
-          /* Wait for transmission to complete */
-          while (DL_UART_Extend_isBusy(unicomm));
-      }
-
-#else
-    /*
-     * Blocking transmission mode
-     */
-    uint8_t locIndex;
-    LIN_word_t tempChksum_TX;
-
-    tempChksum_TX.word = 0;
-
-    /* Transmit all data bytes */
-    for (locIndex = 0; locIndex < messageTable[gMessageTableIndex].msgSize; locIndex++)
-    {
-        DL_UART_Extend_transmitDataBlocking(unicomm, msgBuffer[locIndex]);
-        tempChksum_TX.word += msgBuffer[locIndex];
-    }
-
-    /* Calculate enhanced checksum */
-    tempChksum_TX.word += messageTable[gMessageTableIndex].msgID;
-    tempChksum_TX.word = tempChksum_TX.byte[0] + tempChksum_TX.byte[1];
-    checksum = tempChksum_TX.byte[0];
-    checksum += tempChksum_TX.byte[1];
-    checksum = 0xFF - checksum;
-
-    /* Transmit checksum */
-    DL_UART_Extend_transmitDataBlocking(unicomm, checksum);
-
-    /* Flush RX FIFO to clear echo data */
-    while (!DL_UART_isRXFIFOEmpty(unicomm))
-    {
-        DL_UART_Extend_receiveData(unicomm);
-    }
-
-    /* Wait for transmission to complete */
-    while (DL_UART_Extend_isBusy(unicomm));
-#endif
-}
-
-#endif /* __MCU_HAS_UNICOMMUART__ */
-
-/**
- * @brief   Frame timeout interrupt handler
- *
- * Handles timeout conditions when a complete response is not received
- * within the expected time window. Resets the receive state machine
- * to prepare for the next frame.
- */
 void TIMER_0_INST_IRQHandler(void)
 {
     switch (DL_Timer_getPendingInterrupt(TIMER_0_INST))
     {
     case DL_TIMER_IIDX_ZERO:
-        /* Timeout occurred - reset receive state machine */
-        LIN_state = LIN_RX_STATE_DATA;
-        byteCounter = 0;
-        tempChksum.word = 0;
+        /* Handle RX timeout */
+        LIN_Commander_handleTimeout(LIN_0_INST, TIMER_0_INST);
         break;
+
     default:
         break;
     }

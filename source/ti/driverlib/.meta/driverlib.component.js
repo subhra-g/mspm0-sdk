@@ -202,6 +202,13 @@ if(/DAC/.test(peripherals)) {
     );
 }
 
+/* SD24 Analog Module is device-specific */
+if(/SD24/.test(peripherals)) {
+    analogModulesList.push(
+        "/ti/driverlib/SD24",
+    );
+}
+
 /* MSPM0Gxx-specific modules - only available for MSPM0G350X, MSPM0G310X, MSPM0G351X, MSPM0G321X, MSPM0G320X */
 if(["MSPM0G350X","MSPM0G310X", "MSPM0G351X","MSPM0G321X","MSPM0G320X"].includes(system.deviceData.device)){
     commModulesList.push(
@@ -244,7 +251,9 @@ if (Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() ||
     Common.isDeviceFamily_PARENT_MSPM0G518X() ||
     Common.isDeviceFamily_PARENT_MSPM0L211X_L112X() ||
     Common.isDeviceFamily_PARENT_MSPM0L210X() ||
-    Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()){
+    Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
+    Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() ||
+    Common.isDeviceFamily_PARENT_MSPM0C511X()){
     securityModulesList.push(
         "/ti/driverlib/SECCONFIG",
     );

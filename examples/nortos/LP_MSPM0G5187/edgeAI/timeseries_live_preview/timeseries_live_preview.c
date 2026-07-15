@@ -66,7 +66,7 @@
 /* Global Variable to store input to the Model */
 int8_t if_map[1][128][1][1] ;
 /* Global variable to store Model output */
-int8_t of_map[1][3]={0,0,0};
+int8_t of_map[1][3] __attribute__((aligned(4))) ={0,0,0};
 
 /* Stores extracted features of a single frame */
 volatile int8_t featuresPerFrame[FE_FEATURE_SIZE_PER_FRAME];

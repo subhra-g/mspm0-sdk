@@ -1,0 +1,141 @@
+################################################################################
+MSP Crypto Library Introduction
+################################################################################
+
+The MSP Crypto Library is a comprehensive cryptography 
+library designed for TI microcontroller products, particularly the MSPM0 and
+MSPM33 families of MCUs.
+
+********************************************************************************
+Key Features
+********************************************************************************
+
+The library includes the cryptographic modules given in the table below.
+
+.. list-table::
+   :widths: 15 20 65
+   :header-rows: 1
+
+   * - Module
+     - Primitives
+     - Functions
+   * - Cipher
+     - AES
+     - Single block encryption/decryption, 
+       cipher block chain (CBC) encryption / decryption
+   * - Hash
+     - SHA-224/256/384/512
+     - One-shot hash, streaming hash (init, update, final)
+   * - Hash
+     - SHA3-224/256/384/512
+     - One-shot hash, streaming hash (init, update, final)
+   * - Hash
+     - SHAKE-128/256
+     - One-shot XOF, streaming XOF (init, absorb, xof, squeeze)
+   * - Elliptic curves
+     - ECDSA P-256, P-384, P-521
+     - Key generation, sign, verify
+   * - Post Quantum
+     - ML-DSA-44/65/87
+     - Key generation, sign, verify
+   * - Random
+     - Entropy, DRBG
+     - Get entropy, get pseudorandom numbers
+   * - RSA
+     - RSA PKCS 1.5, RSA PSS
+     - Verify
+
+********************************************************************************
+Additional Information
+********************************************************************************
+
+This library provides a range of cryptographic modules with 
+hardware acceleration used where applicable, falling back to software 
+implementations otherwise.
+
+================================================================================
+Library Structure
+================================================================================
+
+The library is delivered pre-built and is intended to be used without 
+recompilation. Source code is provided for certain modules to offer transparency 
+on implementations.
+
+================================================================================
+Device Support
+================================================================================
+
+This library currently supports the following device families:
+
+.. list-table::
+   :widths: 10 30 10 50 70 40
+   :header-rows: 1
+
+   * - Portfolio
+     - Family
+     - Subfamily
+     - Devices
+     - Pre-compiled library path
+     - Subfamily specific compiler definitions
+   * - MSP
+     - MSPM0 Arm Cortex-M0+ MCUs
+     - MSPM0Gx51x
+     - MSPM0G1518, MSPM0G1519, MSPM0G3518, MSPM0G3519
+     - /source/ti/crypto/lib/ticlang/m0p/mspm0gx51x/cryptolib.a
+     - *CRYPTO_HW_USE_MSPM0_AESADV=1*, *CRYPTO_HW_USE_MSPM0_TRNG=1*, *CRYPTO_EC_WIN=3*
+   * - MSP
+     - MSPM0 Arm Cortex-M0+ MCUs
+     - MSPM0Lx22x
+     - MSPM0L1227, MSPM0L1228, MSPM0L2227, MSPM0L2228
+     - /source/ti/crypto/lib/ticlang/m0p/mspm0l122x_l222x/cryptolib.a
+     - *CRYPTO_HW_USE_MSPM0_AESADV=1*, *CRYPTO_HW_USE_MSPM0_TRNG=1*, *CRYPTO_EC_WIN=3*
+   * - MSP
+     - MSPM0 Arm Cortex-M0+ MCUs
+     - MSPM0L111x
+     - MSPM0L1116, MSPM0L1117
+     - /source/ti/crypto/lib/ticlang/m0p/mspm0l111x/cryptolib.a
+     - *CRYPTO_HW_USE_MSPM0_AESADV=1*, *CRYPTO_HW_USE_MSPM0_TRNG=1*, *CRYPTO_EC_WIN=3*
+   * - MSP
+     - MSPM33 Arm Cortex-M33 MCUs
+     - MSPM33C321x
+     - MSPM33C321A
+     - /source/ti/crypto/lib/ticlang/m33/mspm33c321x/cryptolib.a
+     - *CRYPTO_HW_USE_MSPM33_AESADV=1*, *CRYPTO_HW_USE_MSPM33_TRNG=1*, *CRYPTO_HW_USE_MSPM33_PKA=1*, *CRYPTO_EC_WIN=3*
+
+================================================================================
+Hardware Cryptography Module Support
+================================================================================
+
+The library can leverage hardware crypto modules on compatible devices:
+
+* AESADV module for AES operations
+* TRNG module for true random number generation
+* PKA module for elliptic curve operations
+
+********************************************************************************
+Project Configuration
+********************************************************************************
+
+When using the provided example projects, the projects are pre-configured
+for using the MSP-CRYPTO-LIB.  
+
+When including the MSP-CRYPTO-LIB into a custom project (not an example), the 
+following project build configuration settings must be applied:
+
+#. Add the include path of the library to the project build configuration.  The
+   include path of the library is *<INSTALL_DIR>/source* where *<INSTALL_DIR>*
+   is the root install directory of the MSP-CRYPTO-LIB.
+#. Within the project source file(s) which will use MSP-CRYPTO-LIB, add the
+   include statement for the top level library header file
+   *msp-crypto-lib.h* by adding *#include "ti/crypto/include/msp-crypto-lib.h"*
+   to the list of header file includes.  This top level header file
+   includes all of the module header files in MSP-CRYPTO-LIB.
+#. Add the library for the target hardware to the linker library list.  As an
+   example, for the MSPM0G3519 device, one would add the following to the
+   linker build options: 
+   *-l<INSTALL_DIR>/source/ti/crypto/lib/ticlang/m0p/mspm0gx51x/cryptolib.a*
+#. Add the MSP-CRYPTO-LIB configuration definitions to the compiler build
+   options.  As an example, for the MSPM0G3519 device, one would add the
+   following to the compiler build options:
+   *-DCRYPTO_HW_USE_MSPM0_AESADV=1*, *-DCRYPTO_HW_USE_MSPM0_TRNG=1*,
+   and *-DCRYPTO_EC_WIN=3*.

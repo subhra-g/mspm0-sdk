@@ -33,7 +33,6 @@
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/posix/ticlang
             -I${WORKSPACE_LOC}/freertos_builds_LP_MSPM0G3507_release_ticlang
-            -gdwarf-3
             -mcpu=cortex-m0plus
             -march=thumbv6m
             -mfloat-abi=soft

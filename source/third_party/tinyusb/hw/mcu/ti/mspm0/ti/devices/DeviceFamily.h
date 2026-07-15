@@ -78,6 +78,7 @@ extern "C" {
 #define DeviceFamily_ID_MSPM0G511X      17
 #define DeviceFamily_ID_MSPM0G518X      18
 #define DeviceFamily_ID_MSPM0L211X      19
+#define DeviceFamily_ID_MSPM0C511X      24
 
 /*
  * DeviceFamily_PARENT_XYZ values.
@@ -98,7 +99,7 @@ extern "C" {
 #define DeviceFamily_PARENT_MSPM0G511X          10
 #define DeviceFamily_PARENT_MSPM0G518X          11
 #define DeviceFamily_PARENT_MSPM0L211X_L112X    12
-
+#define DeviceFamily_PARENT_MSPM0C511X          15
 
 /*
  * Lookup table that sets DeviceFamily_ID, DeviceFamily_DIRECTORY, and
@@ -217,6 +218,11 @@ extern "C" {
     #define DeviceFamily_ID             DeviceFamily_ID_MSPM0L211X
     #define DeviceFamily_DIRECTORY      msp
     #define DeviceFamily_PARENT         DeviceFamily_PARENT_MSPM0L211X_L112X
+#elif defined(DeviceFamily_MSPM0C511X) || defined(__MSPM0C5116__) \
+    || defined(__MSPM0C5115__)
+    #define DeviceFamily_ID             DeviceFamily_ID_MSPM0C511X
+    #define DeviceFamily_DIRECTORY      msp
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_MSPM0C511X
 #else
     #error "DeviceFamily_XYZ undefined. You must define a DeviceFamily_XYZ!"
 #endif
@@ -241,6 +247,7 @@ extern "C" {
     + defined(DeviceFamily_MSPM0G511X) \
     + defined(DeviceFamily_MSPM0G518X) \
     + defined(DeviceFamily_MSPM0L211X) \
+    + defined(DeviceFamily_MSPM0C511X) \
     ) > 1
     #error More then one DeviceFamily has been defined!
 #endif

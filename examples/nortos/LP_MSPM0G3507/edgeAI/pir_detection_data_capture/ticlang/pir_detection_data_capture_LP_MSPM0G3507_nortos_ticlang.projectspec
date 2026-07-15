@@ -28,7 +28,6 @@
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/edgeAI/device_agent_protocol/core
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/edgeAI/device_agent_protocol/uart_comm
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source
-            -gdwarf-3
             -mcpu=cortex-m0plus
             -march=thumbv6m
             -mfloat-abi=soft

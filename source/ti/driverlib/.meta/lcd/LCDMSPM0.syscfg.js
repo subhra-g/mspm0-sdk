@@ -402,7 +402,7 @@ Together with LCDMXx, the LCD frequency fLCD is calculated as fLCD = fSOURCE / (
                         readOnly: true,
                         default: "0Hz",
                         getValue: (inst,ui) =>{
-                            let lcdFreq = system.modules["/ti/driverlib/SYSCTL"].$static.LFCLK_Freq/inst.freqDiv;
+                            let lcdFreq = system.modules["/ti/driverlib/SYSCTL"].$static.LFCLK_Freq/(inst.freqDiv * inst.muxRate);
                             return (Common.getUnitPrefix(lcdFreq)).str+"Hz"
                         }
                     },

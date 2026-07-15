@@ -68,7 +68,7 @@
 #define CAP_BIG_INFERENCE_BIT_OFFSET  0
 
 /*! Total number of sensors */
-#define TOTAL_SENSOR_COUNT            1
+#define TOTAL_SENSOR_COUNT            2
 /*! Total number of models */
 #define TOTAL_MODEL_COUNT             0
 /*! Total number of classes  */
@@ -323,6 +323,17 @@ typedef struct {
     /* Sensor Index */
     uint8_t sensorIndex[TOTAL_SENSOR_COUNT];
 } PipelineConfig;
+
+
+/*!
+ *  @brief      Sensor Index
+ *
+ *  This enum defines all the sensors supported in this application.
+*/
+typedef enum {
+    SENSOR_IDX_CURR_VOLTAGE = 0,         /* Both current and voltage value */
+    SENSOR_IDX_CURR,            /* Only current data */
+} SensorIndex;
 
 
 /*! Array of Sensor Info */

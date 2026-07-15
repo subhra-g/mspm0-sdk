@@ -18,6 +18,8 @@ OBJECTS = ti_drivers_config.obj ti_msp_dl_config.obj adcsinglechannel.obj main_f
 NAME = adc_singlechannel
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I../.. \
     -D__MSPM0L2228__ \
     -O2 \
@@ -27,12 +29,17 @@ CFLAGS += -I../.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/posix/ticlang" \
     "-I$(KERNEL_BUILD)" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-l$(MSPM0_SDK_INSTALL_DIR)/source/ti/drivers/lib/ticlang/m0p/drivers_mspm0l122x_l222x.a" \
     -i${WORKSPACE_LOC}/freertos_builds_LP_MSPM0L2228_release_ticlang/Debug \
@@ -71,11 +78,11 @@ main_freertos.obj: ../../main_freertos.c
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_display_Display.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/471/execroot/__main__/source/ti/display/Display.c
+ti_display_Display.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/10126/execroot/__main__/source/ti/display/Display.c
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_display_DisplayUart.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/471/execroot/__main__/source/ti/display/DisplayUart.c
+ti_display_DisplayUart.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/10126/execroot/__main__/source/ti/display/DisplayUart.c
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

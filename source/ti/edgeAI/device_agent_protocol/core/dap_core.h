@@ -89,4 +89,23 @@ void DAP_getFrameLength(UART_Instance *UART_handle);
  */
 uint8_t getDataLen(dataFormat dataType);
 
+/**
+ * @brief Checks if a stop streaming command has been received over UART.
+ *
+ * @param[in] UART_handle   A pointer to UART_Instance
+ * @return    bool         True if the stop streaming command is detected, false otherwise.
+ */
+static inline bool DAP_isStopStreamingReceived(UART_Instance *UART_handle)
+{
+    if (UART_handle != NULL && UART_handle->RxStatus == UART_STATUS_RX_BUFFERING)
+    {
+        if ((UART_handle->rxMsg.len != 0) &&
+            (UART_handle->rxMsg.buffer[CMD_IDX] == Serial_CMD_stopStreaming))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 #endif /* DAP_CORE_H_ */

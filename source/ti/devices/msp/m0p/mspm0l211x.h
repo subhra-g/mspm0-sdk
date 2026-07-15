@@ -392,7 +392,8 @@ static FACTORYREGION_OPEN_Regs                  * const FACTORYREGION           
 #define FLASHCTL_SYS_WEPROTAWIDTH                     (0)       /* !< Bit width of WEPROTA register. */
 #define FLASHCTL_SYS_WEPROTCWIDTH                     (0)       /* !< Bit width of WEPROTC register. */
 #define COMP_SYS_DACOUT_EN                            (1)       /* !< Boolean for if 8-bit DAC output to pin is available */
-
+#define UNICOMMI2CC_SYS_FENTRIES                      (4)       /* !< Number of FIFO entries */
+#define UNICOMMI2CT_SYS_FENTRIES                      (4)       /* !< Number of FIFO entries */
 
 #define UC4_SPI_SYS_EN_REPEAT                         (0)
 #define UC4_SPI_SYS_EN_RTOUT                          (0)

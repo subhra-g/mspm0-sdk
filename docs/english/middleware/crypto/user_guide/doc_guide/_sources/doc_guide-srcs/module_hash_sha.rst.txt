@@ -1,0 +1,225 @@
+################################################################################
+Secure Hash Algorithm (SHA2, SHA3, SHAKE)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The SHA module implements secure hash algorithms according to FIPS standards:
+
+* SHA-224, SHA-256, SHA-384, and SHA-512 (FIPS 180-4)
+* SHA3-224, SHA3-256, SHA3-384, and SHA3-512 (FIPS 202)
+* SHAKE128 and SHAKE256 eXtendable Output Functions (XOF), also from FIPS 202
+
+These functions provide cryptographic hashing capabilities for data integrity 
+verification and other security applications.
+
+================================================================================
+Status Codes
+================================================================================
+
+The hash functions return status codes defined in the `crypto_hash_stat_t`
+enumeration to indicate the result of operations.
+
+==================================== ====== =============================================================
+Status Code                          Value  Description
+==================================== ====== =============================================================
+`CRYPTO_HASH_STAT_NULL_INPUT`        -104   Null pointer parameter was passed (invalid pointer)
+`CRYPTO_HASH_STAT_LENGTH_TOO_LARGE`  -103   512MiB max length exceeded for SHA2
+`CRYPTO_HASH_STAT_ERROR`             -100   General hash error was encountered
+`CRYPTO_HASH_STAT_OK`                0      The operation completed successfully
+==================================== ====== =============================================================
+
+********************************************************************************
+SHA-2 Functions
+********************************************************************************
+
+The application programming interface (API) for SHA-2 is defined below.
+
+================================================================================
+One-shot Hashing
+================================================================================
+
+Compute a hash in a single function call when all data is available:
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHA224(const void *data, size_t len, uint32_t *md);
+    crypto_hash_stat_t Crypto_SHA256(const void *data, size_t len, uint32_t *md);
+    crypto_hash_stat_t Crypto_SHA384(const void *data, size_t len, uint64_t *md);
+    crypto_hash_stat_t Crypto_SHA512(const void *data, size_t len, uint64_t *md);
+
+**Parameters:**
+
+* `data`: Pointer to input data
+* `len`: Length of input data in bytes
+* `md`: Output buffer for message digest (hash result)
+
+**Returns:**
+
+* `CRYPTO_HASH_STAT_OK`: Success
+* `CRYPTO_HASH_STAT_ERROR`: Operation failed
+* `CRYPTO_HASH_STAT_LENGTH_TOO_LARGE`: Input exceeds 512MiB
+* `CRYPTO_HASH_STAT_NULL_INPUT`: A parameter was NULL
+
+================================================================================
+Streaming Hash API
+================================================================================
+
+Compute a hash `len` bytes at a time.  SHA-256 is shown below.  The sequence
+is init, update, and final, with init called to set up the context,
+update called to add bytes to the hash, and final called after all bytes are
+digested and the message digest is to be output.
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHA256_init(crypto_sha256_ctx_t *ctx);
+    crypto_hash_stat_t Crypto_SHA256_update(crypto_sha256_ctx_t *ctx, const void *data, size_t len);
+    crypto_hash_stat_t Crypto_SHA256_final(crypto_sha256_ctx_t *ctx, uint32_t *md);
+
+********************************************************************************
+SHA-3 Functions
+********************************************************************************
+
+The application programming interface (API) for SHA-3 is defined below.
+
+================================================================================
+One-shot Hashing
+================================================================================
+
+Compute a hash in a single function call when all data is available:
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHA3_224(const void *data, size_t len, uint32_t *md);
+    crypto_hash_stat_t Crypto_SHA3_256(const void *data, size_t len, uint32_t *md);
+    crypto_hash_stat_t Crypto_SHA3_384(const void *data, size_t len, uint32_t *md);
+    crypto_hash_stat_t Crypto_SHA3_512(const void *data, size_t len, uint32_t *md);
+
+================================================================================
+Streaming Hash API
+================================================================================
+
+Compute a hash `len` bytes at a time.  SHA3-256 is shown below.  The sequence
+is init, update, and final, with init called to set up the context,
+update called to add bytes to the hash, and final called after all bytes are
+digested and the message digest is to be output.
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHA3_256_init(crypto_sha3_ctx_t *ctx);
+    crypto_hash_stat_t Crypto_SHA3_update(crypto_sha3_ctx_t *ctx, const void *data, size_t len);
+    crypto_hash_stat_t Crypto_SHA3_final(crypto_sha3_ctx_t *ctx, void *md);
+
+********************************************************************************
+SHAKE Functions
+********************************************************************************
+
+SHAKE functions are eXtendable Output Functions (XOF) that can produce 
+variable-length output:
+
+================================================================================
+One-shot XOF
+================================================================================
+
+Absorb `inLen` bytes of data and squeeze `outLen` bytes of data when the input
+data is available and the output buffer is available.  SHAKE-128 is shown
+below.  SHAKE-256 is also supported.
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHAKE128(uint8_t *out, size_t outLen, const uint8_t *in, size_t inLen);
+
+================================================================================
+Streaming XOF API
+================================================================================
+
+Absorb `len` bytes at a time, and squeeze `len` bytes at a time. 
+SHAKE-128 is shown below.  The sequence is init, absorb (can be called multiple
+times), xof (to switch to squeeze state), and squeeze to output data (can be
+called multiple times).
+
+.. code-block:: c
+
+    crypto_hash_stat_t Crypto_SHAKE128_init(crypto_shake_ctx_t *ctx);
+    crypto_hash_stat_t Crypto_SHAKE128_absorb(crypto_shake_ctx_t *ctx, const void *data, size_t len);
+    crypto_hash_stat_t Crypto_SHAKE128_xof(crypto_shake_ctx_t *ctx);
+    crypto_hash_stat_t Crypto_SHAKE128_squeeze(crypto_shake_ctx_t *ctx, void *data, size_t len);
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for using the SHA programming interfaces are given below.
+
+================================================================================
+One-shot SHA-256 Example
+================================================================================
+
+.. code-block:: c
+
+    uint32_t digest[8]; // SHA-256 produces a 256-bit (32-byte) hash
+    const char *message = "Hello, world!";
+    crypto_hash_stat_t status;
+
+    status = Crypto_SHA256(message, strlen(message), digest);
+    if (status == CRYPTO_HASH_STAT_OK) {
+        // Hash computed successfully
+        // digest now contains the SHA-256 hash of "Hello, world!"
+    }
+
+================================================================================
+Streaming SHA-256 Example
+================================================================================
+
+.. code-block:: c
+
+    uint32_t digest[8];
+    crypto_sha256_ctx_t ctx;
+    crypto_hash_stat_t status;
+
+    // Initialize the context
+    status = Crypto_SHA256_init(&ctx);
+    if (status != CRYPTO_HASH_STAT_OK) {
+        // Handle error
+        return;
+    }
+
+    // Process first chunk
+    const char *chunk1 = "Hello, ";
+    status = Crypto_SHA256_update(&ctx, chunk1, strlen(chunk1));
+    if (status != CRYPTO_HASH_STAT_OK) {
+        // Handle error
+        return;
+    }
+
+    // Process second chunk
+    const char *chunk2 = "world!";
+    status = Crypto_SHA256_update(&ctx, chunk2, strlen(chunk2));
+    if (status != CRYPTO_HASH_STAT_OK) {
+        // Handle error
+        return;
+    }
+
+    // Finalize and get the digest
+    status = Crypto_SHA256_final(&ctx, digest);
+    if (status == CRYPTO_HASH_STAT_OK) {
+        // Hash computed successfully
+        // digest now contains the SHA-256 hash of "Hello, world!"
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. SHA-224/256 implementations can process a maximum of 512MiB.
+#. Input data may be 8-bit aligned, but output digest must be 32-bit aligned.
+#. Intermediate values, input data, and final digest value may be left behind 
+   on the stack.
+#. For security-critical applications, ensure sensitive data is properly cleared 
+   from memory after use.
+#. The SHA implementation is optimized for embedded systems, but hash operations 
+   are computationally intensive. For time-critical applications, consider
+   using streaming API for large data to avoid blocking, or selecting the 
+   appropriate hash algorithm for your security needs.

@@ -1,0 +1,156 @@
+/*
+ * Copyright (c) 2025, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "ti_msp_dl_config.h"
+
+#include "model/tvmgen_default.h"
+#include "feature_extract.h"
+
+/* ARM CMSIS-DSP Header files */
+#include "arm_const_structs.h"
+#include "arm_math.h"
+#include "stdlib.h"
+
+#include "bearing_fault_class_data.h"
+
+/** \brief Model input buffer */
+int8_t if_map[1][1][384][1];
+
+/** \brief Model output buffer */
+int8_t of_map[1][6];
+
+/** \brief Extracted features of a single frame */
+int8_t totalFeatures[FE_VARIABLES*FE_NUM_FRAME_CONCAT*FE_FEATURE_SIZE_PER_FRAME];
+
+/** \brief Output vector from the model inference (6 classes) */
+int8_t output_vector[1][6];
+
+/** \brief TVM output structure for model results */
+struct tvmgen_default_outputs outputs = {(void*)&output_vector[0]};
+
+
+/** \brief Glow LED based on which class has the maximum frequency */
+void glow_led()
+{
+    /* Find class with maximum +ve value */
+    uint8_t output_class = 0;
+    for(int i=1; i<6; i++) {
+        if(output_vector[0][output_class] < output_vector[0][i]) {
+            output_class = i;
+        }
+    }
+
+    DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_LED1_PIN);
+    DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_LED2_PIN);
+    DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_LED3_PIN);
+    /* Glow respective class */
+    switch(output_class) {
+        case BEARING_FAULT_CLASS_1_NORMAL:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED1_PIN);
+            break;
+        case BEARING_FAULT_CLASS_2_CONTAMINATED:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED2_PIN);
+            break;
+        case BEARING_FAULT_CLASS_3_EROSION:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED3_PIN);
+            break;
+        case BEARING_FAULT_CLASS_4_FLAKING:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED1_PIN);
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED2_PIN);
+            break;
+        case BEARING_FAULT_CLASS_5_NOLUBRICATION:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED2_PIN);
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED3_PIN);
+            break;
+        case BEARING_FAULT_CLASS_6_LOCALIZEDFAULT:
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED1_PIN);
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED2_PIN);
+            DL_GPIO_setPins(GPIO_LEDS_PORT, GPIO_LEDS_LED3_PIN);
+        default:
+            break;
+    }
+}
+
+/**
+ * \brief Main application function
+ *
+ * Initializes hardware, processes Bearing Fault data directly from class data arrays
+ * through the AI model for classification.
+ */
+int main(void)
+{
+    /* Input to model */
+    struct tvmgen_default_inputs inputs;
+
+    SYSCFG_DL_init();
+
+    /* Initialize ARM library for real FFT */
+    FE_init();
+
+    /* Main processing loop */
+    while (1) {
+        /* Get the current class data pointer */
+        const int32_t *current_data = get_current_bearing_fault_class_data();
+
+        /* Feature extraction */
+        int16_t data[FE_FRAME_SIZE];
+        int32_t index = 0;
+        for(int i=0;i<FE_VARIABLES;i++)
+        {
+            for(int j=0;j<FE_NUM_FRAME_CONCAT;j++)
+            {
+                for(int k=0;k<FE_FRAME_SIZE;k++)
+                {
+                    data[k] = (int16_t) (current_data[index]);
+                    index++;
+                }
+                FE_process((q15_t *)data, totalFeatures+(j*FE_FEATURE_SIZE_PER_FRAME+i*(FE_NUM_FRAME_CONCAT*FE_FEATURE_SIZE_PER_FRAME)), 0);
+            }
+        }
+        for(int i=0;i<FE_NUM_FRAME_CONCAT*FE_FEATURE_SIZE_PER_FRAME*FE_VARIABLES;i++)
+        {
+            if_map[0][0][i][0] = totalFeatures[i];
+        }
+
+        /* Set up input to point directly to the class data */
+        inputs.onnx__Add_0 = (void *)&if_map;
+
+        /* Run inference directly on the class data */
+        (void)tvmgen_default_run(&inputs, &outputs);
+
+        /* Glow the respective led for the class with maximum output */
+        glow_led();
+
+        /* For continuous operation, delay then update to next class */
+        delay_cycles(10000000);
+    }
+}

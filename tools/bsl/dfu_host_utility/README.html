@@ -301,8 +301,9 @@ We do <strong>not</strong> distribute these tools directly. Customers need to in
 <li>For programming, all address and length should be 8-byte aligned.</li>
 <li>By defualt VendorID and ProductID is 2047 and 0210 respectively.</li>
 <li>The example.bat file is a batch script that demonstrates how to use the dfu host utility to perform a typical device update workflow.</li>
-<li>Checksum verification option is different from standalone verificaion feature supported by device Bootloader. Checksum verification checks the integrity of the application image before programming into the device and during readback it checks the integrity of the content read from the device, excluding addresses in case of <code>.txt</code> file.<br />
-</li>
+<li>Checksum verification option is different from standalone verification feature supported by device Bootloader. Checksum verification checks the integrity of the application image before programming into the device and during readback it checks the integrity of the content read from the device, excluding addresses in case of <code>.txt</code> file.</li>
+<li>Factory reset command erases the entire nonmain location, so the user needs to ensure that a suitable nonmain is loaded after this (before the reset) to avoid locking up the device.</li>
+<li>To program any location in the memory, first it needs to be erased. For example to program main memory, mass erase has to be used and to program nonmain, factory reset has to be done.</li>
 <li>When programming across different memory sectors, use <code>.bin</code> files rather than <code>.txt</code> files. This is because text files represent discontinuous memory segments, while memory readback operations return continuous memory blocks. As a result, CRC checksums for <code>.txt</code> files may not match the readback memory CRC even when the programming was successful.</li>
 </ul>
 <hr />

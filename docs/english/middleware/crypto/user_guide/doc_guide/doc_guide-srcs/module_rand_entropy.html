@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.1. Entropy Source (TRNG Interface) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.2. Deterministic Random Bit Generator (DRBG)" href="module_rand_drbg.html" />
+    <link rel="prev" title="7. Random Module" href="module_rand.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_rand.html">7. Random Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7.1. Entropy Source (TRNG Interface)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">7.1.1. Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#key-features">7.1.1.1. Key Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hardware-support">7.1.1.2. Hardware Support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#status-codes">7.1.1.3. Status Codes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#api-functions">7.1.2. API Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getting-random-data">7.1.2.1. Getting Random Data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-example">7.1.3. Usage Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">7.1.4. Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes">7.1.5. Important Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">7.1.6. Related Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module_rand_drbg.html">7.2. Deterministic Random Bit Generator (DRBG)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_rand.html"><span class="section-number">7. </span>Random Module</a> &raquo;</li>
+      <li><span class="section-number">7.1. </span>Entropy Source (TRNG Interface)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="entropy-source-trng-interface">
+<h1><span class="section-number">7.1. </span>Entropy Source (TRNG Interface)<a class="headerlink" href="#entropy-source-trng-interface" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">7.1.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The entropy module (<cite>entropy.h</cite>) provides an interface to the True Random
+Number Generator (TRNG) hardware module present on certain MSPM0 devices.</p>
+<p>The entropy module is intented to extract entropy data from the TRNG to be used
+as seed material for a deterministic random bit generator.</p>
+<section id="key-features">
+<h3><span class="section-number">7.1.1.1. </span>Key Features<a class="headerlink" href="#key-features" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Abstracted access to hardware TRNG entropy source on the microcontroller</p></li>
+<li><p>Built-in power-on self-tests (POST) for both analog and digital components</p></li>
+<li><p>Continuous health monitoring during operation</p></li>
+<li><p>Function call will time out in event hardware TRNG does not respond to a
+command</p></li>
+</ul>
+</section>
+<section id="hardware-support">
+<h3><span class="section-number">7.1.1.2. </span>Hardware Support<a class="headerlink" href="#hardware-support" title="Permalink to this heading">¶</a></h3>
+<p>This module requires an MSPM0 device with a TRNG hardware module.
+Consult your device datasheet to confirm TRNG availability.</p>
+<p>Currently supported device families include:</p>
+<ul class="simple">
+<li><p>MSPM0Gx51x  (MSPM0G1518, MSPM0G1519, MSPM0G3518, MSPM0G3519)</p></li>
+<li><p>MSPM0Lx22x  (MSPM0L1227, MSPM0L1228, MSPM0L2227, MSPM021228)</p></li>
+<li><p>MSPM33C32xx (MSPM33C321A)</p></li>
+</ul>
+</section>
+<section id="status-codes">
+<h3><span class="section-number">7.1.1.3. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h3>
+<p>The entropy functions return status codes defined in the <cite>crypto_entropy_stat_t</cite>
+enumeration to indicate the result of operations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_ENTROPY_TRNG_HEATH_FAIL</cite></p></td>
+<td><p>-5</p></td>
+<td><p>Continuous TRNG health monitor test failed</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL</cite></p></td>
+<td><p>-4</p></td>
+<td><p>Analog power-on self test failed</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL</cite></p></td>
+<td><p>-3</p></td>
+<td><p>Digital power-on self test failed</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR</cite></p></td>
+<td><p>-2</p></td>
+<td><p>A command timed out (TRNG did not respond to command)</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR</cite></p></td>
+<td><p>-1</p></td>
+<td><p>Invalid clock frequency (frequency not supported by TRNG)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_ENTROPY_OK</cite></p></td>
+<td><p>0</p></td>
+<td><p>The operation completed successfully</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="api-functions">
+<h2><span class="section-number">7.1.2. </span>API Functions<a class="headerlink" href="#api-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for the entropy source is defined
+below.</p>
+<section id="getting-random-data">
+<h3><span class="section-number">7.1.2.1. </span>Getting Random Data<a class="headerlink" href="#getting-random-data" title="Permalink to this heading">¶</a></h3>
+<p>The <cite>Crypto_getEntropy</cite> function is used to extract entropy from the TRNG.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_entropy_stat_t</span><span class="w"> </span><span class="nf">Crypto_getEntropy</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">                                        </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">inClkFreq</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Description:</strong>
+Generates true random bits (entropy) from the on-chip TRNG entropy source and
+stores them in an output buffer. This function handles the complete lifecycle
+of the TRNG operation:</p>
+<ul class="simple">
+<li><p>Powers on the TRNG</p></li>
+<li><p>Executes TRNG self-tests</p></li>
+<li><p>Configures clocking and decimation</p></li>
+<li><p>Extracts the specified number of 32-bit samples</p></li>
+<li><p>Powers down the TRNG after completion</p></li>
+</ul>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>output</cite>: Pointer to the buffer where entropy will be stored</p></li>
+<li><p><cite>len</cite>: Number of 32-bit words of entropy to generate</p></li>
+<li><p><cite>inClkFreq</cite>: The frequency of the bus clock used by the TRNG (in Hz)</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_ENTROPY_OK</cite>: Success - <cite>len</cite> words of random data were collected</p></li>
+<li><p><cite>CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR</cite>: The TRNG input clock frequency is incompatible</p></li>
+<li><p><cite>CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR</cite>: A command timed out</p></li>
+<li><p><cite>CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL</cite>: Digital power-on self-test failed</p></li>
+<li><p><cite>CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL</cite>: Analog power-on self-test failed</p></li>
+<li><p><cite>CRYPTO_ENTROPY_TRNG_HEATH_FAIL</cite>: Continuous health test failed during operation</p></li>
+</ul>
+</section>
+</section>
+<section id="usage-example">
+<h2><span class="section-number">7.1.3. </span>Usage Example<a class="headerlink" href="#usage-example" title="Permalink to this heading">¶</a></h2>
+<p>An example programming sequence to extract entropy is shown below.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/rand/entropy.h&quot;</span>
+
+<span class="cm">/* Generate 4 words (16 bytes) of random data */</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">randomData</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="n">crypto_entropy_stat_t</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+
+<span class="cm">/* System clock frequency (example: 48 MHz) */</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">systemClockFreq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">48000000U</span><span class="p">;</span>
+
+<span class="cm">/* Get entropy from the TRNG */</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_getEntropy</span><span class="p">(</span><span class="n">randomData</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">systemClockFreq</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CRYPTO_ENTROPY_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Successfully generated random data */</span>
+<span class="w">    </span><span class="cm">/* Use randomData for cryptographic purposes */</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle error based on status code */</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR</span><span class="p">:</span>
+<span class="w">            </span><span class="cm">/* Clock frequency is not compatible with TRNG */</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR</span><span class="p">:</span>
+<span class="w">            </span><span class="cm">/* TRNG operation timed out */</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL</span><span class="p">:</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL</span><span class="p">:</span>
+<span class="w">            </span><span class="cm">/* POST failure */</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">CRYPTO_ENTROPY_TRNG_HEATH_FAIL</span><span class="p">:</span>
+<span class="w">            </span><span class="cm">/* Health test failure during operation */</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2><span class="section-number">7.1.4. </span>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Error Handling</strong>: Always check return values from <cite>Crypto_getEntropy()</cite>.
+A failure could indicate hardware issues that compromise security.</p></li>
+<li><p><strong>Clock Configuration</strong>: Ensure the input clock frequency (<cite>inClkFreq</cite>) is
+correctly specified. Incorrect clock settings can lead to suboptimal entropy
+generation or errors.</p></li>
+<li><p><strong>Buffer Allocation</strong>: Make sure the output buffer is large enough to hold
+<cite>len</cite> 32-bit words.</p></li>
+<li><p><strong>Power Considerations</strong>: The TRNG hardware consumes power during operation.
+This module automatically powers down the TRNG after completion to conserve
+energy.</p></li>
+<li><p><strong>Secure Usage</strong>: Random data generated should be protected in memory and
+securely erased when no longer needed. For example, when generating entropy
+to seed a DRBG, after the DRBG initialization the random seed may be cleared
+from SRAM.</p></li>
+</ol>
+</section>
+<section id="important-notes">
+<h2><span class="section-number">7.1.5. </span>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The TRNG module discards leading samples after initialization to
+remove any deterministic information left over from self-tests.</p></li>
+<li><p>The implementation includes continuous health monitoring that checks the
+entropy source during operation.</p></li>
+<li><p>The function has a built-in timeout mechanism to prevent indefinite blocking
+if the TRNG hardware malfunctions.</p></li>
+<li><p>The TRNG is a hardware resource that may not be available on all devices.</p></li>
+<li><p>The entropy generation rate is limited by the TRNG hardware capabilities.</p></li>
+<li><p>For applications requiring deterministic random number generation based on
+entropy seeds, consider using the DRBG (Deterministic Random Bit Generator)
+module in conjunction with the entropy source.</p></li>
+</ul>
+</section>
+<section id="related-modules">
+<h2><span class="section-number">7.1.6. </span>Related Modules<a class="headerlink" href="#related-modules" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use with the DRBG module (<cite>drbg.h</cite>) to condition entropy for further use in
+generating random values for use with cipher, MAC, and signature modules.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_rand.html" class="btn btn-neutral float-left" title="7. Random Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_rand_drbg.html" class="btn btn-neutral float-right" title="7.2. Deterministic Random Bit Generator (DRBG)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -38,6 +38,5 @@ const SYSCTL                 = scripting.addModule("/ti/driverlib/SYSCTL", {}, f
 SYSCTL.clockTreeEn           = true;
 SYSCTL.forceDefaultClkConfig = true;
 
-
 SYSCTL.clockTreeEn = true;
 SYSCTL.forceDefaultClkConfig = true;

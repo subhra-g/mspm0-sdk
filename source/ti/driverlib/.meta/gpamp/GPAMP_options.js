@@ -18,6 +18,8 @@ let GPAMP_adcAssistedChopping = {
     MSPM0L211X_L112X: undefined,
     MSPM0L210X      : undefined,
     MSPM0GX218_GX207: undefined,
+    MSPM0GX70X_GX73X      : undefined,
+    MSPM0H821X      : undefined,
     MSPM0G122X      : undefined,
 };
 

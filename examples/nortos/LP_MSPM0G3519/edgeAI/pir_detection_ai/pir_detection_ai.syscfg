@@ -35,7 +35,6 @@ ADC121.trigSrc                     = "DL_ADC12_TRIG_SRC_EVENT";
 ADC121.adcMem0trig                 = "DL_ADC12_TRIGGER_MODE_TRIGGER_NEXT";
 ADC121.peripheral.$assign          = "ADC0";
 ADC121.peripheral.adcPin12.$assign = "PA14";
-ADC121.adcPin12Config.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
 
 Board.peripheral.$assign          = "DEBUGSS";
 Board.peripheral.swclkPin.$assign = "PA20";

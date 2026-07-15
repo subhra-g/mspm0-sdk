@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edge AI Software Solution for MSPM0 Devices &mdash; MSPM0 EdgeAI User Guide 1.3.0 documentation</title>
+  <title>Edge AI Software Solution for MSPM0 Devices &mdash; MSPM0 EdgeAI User Guide 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> MSPM0 EdgeAI User Guide
           </a>
               <div class="version">
-                1.3.0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -131,7 +131,7 @@
 </section>
 <section id="examples">
 <h3>4. Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h3>
-<p>The solution includes a variety of example applications demonstrating Edge AI capabilities:</p>
+<p>The solution includes 46 example applications demonstrating Edge AI capabilities across classification, regression, anomaly detection, and specialized sensing tasks.</p>
 <section id="basic-examples">
 <h4>Basic Examples<a class="headerlink" href="#basic-examples" title="Permalink to this heading">¶</a></h4>
 <ul class="simple">
@@ -144,11 +144,17 @@
 <h4>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Permalink to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Character Recognition</strong>: Basic OCR capabilities</p></li>
-<li><p><strong>Motor Fault AI</strong>: Detection of motor faults through vibration analysis</p></li>
+<li><p><strong>Motor Bearing Fault Detection AI</strong>: Detection of motor bearing faults through vibration analysis</p></li>
+<li><p><strong>Motor Fan Blade Fault AI</strong>: Detection of motor fan blade faults through vibration analysis</p></li>
+<li><p><strong>Motor Bearing Fault Anomaly Detection AI</strong>: Autoencoder-based unsupervised anomaly detection for motor bearing health monitoring</p></li>
 <li><p><strong>ECG Anomaly Detection AI</strong>: Heart rhythm anomaly classification from ECG data (Normal, Mild, Severe, Emergency)</p></li>
 <li><p><strong>Gearbox Fault Diagnosis AI</strong>: Vibration-based gearbox fault detection (Healthy vs Broken Tooth)</p></li>
 <li><p><strong>Linear Actuator Fault AI</strong>: Detection of linear actuator faults (Normal, Spalling, Lack of Lubrication, Backlash)</p></li>
 <li><p><strong>Motor Temperature AI</strong>: PMSM motor temperature prediction using regression model</p></li>
+<li><p><strong>Washer Load AI</strong>: Regression-based washing machine load prediction on MSPM0G3519</p></li>
+<li><p><strong>Fall Detection AI</strong>: Human fall detection using accelerometer on TIDA-010997 boosterpack</p></li>
+<li><p><strong>Dynamic Hand Gesture Recognition AI</strong>: Hand gesture recognition using accelerometer on TIDA-010997 boosterpack</p></li>
+<li><p><strong>PIR Detection AI</strong>: End-to-end PIR-based motion detection</p></li>
 </ul>
 </section>
 <section id="npu-accelerated-variants">
@@ -156,16 +162,22 @@
 <ul class="simple">
 <li><p><strong>Hello World AI NPU</strong>: NPU-accelerated version of the hello world example</p></li>
 <li><p><strong>Character Recognition NPU</strong>: NPU-accelerated optical character recognition</p></li>
-<li><p><strong>Motor Fault AI NPU</strong>: NPU-accelerated motor fault detection</p></li>
 <li><p><strong>Waveform Classifier AI NPU</strong>: NPU-accelerated waveform classification</p></li>
-<li><p><strong>AC Arc Fault Detection AI NPU</strong>: Safety-critical arc fault detection for electrical systems (NPU-only)</p></li>
+<li><p><strong>AC Arc Fault Detection AI NPU</strong>: Safety-critical arc fault detection for electrical systems</p></li>
 <li><p><strong>ECG Anomaly Detection AI NPU</strong>: NPU-accelerated ECG anomaly classification</p></li>
 <li><p><strong>Gearbox Fault Diagnosis AI NPU</strong>: NPU-accelerated gearbox fault detection</p></li>
 <li><p><strong>Linear Actuator Fault AI NPU</strong>: NPU-accelerated linear actuator fault detection</p></li>
+<li><p><strong>Motor Bearing Fault Detection AI NPU</strong>: NPU-accelerated motor bearing fault detection</p></li>
+<li><p><strong>Motor Fan Blade Fault AI NPU</strong>: NPU-accelerated motor fan blade fault detection</p></li>
 <li><p><strong>Motor Temperature AI NPU</strong>: NPU-accelerated motor temperature prediction</p></li>
 <li><p><strong>Electrical Fault AI NPU</strong>: NPU-accelerated power system transmission line fault detection</p></li>
 <li><p><strong>Non-intrusive Load Monitoring (NILM) NPU</strong>: NPU-accelerated appliance usage classification</p></li>
-<li><p><strong>PIR based Motion Detection AI NPU</strong>: NPU-accelerated PIR based motion detection</p></li>
+<li><p><strong>PIR Detection AI NPU</strong>: NPU-accelerated PIR-based motion detection</p></li>
+<li><p><strong>Fall Detection AI NPU</strong>: NPU-accelerated human fall detection on TIDA-010997 boosterpack</p></li>
+<li><p><strong>Dynamic Hand Gesture Recognition AI NPU</strong>: NPU-accelerated hand gesture recognition on TIDA-010997 boosterpack</p></li>
+<li><p><strong>Glass Break Detection AI NPU</strong>: NPU-accelerated glass break detection for security and building automation</p></li>
+<li><p><strong>Machine Readable Code Classification AI NPU</strong>: NPU-accelerated machine-readable code classification</p></li>
+<li><p><strong>Wakeword Detection AI NPU</strong>: NPU-accelerated audio wakeword detection with full audio processing pipeline</p></li>
 </ul>
 </section>
 <section id="data-collection-and-visualization">
@@ -173,10 +185,14 @@
 <ul class="simple">
 <li><p><strong>AC Arc Fault Data Capture</strong>: Tools for capturing arc fault data for training</p></li>
 <li><p><strong>AC Arc Fault Detection Live Preview</strong>: Real-time visualization of arc fault detection</p></li>
-<li><p><strong>Motor Fault AI Data Capture</strong>: Utilities for collecting motor vibration data</p></li>
-<li><p><strong>Motor Fault AI Live Preview</strong>: Real-time visualization of motor fault detection</p></li>
+<li><p><strong>Motor Fan Blade Fault Data Capture</strong>: Utilities for collecting motor vibration data for training</p></li>
+<li><p><strong>Motor Fan Blade Fault Live Preview</strong>: Real-time visualization of motor fan blade fault detection</p></li>
 <li><p><strong>ECG Anomaly Detection Data Capture</strong>: Tools for capturing ECG data for training</p></li>
 <li><p><strong>ECG Anomaly Detection Live Preview</strong>: Real-time visualization of ECG anomaly detection</p></li>
+<li><p><strong>PIR Detection Data Capture</strong>: Capture PIR sensor data from TIDA-010997 boosterpack</p></li>
+<li><p><strong>PIR Detection Live Preview</strong>: Real-time visualization of PIR detection inference</p></li>
+<li><p><strong>Fall Detection Live Preview</strong>: Real-time visualization of fall detection on EdgeAI Studio</p></li>
+<li><p><strong>Dynamic Hand Gesture Recognition Live Preview</strong>: Real-time visualization of gesture recognition on EdgeAI Studio</p></li>
 <li><p><strong>Time Series Data Capture</strong>: General-purpose time series data collection</p></li>
 <li><p><strong>Time Series Live Preview</strong>: Visualization tools for time series analysis</p></li>
 <li><p><strong>TIDA-010997 Data Capture</strong>: Multi-sensor data capture for TIDA-010997 reference design (PIR, temperature, humidity, pressure, ambient light, microphone, IMU, hall effect sensor)</p></li>
@@ -186,12 +202,13 @@
 </section>
 <section id="hardware-support">
 <h2>Hardware Support<a class="headerlink" href="#hardware-support" title="Permalink to this heading">¶</a></h2>
-<p>The Edge AI software solution is designed for MSPM0 microcontroller units, currently supporting:</p>
+<p>The Edge AI software solution in this SDK targets MSPM0 microcontroller units, currently supporting:</p>
 <ul class="simple">
 <li><p>MSPM0G3507 LaunchPad development kit</p></li>
 <li><p>MSPM0G3519 LaunchPad development kit</p></li>
-<li><p>MSPM0G5187 LaunchPad development kit</p></li>
+<li><p>MSPM0G5187 LaunchPad development kit (NPU-enabled)</p></li>
 </ul>
+<p>The CLI training tools (tinyml-tensorlab) additionally support 40+ TI MCU devices across C2000, connectivity, and AM device families. For the full device list, refer to the <a class="reference external" href="https://software-dl.ti.com/C2000/esd/mcu_ai/user_guide/index.html">TI Tiny ML Tensorlab User Guide</a>.</p>
 </section>
 <section id="development-environment">
 <h2>Development Environment<a class="headerlink" href="#development-environment" title="Permalink to this heading">¶</a></h2>
@@ -200,8 +217,9 @@
 <li><p>Code Composer Studio (CCS)</p></li>
 <li><p>TI MSPM0 SDK</p></li>
 <li><p>ARM CMSIS-DSP library</p></li>
-<li><p>CLI Tools (Pytorch based framework to train and develop AI/ML Models)</p></li>
-<li><p>CCStudio™ Edge AI Studio (GUI which enables accelerated development by enabling data capture)</p></li>
+<li><p>TI Tiny ML Tensorlab (v1.4.0) - CLI tools for training and deploying AI/ML models supporting Time Series Classification, Regression, Forecasting, Anomaly Detection, and Image Classification tasks across 40+ TI MCUs</p></li>
+<li><p>TI Neural Network Compiler (NNC) for MCUs (v2.1.2) - compiles trained models to executable libraries</p></li>
+<li><p>CCStudio™ Edge AI Studio (GUI which enables accelerated development with data capture and model training)</p></li>
 </ul>
 </section>
 <section id="development-workflow">
@@ -238,7 +256,7 @@
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">¶</a></h2>
 <p>The Edge AI Software solution for MSPM0 devices enables developers to bring machine learning capabilities to ultra-low-power edge devices. By leveraging efficient feature extraction, optimized inference engines, and optional NPU acceleration, developers can create intelligent embedded systems for a wide range of applications while maintaining the power efficiency expected from MSPM0 microcontrollers.</p>
-<p>The comprehensive set of examples provides a foundation for rapid development and exploration of Edge AI capabilities, from basic waveform classification to advanced use cases like motor fault detection and character recognition, with dedicated tools for both standard CPU execution and NPU-accelerated performance.</p>
+<p>The comprehensive set of 46 example applications provides a foundation for rapid development and exploration of Edge AI capabilities - from basic waveform classification to advanced use cases like motor bearing fault detection, ECG anomaly detection, fall detection, gesture recognition, wakeword detection, and glass break detection - with dedicated tools for both standard CPU execution and NPU-accelerated performance. The CLI training tools (tinyml-tensorlab) additionally support 40+ TI MCU devices across the MSPM0, C2000, connectivity, and AM device families.</p>
 </section>
 </section>
 

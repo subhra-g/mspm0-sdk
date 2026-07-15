@@ -4,7 +4,7 @@
         <when>
             <context
                 deviceFamily="ARM"
-                deviceId="Cortex M.MSPM0G3507"
+                deviceId="Cortex M.MSPM0G1506"
             />
         </when>
     </applicability>
@@ -15,7 +15,7 @@
         configurations="Debug"
         toolChain="TICLANG"
         connection="TIXDS110_Connection.xml"
-        device="Cortex M.MSPM0G3507"
+        device="Cortex M.MSPM0G1506"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
         products="MSPM0-SDK;sysconfig"
@@ -28,7 +28,7 @@
 	        -I${PROJECT_ROOT}/modules/DLT645/
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}
-            -D__MSPM0G3507__
+            -D__MSPM0G1506__
             -O2
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/third_party/CMSIS/Core/Include
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source

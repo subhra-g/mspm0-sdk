@@ -91,7 +91,7 @@ function validatePowerPolicy(inst, validation){
     }
 
     // MFPSourcing in STOP0 mode
-    if(Common.isDeviceM0G() && inst.powerPolicy.match(/STOP[01]/)) {
+    if(ClockSignals.includes("MFPCLK") && ClockSignals.includes("HFCLK") && inst.powerPolicy.match(/STOP[01]/)) {
         let errStr = "MFPCLK cannot be sourced from HFCLK and remain operational in any STOP mode";
         if(inst.clockTreeEn) {
             let mod = system.modules["/ti/clockTree/gate.js"];
@@ -109,7 +109,7 @@ function validatePowerPolicy(inst, validation){
     }
 
     // check for HSCLKs in RUN1/2
-    if(Common.isDeviceM0G() && inst.runPowerPolicy != "RUN0"){
+    if(ClockSignals.includes("HSCLK") && inst.runPowerPolicy != "RUN0"){
         if(inst.clockTreeEn){
 
             // Checks for remaining HFCLK enabled
@@ -493,9 +493,12 @@ function validateSYSCTL(inst, validation)
         else if(inst.EXCLKSource === "MFPCLK" && !inst.MFPCLKEn){
             validation.logError("MFPCLK is currently disabled.", inst, "EXCLKSource");
         }
+        else if (inst.EXCLKSource === "USBFLL" && !inst.enableUSBFLL){
+            validation.logError("USBFLL is currently disabled.", inst, "EXCLKSource");
+        }
 
         if(inst.EXCLKDivider === "DISABLE"){
-            if(inst.EXCLKSource === "ULPCLK" || inst.EXCLKSource === "MFPCLK"){
+            if(inst.EXCLKSource === "ULPCLK" || inst.EXCLKSource === "MFPCLK" || inst.EXCLKSource === "USBFLL"){
                 validation.logError("CLK_OUT Divider must be enabled for selected source.", inst, ["EXCLKSource", "EXCLKDivider"]);
             }
         }
@@ -509,13 +512,12 @@ function validateSYSCTL(inst, validation)
         if((inst.fccClkSrc == "CLK_OUT")&&(!inst.enableEXCLK)){
             validation.logError("Must enable CLK_OUT for this configuration", inst, ["fccClkSrc","enableEXCLK"]);
         }
-        if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceFamily_PARENT_MSPM0L111X() || Common.isDeviceM0C() ||
-           Common.isDeviceFamily_PARENT_MSPM0H321X()) {
+        if(ClockSignals.includes("HFCLK")) {
             if((inst.fccClkSrc == "HFCLK")&&(!inst.useHFCLK_Manual)){
                 validation.logError("Must enable HFCLK for this configuration", inst, ["fccClkSrc"]);
             }
         }
-        if(Common.isDeviceM0G()){
+        if(ClockSignals.includes("SYSPLL")){
             if((inst.fccClkSrc == "SYSPLLCLK0")&&(!inst.SYSPLL_CLK0En)){
                 validation.logError("Must enable SYSPLLCLK0 for this configuration", inst, ["fccClkSrc","SYSPLL_CLK0En"]);
             }
@@ -776,7 +778,7 @@ function getNMIConfig(){
             ],
         },
     ];
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         returnConfig = returnConfig.concat([
             // DL_SYSCTL_setWWDT1ErrorBehavior
             {
@@ -863,7 +865,7 @@ INT_GROUP0:
 }
 
 function getPowerSysIntConfig(){
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         return [
             //DL_SYSCTL_enableInterrupt
             {
@@ -1430,7 +1432,7 @@ The default behavior for some system error conditions can be configured.
                             onChange: (inst, ui) => {
                                 ui.disableSYSOSC.hidden = !(inst.MCLKSource == "LFCLK");
                                 inst.disableSYSOSC = false;
-                                if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X() || Common.isDeviceM0C() || Common.isDeviceFamily_PARENT_MSPM0H321X()){
+                                if(ClockSignals.includes("HSCLK")){
                                     ui.HSCLKSource.hidden = !(inst.MCLKSource == "HSCLK");
                                     /* Wait configuration available only when MCLK source is HSCLK */
                                     if((Options.WaitStates).length>0){
@@ -1623,6 +1625,11 @@ The default behavior for some system error conditions can be configured.
                             default: 32,
                             getValue: (inst, ui) => {
                                 let sourceFreq = inst.EXCLKSource + "_Freq";
+                                if (sourceFreq === "USBFLL_Freq") {
+                                    // While the clock source is USBFLL, the frequency value is stored in
+                                    // the USBCLK_Freq variable
+                                    sourceFreq = "USBCLK_Freq";
+                                }
                                 let div = (inst.EXCLKDivider == "DISABLE")?1:parseInt(inst.EXCLKDivider);
                                 return inst[sourceFreq] / div;
                             }
@@ -1865,7 +1872,7 @@ for use by the device. Specifically, the SYSPLL clock outputs can be used as sou
 };
 
 function getClockInterrupts(inst){
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         return [
             // DL_SYSCTL_INTERRUPT_[...]
             {name: "LFOSC_GOOD", displayName: "Low Frequency Oscillator is stabilized and ready to use"},
@@ -1929,7 +1936,7 @@ function getClockInterrupts(inst){
 };
 
 function getPowerSysInterrupts(inst){
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         return [
             // DL_SYSCTL_INTERRUPT_[...]
             {name: "FLASH_SEC", displayName: "Flash Single Error Correct"},
@@ -1944,7 +1951,7 @@ function getPowerSysInterrupts(inst){
 };
 
 function getFCCClkSrcs(inst){
-    if(Common.isDeviceM0G()){
+    if(Common.isDeviceM0G() || Common.isDeviceFamily_PARENT_MSPM0H821X()){
         return [
             {name: "MCLK",},
             {name: "SYSOSC",},

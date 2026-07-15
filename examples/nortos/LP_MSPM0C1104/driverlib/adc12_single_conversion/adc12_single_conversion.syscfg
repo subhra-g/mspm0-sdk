@@ -29,7 +29,6 @@ ADC121.enabledInterrupts          = ["DL_ADC12_INTERRUPT_MEM0_RESULT_LOADED"];
 ADC121.peripheral.$assign         = "ADC0";
 ADC121.peripheral.adcPin2.$assign = "PA25";
 
-
 GPIO1.$name                          = "GPIO_LEDS";
 GPIO1.associatedPins.create(2);
 GPIO1.associatedPins[0].$name        = "USER_LED_1";

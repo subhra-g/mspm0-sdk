@@ -42,15 +42,28 @@
 const char deviceName[] = STRINGIFY(DEVICE_NAME);
 #endif
 
-const SensorInfo funcGen = {
-    .name = "Current Sensor",
+const SensorInfo funcGen1 = {
+    .name = "Current-Voltage Sensor",
     .type = SENSOR_TYPE_VECTOR,
     .format = DATA_FORMAT_UINT16,
     .label = "[\"x\", \"y\"]",
     .misc = "\"sampleRate\":512,\"columns\":2"
 };
 
-const SensorInfo* const gSensors[TOTAL_SENSOR_COUNT] = {&funcGen};
+const SensorInfo funcGen2 = {
+     .name = "Current Sensor",
+     .type = SENSOR_TYPE_VECTOR,
+     .format = DATA_FORMAT_UINT16,
+     .label = "[\"x\"]",
+     .misc = "\"sampleRate\":512,\"columns\":1"
+};
+
+
+
+const SensorInfo* const gSensors[TOTAL_SENSOR_COUNT] = {
+       [SENSOR_IDX_CURR_VOLTAGE] = &funcGen1,
+       [SENSOR_IDX_CURR]  =   &funcGen2,
+};
 
 PropertyInfo property1 = {
     .name = "samples",

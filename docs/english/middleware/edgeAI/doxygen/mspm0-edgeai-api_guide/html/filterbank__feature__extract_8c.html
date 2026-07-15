@@ -91,7 +91,6 @@ $(function() {
 <p>This implementation is optimized for low-power operation on TI MSP devices with integrated Neural Processing Unit (NPU) hardware acceleration. </p>
 </div><div class="textblock"><code>#include &quot;<a class="el" href="filterbank__feature__extract_8h_source.html">filterbank_feature_extract.h</a>&quot;</code><br />
 <code>#include &quot;constants.h&quot;</code><br />
-<code>#include &quot;model_AUTOGEN.h&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;limits.h&gt;</code><br />
 <code>#include &quot;fe_model/fe_model.h&quot;</code><br />
@@ -103,7 +102,7 @@ Include dependency graph for filterbank_feature_extract.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="filterbank__feature__extract_8c__incl.png" border="0" usemap="#filterbank__feature__extract_8c" alt=""/></div>
 <map name="filterbank__feature__extract_8c" id="filterbank__feature__extract_8c">
-<area shape="rect" id="node2" href="filterbank__feature__extract_8h.html" title="Filterbank Feature Extraction API. " alt="" coords="69,95,207,136"/>
+<area shape="rect" id="node2" href="filterbank__feature__extract_8h.html" title="Filterbank Feature Extraction — public API and types. " alt="" coords="119,95,258,136"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -122,17 +121,13 @@ Macros</h2></td></tr>
 <tr class="memdesc:ae4bea5e9375a2075b9974fef5d60ef1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for NPU CTL1 OFMAP field. <br /></td></tr>
 <tr class="separator:ae4bea5e9375a2075b9974fef5d60ef1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa02908e99f24cc4c1a5b212f48182e46"><td class="memItemLeft" align="right" valign="top"><a id="aa02908e99f24cc4c1a5b212f48182e46"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46">FBFE_MMR_STRIDE_STEP</a>&#160;&#160;&#160;(2u)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46">FBFE_MMR_STRIDE_STEP</a>&#160;&#160;&#160;((MODEL_CONV_STRIDE_T/4u)*2u)</td></tr>
 <tr class="memdesc:aa02908e99f24cc4c1a5b212f48182e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Step size for MMR stride operations. <br /></td></tr>
 <tr class="separator:aa02908e99f24cc4c1a5b212f48182e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c24e379b5094227513236472c3405ca"><td class="memItemLeft" align="right" valign="top"><a id="a9c24e379b5094227513236472c3405ca"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca">FBFE_MSB_COMBINE_SHIFT_BITS</a>&#160;&#160;&#160;(8u)</td></tr>
 <tr class="memdesc:a9c24e379b5094227513236472c3405ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for MSB combination in the 2-bit weights flow. <br /></td></tr>
 <tr class="separator:a9c24e379b5094227513236472c3405ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49fc4dda9af37d26efc05a484f3e3694"><td class="memItemLeft" align="right" valign="top"><a id="a49fc4dda9af37d26efc05a484f3e3694"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a49fc4dda9af37d26efc05a484f3e3694">FBFE_ARBIAS0_ROW_WORD64</a>&#160;&#160;&#160;(128u)</td></tr>
-<tr class="memdesc:a49fc4dda9af37d26efc05a484f3e3694"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row word count for ARBIAS0. <br /></td></tr>
-<tr class="separator:a49fc4dda9af37d26efc05a484f3e3694"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61e39a6890e306a0216ca1f13b06aa2a"><td class="memItemLeft" align="right" valign="top"><a id="a61e39a6890e306a0216ca1f13b06aa2a"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a">FBFE_WORD_ADDR_SHIFT_BITS</a>&#160;&#160;&#160;(2u)</td></tr>
 <tr class="memdesc:a61e39a6890e306a0216ca1f13b06aa2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for word addressing. <br /></td></tr>
@@ -161,23 +156,98 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c">FE_CTL0_LSB</a>&#160;&#160;&#160;(0x12011u)</td></tr>
 <tr class="memdesc:ae1c9bfed71ad1672e7287f30008b9e0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTL0 value for LSB pass in 2-bit weights flow. <br /></td></tr>
 <tr class="separator:ae1c9bfed71ad1672e7287f30008b9e0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52df4c3d1acd00ebc7cdb506958f587a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a52df4c3d1acd00ebc7cdb506958f587a">MODEL_FE_CTL0_MSB</a>&#160;&#160;&#160;<a class="el" href="filterbank__feature__extract_8c.html#a9ea4fd4ecae38febbe0eb35148fd5970">FE_CTL0_MSB</a></td></tr>
+<tr class="memdesc:a52df4c3d1acd00ebc7cdb506958f587a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Model-specific alias for CTL0 MSB pass value.  <a href="#a52df4c3d1acd00ebc7cdb506958f587a">More...</a><br /></td></tr>
+<tr class="separator:a52df4c3d1acd00ebc7cdb506958f587a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2260b812fd4ee224aff0748adacee06f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a2260b812fd4ee224aff0748adacee06f">MODEL_FE_CTL0_LSB</a>&#160;&#160;&#160;<a class="el" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c">FE_CTL0_LSB</a></td></tr>
+<tr class="memdesc:a2260b812fd4ee224aff0748adacee06f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Model-specific alias for CTL0 LSB pass value.  <a href="#a2260b812fd4ee224aff0748adacee06f">More...</a><br /></td></tr>
+<tr class="separator:a2260b812fd4ee224aff0748adacee06f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a25f8a4e637a55e5365469947d00954ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start</a> (void)</td></tr>
-<tr class="memdesc:a25f8a4e637a55e5365469947d00954ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the NPU layer execution.  <a href="#a25f8a4e637a55e5365469947d00954ee">More...</a><br /></td></tr>
-<tr class="separator:a25f8a4e637a55e5365469947d00954ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45dccb58bcd09c42469e3b119b5f96a0"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a45dccb58bcd09c42469e3b119b5f96a0">FBFE_ReadSignedDREG19</a> (volatile NPU_Regs *npu, uint16_t reg_idx)</td></tr>
+<tr class="memdesc:a45dccb58bcd09c42469e3b119b5f96a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a sign-extended value from a DREG19 register.  <a href="#a45dccb58bcd09c42469e3b119b5f96a0">More...</a><br /></td></tr>
+<tr class="separator:a45dccb58bcd09c42469e3b119b5f96a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b5a6765e7be8a8f159f5bce6c44798"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798">FBFE_ReadPassOutput</a> (volatile NPU_Regs *npu, int32_t *pass_out)</td></tr>
+<tr class="memdesc:a27b5a6765e7be8a8f159f5bce6c44798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the output of one NPU pass into a buffer.  <a href="#a27b5a6765e7be8a8f159f5bce6c44798">More...</a><br /></td></tr>
+<tr class="separator:a27b5a6765e7be8a8f159f5bce6c44798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a003859f4d2a37b82b3ff12c5c5506ba0"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady</a> (const <a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
+<tr class="memdesc:a003859f4d2a37b82b3ff12c5c5506ba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether a filterbank context is ready for use.  <a href="#a003859f4d2a37b82b3ff12c5c5506ba0">More...</a><br /></td></tr>
+<tr class="separator:a003859f4d2a37b82b3ff12c5c5506ba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2abfc0068ef70e2d208ca8b5a79f488"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ac2abfc0068ef70e2d208ca8b5a79f488">FBFE_InitArgsAreValid</a> (const <a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, const <a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a> *cfg, const uint8_t *final_features, size_t final_features_bytes)</td></tr>
+<tr class="memdesc:ac2abfc0068ef70e2d208ca8b5a79f488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the arguments passed to <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>.  <a href="#ac2abfc0068ef70e2d208ca8b5a79f488">More...</a><br /></td></tr>
+<tr class="separator:ac2abfc0068ef70e2d208ca8b5a79f488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ef03ae07d312387b4ce7eaf023cfcda"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
+<tr class="memdesc:a8ef03ae07d312387b4ce7eaf023cfcda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the library-owned static buffers to a context.  <a href="#a8ef03ae07d312387b4ce7eaf023cfcda">More...</a><br /></td></tr>
+<tr class="separator:a8ef03ae07d312387b4ce7eaf023cfcda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab005daf129b8f62f2c4e8756a3ac1517"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, size_t final_features_bytes)</td></tr>
+<tr class="memdesc:ab005daf129b8f62f2c4e8756a3ac1517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero-initialize all internal processing buffers.  <a href="#ab005daf129b8f62f2c4e8756a3ac1517">More...</a><br /></td></tr>
+<tr class="separator:ab005daf129b8f62f2c4e8756a3ac1517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad32587576d0c79d08b65d386a3e2cb11"><td class="memItemLeft" align="right" valign="top">static int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ad32587576d0c79d08b65d386a3e2cb11">FBFE_ScaleSampleByBranchBits</a> (int16_t sample, uint8_t branch_bits)</td></tr>
+<tr class="memdesc:ad32587576d0c79d08b65d386a3e2cb11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale an input audio sample based on the configured branch bit-width.  <a href="#ad32587576d0c79d08b65d386a3e2cb11">More...</a><br /></td></tr>
+<tr class="separator:ad32587576d0c79d08b65d386a3e2cb11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afebf05c622dbae17819dfb870d0ab119"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, int16_t scaled_sample)</td></tr>
+<tr class="memdesc:afebf05c622dbae17819dfb870d0ab119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split a scaled sample into its LSB and MSB byte components.  <a href="#afebf05c622dbae17819dfb870d0ab119">More...</a><br /></td></tr>
+<tr class="separator:afebf05c622dbae17819dfb870d0ab119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9b48657ae118f9dddb81e71e8c8225e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
+<tr class="memdesc:ab9b48657ae118f9dddb81e71e8c8225e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack four staged sample bytes into the frame buffer.  <a href="#ab9b48657ae118f9dddb81e71e8c8225e">More...</a><br /></td></tr>
+<tr class="separator:ab9b48657ae118f9dddb81e71e8c8225e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b227292a2e584e76e865488253ab181"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
+<tr class="memdesc:a3b227292a2e584e76e865488253ab181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slide the packed input buffer forward when a full frame is complete.  <a href="#a3b227292a2e584e76e865488253ab181">More...</a><br /></td></tr>
+<tr class="separator:a3b227292a2e584e76e865488253ab181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e0891ede3f6415fe73ffe93f9dc1b6e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e">FBFE_AdvanceSampleState</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
+<tr class="memdesc:a7e0891ede3f6415fe73ffe93f9dc1b6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the pack and sample indices after processing one sample.  <a href="#a7e0891ede3f6415fe73ffe93f9dc1b6e">More...</a><br /></td></tr>
+<tr class="separator:a7e0891ede3f6415fe73ffe93f9dc1b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7dda403ea9931ac6ff8ab058bd2d7e6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, const uint8_t *new_frame)</td></tr>
 <tr class="memdesc:af7dda403ea9931ac6ff8ab058bd2d7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift the neural network input window to incorporate a new frame.  <a href="#af7dda403ea9931ac6ff8ab058bd2d7e6">More...</a><br /></td></tr>
 <tr class="separator:af7dda403ea9931ac6ff8ab058bd2d7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a452a5db677b156d57beddb31f18d1c55"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a452a5db677b156d57beddb31f18d1c55">FBFE_GetMMR0Value</a> (const int8_t *fb_input)</td></tr>
+<tr class="memdesc:a452a5db677b156d57beddb31f18d1c55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the MMR0 base address word for the given input buffer.  <a href="#a452a5db677b156d57beddb31f18d1c55">More...</a><br /></td></tr>
+<tr class="separator:a452a5db677b156d57beddb31f18d1c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42dae8a4c8348ade59a19a402c86b876"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a42dae8a4c8348ade59a19a402c86b876">FBFE_GetCTL1Value</a> (const int8_t *fb_input, const uint8_t *single_out)</td></tr>
+<tr class="memdesc:a42dae8a4c8348ade59a19a402c86b876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the CTL1 register value encoding both IFMAP and OFMAP addresses.  <a href="#a42dae8a4c8348ade59a19a402c86b876">More...</a><br /></td></tr>
+<tr class="separator:a42dae8a4c8348ade59a19a402c86b876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c721bd4b13f51c5168de523d6293320"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a4c721bd4b13f51c5168de523d6293320">FBFE_GetAROUT0Base</a> (const uint8_t *single_out)</td></tr>
+<tr class="memdesc:a4c721bd4b13f51c5168de523d6293320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the AROUT0 base address word for the given output buffer.  <a href="#a4c721bd4b13f51c5168de523d6293320">More...</a><br /></td></tr>
+<tr class="separator:a4c721bd4b13f51c5168de523d6293320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21fd0baaa051c8c26fbb947b5048917f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a21fd0baaa051c8c26fbb947b5048917f">FBFE_LoadMMR</a> (volatile NPU_Regs *npu)</td></tr>
+<tr class="memdesc:a21fd0baaa051c8c26fbb947b5048917f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the filterbank MMR coefficient table into NPU DREG0.  <a href="#a21fd0baaa051c8c26fbb947b5048917f">More...</a><br /></td></tr>
+<tr class="separator:a21fd0baaa051c8c26fbb947b5048917f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb819c4fff3a508731f296f903d81f34"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#acb819c4fff3a508731f296f903d81f34">FBFE_ProgramCommonNpuState</a> (volatile NPU_Regs *npu, uint32_t ctl_val, uint32_t arout0Base, uint32_t mmr0Val)</td></tr>
+<tr class="memdesc:acb819c4fff3a508731f296f903d81f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program the NPU registers that are common across all stride passes.  <a href="#acb819c4fff3a508731f296f903d81f34">More...</a><br /></td></tr>
+<tr class="separator:acb819c4fff3a508731f296f903d81f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0606db02a3cbe7ec4e7ccc0a999900f5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a0606db02a3cbe7ec4e7ccc0a999900f5">FBFE_LoadInstructions</a> (volatile NPU_Regs *npu)</td></tr>
+<tr class="memdesc:a0606db02a3cbe7ec4e7ccc0a999900f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the filterbank instruction stream into the NPU.  <a href="#a0606db02a3cbe7ec4e7ccc0a999900f5">More...</a><br /></td></tr>
+<tr class="separator:a0606db02a3cbe7ec4e7ccc0a999900f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b00f18cee2704762a4dc3f00f11b50d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a2b00f18cee2704762a4dc3f00f11b50d">FBFE_LoadParamsForBlock</a> (volatile NPU_Regs *npu, uint16_t block)</td></tr>
+<tr class="memdesc:a2b00f18cee2704762a4dc3f00f11b50d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the weight parameters for a given output block into the NPU.  <a href="#a2b00f18cee2704762a4dc3f00f11b50d">More...</a><br /></td></tr>
+<tr class="separator:a2b00f18cee2704762a4dc3f00f11b50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af05bbccf56a21a6240b88ccda948bf97"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass</a> (volatile NPU_Regs *npu, uint32_t mmr0Val, uint16_t stride, uint32_t ctl0, uint32_t stride_offset, int32_t *pass_out)</td></tr>
+<tr class="memdesc:af05bbccf56a21a6240b88ccda948bf97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one MSB or LSB TINIE pass and capture the output.  <a href="#af05bbccf56a21a6240b88ccda948bf97">More...</a><br /></td></tr>
+<tr class="separator:af05bbccf56a21a6240b88ccda948bf97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6ddab1a02f97206d40b4b256a75177d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d">FBFE_InitBlockMaxValues</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, uint16_t base_ch)</td></tr>
+<tr class="memdesc:af6ddab1a02f97206d40b4b256a75177d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the max-value accumulators for one output block.  <a href="#af6ddab1a02f97206d40b4b256a75177d">More...</a><br /></td></tr>
+<tr class="separator:af6ddab1a02f97206d40b4b256a75177d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904343f40089554b63121675b6c1a960"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, uint16_t base_ch)</td></tr>
+<tr class="memdesc:a904343f40089554b63121675b6c1a960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the per-channel maximum values after one stride pass pair.  <a href="#a904343f40089554b63121675b6c1a960">More...</a><br /></td></tr>
+<tr class="separator:a904343f40089554b63121675b6c1a960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58fa67056ffc456361697b162cbb2d35"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a58fa67056ffc456361697b162cbb2d35">FBFE_PostprocessOneChannel</a> (uint16_t idx, int32_t max_value)</td></tr>
+<tr class="memdesc:a58fa67056ffc456361697b162cbb2d35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply scale, offset, and quantization to one output channel.  <a href="#a58fa67056ffc456361697b162cbb2d35">More...</a><br /></td></tr>
+<tr class="separator:a58fa67056ffc456361697b162cbb2d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc564ed7c7b7cd370d141beeca02340"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, uint16_t base_ch)</td></tr>
+<tr class="memdesc:a1dc564ed7c7b7cd370d141beeca02340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply post-processing to all channels of one output block.  <a href="#a1dc564ed7c7b7cd370d141beeca02340">More...</a><br /></td></tr>
+<tr class="separator:a1dc564ed7c7b7cd370d141beeca02340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25f8a4e637a55e5365469947d00954ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start</a> (void)</td></tr>
+<tr class="memdesc:a25f8a4e637a55e5365469947d00954ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the NPU layer execution.  <a href="#a25f8a4e637a55e5365469947d00954ee">More...</a><br /></td></tr>
+<tr class="separator:a25f8a4e637a55e5365469947d00954ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, const <a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a> *cfg, uint8_t *final_features, size_t final_features_bytes)</td></tr>
 <tr class="memdesc:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the filterbank feature extraction context.  <a href="#a0aa11eaa317b83ec7556c8fc7e3f360c">More...</a><br /></td></tr>
 <tr class="separator:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae14b90d0f7762297ea475985f60019d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ae14b90d0f7762297ea475985f60019d9">FBFE_PushSample</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, uint16_t sample)</td></tr>
-<tr class="memdesc:ae14b90d0f7762297ea475985f60019d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a new audio sample for processing.  <a href="#ae14b90d0f7762297ea475985f60019d9">More...</a><br /></td></tr>
-<tr class="separator:ae14b90d0f7762297ea475985f60019d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c690f846a85bceee4fb5fe97877ff0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, int16_t sample)</td></tr>
+<tr class="memdesc:ab0c690f846a85bceee4fb5fe97877ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a new audio sample into the filterbank processing pipeline.  <a href="#ab0c690f846a85bceee4fb5fe97877ff0">More...</a><br /></td></tr>
+<tr class="separator:ab0c690f846a85bceee4fb5fe97877ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94e77ae51fd3840aa402f5440915b58b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
-<tr class="memdesc:a94e77ae51fd3840aa402f5440915b58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process one frame of data through the filterbank.  <a href="#a94e77ae51fd3840aa402f5440915b58b">More...</a><br /></td></tr>
+<tr class="memdesc:a94e77ae51fd3840aa402f5440915b58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process one complete frame through the filterbank NPU pipeline.  <a href="#a94e77ae51fd3840aa402f5440915b58b">More...</a><br /></td></tr>
 <tr class="separator:a94e77ae51fd3840aa402f5440915b58b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -204,30 +274,576 @@ Variables</h2></td></tr>
 <tr class="memdesc:a4f36e87e85380b39600a8946c8ac5cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer for storing maxpool operation results.  <a href="#a4f36e87e85380b39600a8946c8ac5cc4">More...</a><br /></td></tr>
 <tr class="separator:a4f36e87e85380b39600a8946c8ac5cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a25f8a4e637a55e5365469947d00954ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25f8a4e637a55e5365469947d00954ee">&sect;&nbsp;</a></span>TINIE_start()</h2>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a52df4c3d1acd00ebc7cdb506958f587a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52df4c3d1acd00ebc7cdb506958f587a">&sect;&nbsp;</a></span>MODEL_FE_CTL0_MSB</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void TINIE_start </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td class="memname">#define MODEL_FE_CTL0_MSB&#160;&#160;&#160;<a class="el" href="filterbank__feature__extract_8c.html#a9ea4fd4ecae38febbe0eb35148fd5970">FE_CTL0_MSB</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Start the NPU layer execution. </p>
-<p>This function triggers the execution of a layer in the NPU by setting the START bit in the CTL5 register.</p>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="npu_8c.html#abaee13e346de3d356f713935249cdfb8">NPU_getCtlReg()</a>.</p>
+<p>Model-specific alias for CTL0 MSB pass value. </p>
+<p>Defaults to FE_CTL0_MSB if not overridden by the model header. </p>
 
 <p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a2260b812fd4ee224aff0748adacee06f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2260b812fd4ee224aff0748adacee06f">&sect;&nbsp;</a></span>MODEL_FE_CTL0_LSB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MODEL_FE_CTL0_LSB&#160;&#160;&#160;<a class="el" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c">FE_CTL0_LSB</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Model-specific alias for CTL0 LSB pass value. </p>
+<p>Defaults to FE_CTL0_LSB if not overridden by the model header. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a45dccb58bcd09c42469e3b119b5f96a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45dccb58bcd09c42469e3b119b5f96a0">&sect;&nbsp;</a></span>FBFE_ReadSignedDREG19()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int32_t FBFE_ReadSignedDREG19 </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>reg_idx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a sign-extended value from a DREG19 register. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">reg_idx</td><td>Index of the DREG19 register to read.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Sign-extended 32-bit integer value.</dd></dl>
+<p>Reads the raw 32-bit value at DREG19[<code>reg_idx</code>] and applies the ACCREG sign-extension heuristic: if the value, when ORed with FE_SIGNCHK_MASK, equals FE_SIGNCHK_VAL, the upper bits are filled using FE_SIGNEXT_OR to produce the correct signed result.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">reg_idx</td><td>Index into the DREG19 register array.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Sign-extended 32-bit signed integer value. </dd></dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#aec8a2e478772ab924e4507342b92a105">FE_SIGNCHK_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae9b8074f516df7bc9e5a96fde1225a62">FE_SIGNCHK_VAL</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ae9b5ea91860429d45cb988d1ddf19db5">FE_SIGNEXT_OR</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798">FBFE_ReadPassOutput()</a>.</p>
+
+</div>
+</div>
+<a id="a27b5a6765e7be8a8f159f5bce6c44798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b5a6765e7be8a8f159f5bce6c44798">&sect;&nbsp;</a></span>FBFE_ReadPassOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_ReadPassOutput </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t *&#160;</td>
+          <td class="paramname"><em>pass_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read the output of one NPU pass into a buffer. </p>
+<p>Read the output of one NPU pass into a caller-supplied buffer.</p>
+<p>Reads MODEL_MAX_OUT_CH_PER_ITER lanes from DREG19, reconstructing the full-precision value according to MODEL_WEIGHT_BITS.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">pass_out</td><td>Pointer to the output array of at least MODEL_MAX_OUT_CH_PER_ITER elements.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Reads MODEL_MAX_OUT_CH_PER_ITER output lanes from the DREG19 register array and reconstructs the full-precision integer value for each lane according to MODEL_WEIGHT_BITS:</p>
+<ul>
+<li>2-bit: one DREG19 word per lane (direct read).</li>
+<li>4-bit: two DREG19 words per lane; result = high_part * 4 + low_part.</li>
+<li>8-bit: four DREG19 words per lane; result = hh*64 + hl*16 + lh*4 + ll.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">pass_out</td><td>Pointer to an output array of at least MODEL_MAX_OUT_CH_PER_ITER elements. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a45dccb58bcd09c42469e3b119b5f96a0">FBFE_ReadSignedDREG19()</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass()</a>.</p>
+
+</div>
+</div>
+<a id="a003859f4d2a37b82b3ff12c5c5506ba0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003859f4d2a37b82b3ff12c5c5506ba0">&sect;&nbsp;</a></span>FBFE_IsReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool FBFE_IsReady </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether a filterbank context is ready for use. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>Pointer to the context to check.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if <code>ctx</code> is non-NULL and has been successfully initialized, false otherwise. </dd></dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>, and <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="ac2abfc0068ef70e2d208ca8b5a79f488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2abfc0068ef70e2d208ca8b5a79f488">&sect;&nbsp;</a></span>FBFE_InitArgsAreValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool FBFE_InitArgsAreValid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a> *&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>final_features</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>final_features_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate the arguments passed to <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. </p>
+<p>Verifies that all pointers are non-NULL and that the supplied features buffer is large enough to hold FEATURES_BYTES bytes.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>Pointer to the context to initialize. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cfg</td><td>Pointer to the configuration structure. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the output features buffer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of <code>final_features</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if all arguments are valid, false otherwise. </dd></dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+
+</div>
+</div>
+<a id="a8ef03ae07d312387b4ce7eaf023cfcda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ef03ae07d312387b4ce7eaf023cfcda">&sect;&nbsp;</a></span>FBFE_BindInternalBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_BindInternalBuffers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind the library-owned static buffers to a context. </p>
+<p>Associates each internal global buffer with the corresponding pointer field in <code>ctx</code> so that the rest of the library accesses memory through the context rather than global symbols directly.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the context whose buffer pointers will be populated. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae10836c9151850f81f0634a5caa61e2b">g_fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a76648449cfc4013a44227db613f3ca0c">g_frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#a138698e45c1982e9db894058c4bcbead">g_lsbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4f36e87e85380b39600a8946c8ac5cc4">g_maxpool</a>, <a class="el" href="filterbank__feature__extract_8c.html#a69160d4cab587f574855779e11599ab7">g_maxValues</a>, <a class="el" href="filterbank__feature__extract_8c.html#a5967d3232cad58ca2c6420c79c39399a">g_msbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a89d7421d2251b6edf245627586c8b321">g_singleOut</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+
+</div>
+</div>
+<a id="ab005daf129b8f62f2c4e8756a3ac1517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab005daf129b8f62f2c4e8756a3ac1517">&sect;&nbsp;</a></span>FBFE_ClearInternalBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_ClearInternalBuffers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>final_features_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Zero-initialize all internal processing buffers. </p>
+<p>Clears every library-owned buffer bound to <code>ctx</code> so that the pipeline starts from a deterministic, all-zero state.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context whose buffers will be cleared. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Number of bytes to clear in ctx-&gt;final_features. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae10836c9151850f81f0634a5caa61e2b">g_fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a76648449cfc4013a44227db613f3ca0c">g_frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4f36e87e85380b39600a8946c8ac5cc4">g_maxpool</a>, <a class="el" href="filterbank__feature__extract_8c.html#a69160d4cab587f574855779e11599ab7">g_maxValues</a>, <a class="el" href="filterbank__feature__extract_8c.html#a89d7421d2251b6edf245627586c8b321">g_singleOut</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+
+</div>
+</div>
+<a id="ad32587576d0c79d08b65d386a3e2cb11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad32587576d0c79d08b65d386a3e2cb11">&sect;&nbsp;</a></span>FBFE_ScaleSampleByBranchBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int16_t FBFE_ScaleSampleByBranchBits </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>sample</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>branch_bits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scale an input audio sample based on the configured branch bit-width. </p>
+<p>Converts the incoming signed 16-bit sample to the effective input precision expected by the filterbank model. The branch bit-width controls how much the original 16-bit sample is scaled down before it is split into MSB/LSB bytes and packed for TINIE processing.</p>
+<p>The scaling is derived as: </p><div class="fragment"><div class="line">scale_shift = 16 - branch_bits</div><div class="line">divisor     = 2 ^ scale_shift</div></div><!-- fragment --><p>Rounded integer division is used instead of plain truncation, and the result is saturated to the int16_t range before returning.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The signed 16-bit input audio sample. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">branch_bits</td><td>Effective branch bit-width (clamped to 16 internally).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The scaled and saturated signed 16-bit sample. </dd></dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
+
+</div>
+</div>
+<a id="afebf05c622dbae17819dfb870d0ab119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afebf05c622dbae17819dfb870d0ab119">&sect;&nbsp;</a></span>FBFE_StoreSampleBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_StoreSampleBytes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>scaled_sample</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Split a scaled sample into its LSB and MSB byte components. </p>
+<p>Applies the configured ls_mask / ms_mask and ms_shift from <code>ctx</code> to decompose <code>scaled_sample</code> and stores the results into the ls_bytes and ms_bytes staging arrays at the current pack_index position.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">scaled_sample</td><td>The pre-scaled 16-bit sample to split. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">FBFE_Ctx::ls_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43">FBFE_Config::ls_mask</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">FBFE_Ctx::ms_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac">FBFE_Config::ms_mask</a>, <a class="el" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e">FBFE_Config::ms_shift</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
+
+</div>
+</div>
+<a id="ab9b48657ae118f9dddb81e71e8c8225e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9b48657ae118f9dddb81e71e8c8225e">&sect;&nbsp;</a></span>FBFE_PackFourSamplesIntoFrameBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_PackFourSamplesIntoFrameBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack four staged sample bytes into the frame buffer. </p>
+<p>Reads the four entries currently held in ctx-&gt;ms_bytes[] and ctx-&gt;ls_bytes[] and writes them into ctx-&gt;frame_buffer[] at positions relative to the current sample_index, following the interleaved layout expected by the NPU.</p>
+<p>This function must only be called when pack_index equals pack_size - 1 (i.e., after the fourth sample of a group has been stored).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">FBFE_Ctx::ls_bytes</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">FBFE_Ctx::ms_bytes</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
+
+</div>
+</div>
+<a id="a3b227292a2e584e76e865488253ab181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b227292a2e584e76e865488253ab181">&sect;&nbsp;</a></span>FBFE_UpdateInputBufferAtFrameEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_UpdateInputBufferAtFrameEnd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Slide the packed input buffer forward when a full frame is complete. </p>
+<p>When the last sample of a frame has been received (sample_index == N-1), the overlap region is shifted toward the beginning of fb_input and the newly packed frame is appended, maintaining the continuous overlap required by the NPU input format.</p>
+<p>Has no effect for any sample index other than N-1.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
+
+</div>
+</div>
+<a id="a7e0891ede3f6415fe73ffe93f9dc1b6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e0891ede3f6415fe73ffe93f9dc1b6e">&sect;&nbsp;</a></span>FBFE_AdvanceSampleState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_AdvanceSampleState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advance the pack and sample indices after processing one sample. </p>
+<p>Increments pack_index modulo pack_size (4) and sample_index modulo NUM_SAMPLES, wrapping both counters back to zero at their respective boundaries.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
 
 </div>
 </div>
@@ -266,19 +882,640 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Shift the neural network input window to incorporate a new frame. </p>
-<p>This function updates the feature window by shifting existing features and adding the new frame. It maintains a sliding window of features for temporal context in the neural network input.</p>
+<p>Updates the feature window by evicting the oldest frame and appending <code>new_frame</code> at the end. Maintains a sliding window of features providing the temporal context required by the neural network input.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the filterbank context. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">new_frame</td><td>Pointer to the new frame data to be incorporated.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">new_frame</td><td>Pointer to the new frame data (MODEL_CONV_OUT_CHANNELS bytes) to append. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
 <p>References <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>.</p>
 
 <p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a452a5db677b156d57beddb31f18d1c55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a452a5db677b156d57beddb31f18d1c55">&sect;&nbsp;</a></span>FBFE_GetMMR0Value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t FBFE_GetMMR0Value </td>
+          <td>(</td>
+          <td class="paramtype">const int8_t *&#160;</td>
+          <td class="paramname"><em>fb_input</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the MMR0 base address word for the given input buffer. </p>
+<p>Converts the byte address of <code>fb_input</code> to the word-addressed format expected by the NPU MMR0 register by shifting and masking.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fb_input</td><td>Pointer to the packed NPU input buffer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>32-bit word address value for MMR0. </dd></dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af">FBFE_WORD_ADDR_16BIT_MASK</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a">FBFE_WORD_ADDR_SHIFT_BITS</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a42dae8a4c8348ade59a19a402c86b876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42dae8a4c8348ade59a19a402c86b876">&sect;&nbsp;</a></span>FBFE_GetCTL1Value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t FBFE_GetCTL1Value </td>
+          <td>(</td>
+          <td class="paramtype">const int8_t *&#160;</td>
+          <td class="paramname"><em>fb_input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>single_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the CTL1 register value encoding both IFMAP and OFMAP addresses. </p>
+<p>Extracts the high-order address bits from <code>fb_input</code> (IFMAP) and <code>single_out</code> (OFMAP), then packs them into the CTL1 layout by placing the OFMAP field at the FBFE_CTL1_OFMAP_SHIFT_BITS offset.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fb_input</td><td>Pointer to the packed NPU input buffer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">single_out</td><td>Pointer to the single-iteration output buffer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>32-bit value to be written to the NPU CTL1 register. </dd></dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#ae5ae7236ffc471d5675aec0d3ad4fb91">FBFE_CTL1_ADDR_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#adda8244148989c389c1beefd827948a0">FBFE_CTL1_ADDR_SHIFT_BITS</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ae4bea5e9375a2075b9974fef5d60ef1a">FBFE_CTL1_OFMAP_SHIFT_BITS</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a4c721bd4b13f51c5168de523d6293320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c721bd4b13f51c5168de523d6293320">&sect;&nbsp;</a></span>FBFE_GetAROUT0Base()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t FBFE_GetAROUT0Base </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>single_out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the AROUT0 base address word for the given output buffer. </p>
+<p>Converts the byte address of <code>single_out</code> to the word-addressed format expected by the NPU AROUT0 register by shifting and masking.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">single_out</td><td>Pointer to the single-iteration output buffer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>32-bit word address value for AROUT0. </dd></dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af">FBFE_WORD_ADDR_16BIT_MASK</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a">FBFE_WORD_ADDR_SHIFT_BITS</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a21fd0baaa051c8c26fbb947b5048917f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21fd0baaa051c8c26fbb947b5048917f">&sect;&nbsp;</a></span>FBFE_LoadMMR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_LoadMMR </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load the filterbank MMR coefficient table into NPU DREG0. </p>
+<p>Writes all FBANK_MMR_LEN entries of the FBANK_MMR array into consecutive DREG0 registers starting at index 0.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="acb819c4fff3a508731f296f903d81f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb819c4fff3a508731f296f903d81f34">&sect;&nbsp;</a></span>FBFE_ProgramCommonNpuState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_ProgramCommonNpuState </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>ctl_val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>arout0Base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mmr0Val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Program the NPU registers that are common across all stride passes. </p>
+<p>Writes the CTL1 address register, the AROUT0 base register, and the MMR0 base address register. These values remain constant for every stride and pass within a single output block.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctl_val</td><td>Value to write to the CTL1 (DREG4) register. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">arout0Base</td><td>Value to write to the AROUT0 (DREG8[4]) register. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mmr0Val</td><td>Value to write to the MMR0 (DREG8[16]) register. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a0606db02a3cbe7ec4e7ccc0a999900f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0606db02a3cbe7ec4e7ccc0a999900f5">&sect;&nbsp;</a></span>FBFE_LoadInstructions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_LoadInstructions </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load the filterbank instruction stream into the NPU. </p>
+<p>Writes all FB_INS_LEN entries of the FB_INS array into the NPU DREG20 instruction registers. Only required once per <a class="el" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b" title="Process one complete frame through the filterbank NPU pipeline. ">FBFE_RunOneFrame()</a> call (for block 0); subsequent blocks reuse the same instruction set.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a2b00f18cee2704762a4dc3f00f11b50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b00f18cee2704762a4dc3f00f11b50d">&sect;&nbsp;</a></span>FBFE_LoadParamsForBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool FBFE_LoadParamsForBlock </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>block</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load the weight parameters for a given output block into the NPU. </p>
+<p>Selects the parameter slice for <code>block</code> from g_fb_param_slices, validates that it fits within MODEL_PARAMS_LOAD_CAPACITY, writes the valid words into DREG21, and zero-pads the remainder of the capacity.</p>
+<p>Also resets ARWT1 (DREG8[9]) to 0 and programs ARBIAS0 row word count (DREG8[12]) before loading parameters.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">block</td><td>Output block index to load parameters for.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if parameters were loaded successfully, false if the parameter count exceeds MODEL_PARAMS_LOAD_CAPACITY. </dd></dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af">FBFE_WORD_ADDR_16BIT_MASK</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="af05bbccf56a21a6240b88ccda948bf97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af05bbccf56a21a6240b88ccda948bf97">&sect;&nbsp;</a></span>FBFE_RunTiniePass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_RunTiniePass </td>
+          <td>(</td>
+          <td class="paramtype">volatile NPU_Regs *&#160;</td>
+          <td class="paramname"><em>npu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mmr0Val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>ctl0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>stride_offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t *&#160;</td>
+          <td class="paramname"><em>pass_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Execute one MSB or LSB TINIE pass and capture the output. </p>
+<p>Resets the program counter, programs the stride-adjusted MMR0 address, writes the CTL0 control word, triggers NPU execution via <a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee" title="Start the NPU layer execution. ">TINIE_start()</a>, waits for completion with __WFI(), then reads the pass output into <code>pass_out</code> via <a class="el" href="filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798" title="Read the output of one NPU pass into a buffer. ">FBFE_ReadPassOutput()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">npu</td><td>Pointer to the NPU register block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mmr0Val</td><td>Base MMR0 word address for the current frame. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stride</td><td>Current stride index (0-based). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctl0</td><td>CTL0 value selecting MSB or LSB mode (MODEL_FE_CTL0_MSB or MODEL_FE_CTL0_LSB). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stride_offset</td><td>Additional offset added to the stride step (0 for MSB pass, 1 for LSB pass). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">pass_out</td><td>Pointer to an array of at least MODEL_MAX_OUT_CH_PER_ITER elements that will receive the pass output values. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46">FBFE_MMR_STRIDE_STEP</a>, <a class="el" href="filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798">FBFE_ReadPassOutput()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start()</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="af6ddab1a02f97206d40b4b256a75177d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6ddab1a02f97206d40b4b256a75177d">&sect;&nbsp;</a></span>FBFE_InitBlockMaxValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_InitBlockMaxValues </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>base_ch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialize the max-value accumulators for one output block. </p>
+<p>Sets the max_values entries for all MODEL_MAX_OUT_CH_PER_ITER lanes starting at <code>base_ch</code> to INT_MIN, ensuring that the first real activation value written during stride processing is always accepted.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">base_ch</td><td>First channel index of the current output block. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a904343f40089554b63121675b6c1a960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a904343f40089554b63121675b6c1a960">&sect;&nbsp;</a></span>FBFE_UpdateMaxValuesForStride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_UpdateMaxValuesForStride </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>base_ch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the per-channel maximum values after one stride pass pair. </p>
+<p>Combines the MSB and LSB pass outputs for each lane using the formula: </p><div class="fragment"><div class="line">combined = lsb_temp[lane] + msb_temp[lane] * (1 &lt;&lt; <a class="code" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca">FBFE_MSB_COMBINE_SHIFT_BITS</a>)</div></div><!-- fragment --><p> Then updates max_values[base_ch + lane] if <code>combined</code> exceeds the current stored maximum for that channel.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">base_ch</td><td>First channel index of the current output block. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca">FBFE_MSB_COMBINE_SHIFT_BITS</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a58fa67056ffc456361697b162cbb2d35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58fa67056ffc456361697b162cbb2d35">&sect;&nbsp;</a></span>FBFE_PostprocessOneChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint8_t FBFE_PostprocessOneChannel </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>max_value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply scale, offset, and quantization to one output channel. </p>
+<p>Computes: </p><div class="fragment"><div class="line">result = ((max_value + FB_OFFSET[idx]) * FB_SCALE[idx]) &gt;&gt; FB_SHIFT[idx]</div></div><!-- fragment --><p> using 64-bit arithmetic to avoid overflow, then clamps the result to the [0, 255] range before returning it as a uint8_t.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Global output channel index used to index FB_OFFSET, FB_SCALE, and FB_SHIFT tables. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">max_value</td><td>Maximum activation value accumulated across all stride iterations for this channel.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Quantized uint8_t feature value in [0, 255]. </dd></dl>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock()</a>.</p>
+
+</div>
+</div>
+<a id="a1dc564ed7c7b7cd370d141beeca02340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc564ed7c7b7cd370d141beeca02340">&sect;&nbsp;</a></span>FBFE_PostprocessBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void FBFE_PostprocessBlock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>base_ch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply post-processing to all channels of one output block. </p>
+<p>Iterates over the MODEL_MAX_OUT_CH_PER_ITER lanes starting at <code>base_ch</code> and calls <a class="el" href="filterbank__feature__extract_8c.html#a58fa67056ffc456361697b162cbb2d35" title="Apply scale, offset, and quantization to one output channel. ">FBFE_PostprocessOneChannel()</a> for each, storing the resulting quantized values into ctx-&gt;maxpool_outputs.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">base_ch</td><td>First channel index of the current output block. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="filterbank__feature__extract_8c.html#a58fa67056ffc456361697b162cbb2d35">FBFE_PostprocessOneChannel()</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a25f8a4e637a55e5365469947d00954ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25f8a4e637a55e5365469947d00954ee">&sect;&nbsp;</a></span>TINIE_start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TINIE_start </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start the NPU layer execution. </p>
+<p>This function triggers the execution of a layer in the NPU by setting the START bit in the CTL5 register.</p>
+<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="npu_8c.html#abaee13e346de3d356f713935249cdfb8">NPU_getCtlReg()</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass()</a>.</p>
 
 </div>
 </div>
@@ -321,24 +1558,25 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initialize the filterbank feature extraction context. </p>
-<p>This function initializes the filterbank feature extraction context with the provided configuration and output buffer. It performs parameter validation, sets up the context structure, binds internal buffers, and ensures a deterministic initial state.</p>
+<p>Initialize a filterbank feature extraction context.</p>
+<p>Validates all arguments, clears the context structure, stores the configuration and output buffer, binds the library-owned internal buffers, zeros every buffer for a deterministic startup state, and marks the context as ready.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the context structure to initialize. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cfg</td><td>Pointer to the configuration structure. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the buffer where final features will be stored. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of the final features buffer.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the caller-supplied buffer where the sliding feature window will be maintained. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of <code>final_features</code>; must be at least FEATURES_BYTES.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if initialization was successful, false otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if initialization succeeded, false if any argument is invalid or the buffer is too small. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">FBFE_Ctx::final_features_bytes</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae10836c9151850f81f0634a5caa61e2b">g_fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a76648449cfc4013a44227db613f3ca0c">g_frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#a138698e45c1982e9db894058c4bcbead">g_lsbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4f36e87e85380b39600a8946c8ac5cc4">g_maxpool</a>, <a class="el" href="filterbank__feature__extract_8c.html#a69160d4cab587f574855779e11599ab7">g_maxValues</a>, <a class="el" href="filterbank__feature__extract_8c.html#a5967d3232cad58ca2c6420c79c39399a">g_msbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a89d7421d2251b6edf245627586c8b321">g_singleOut</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ac2abfc0068ef70e2d208ca8b5a79f488">FBFE_InitArgsAreValid()</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">FBFE_Ctx::final_features_bytes</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
 
 </div>
 </div>
-<a id="ae14b90d0f7762297ea475985f60019d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae14b90d0f7762297ea475985f60019d9">&sect;&nbsp;</a></span>FBFE_PushSample()</h2>
+<a id="ab0c690f846a85bceee4fb5fe97877ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c690f846a85bceee4fb5fe97877ff0">&sect;&nbsp;</a></span>FBFE_PushSample()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -352,7 +1590,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramtype">int16_t&#160;</td>
           <td class="paramname"><em>sample</em>&#160;</td>
         </tr>
         <tr>
@@ -363,25 +1601,19 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Push a new audio sample for processing. </p>
-<p>Push a new sample for processing.</p>
-<p>This function adds a new sample to the processing pipeline. It handles the sample packing, byte splitting, and frame buffer management. When enough samples have been collected to form a complete frame, the function prepares the data for NPU processing by properly arranging it in the input buffer. The sample packing process follows these steps:</p><ol type="1">
-<li>Split the 16-bit sample into most and least significant bytes using configured masks</li>
-<li>Store these bytes in temporary buffers</li>
-<li>When enough samples are collected (pack_size=4), pack them into the frame buffer</li>
-<li>When a complete frame is collected, update the input buffer with overlap handling</li>
-</ol>
-<p>The byte packing scheme optimizes memory usage and aligns data for efficient NPU processing by organizing samples in a specific pattern.</p>
+<p>Push a new audio sample into the filterbank processing pipeline. </p>
+<p>Push one signed 16-bit PCM sample into the processing pipeline.</p>
+<p>Scales the incoming sample to the configured branch bit-width, splits it into MSB/LSB byte components, and stages them in the internal packing arrays. When every fourth sample has been staged, the four samples are packed into the frame buffer. When the final sample of a complete frame has been received, the NPU input buffer is updated with the new frame and the appropriate overlap region.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The sample value to process.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The signed 16-bit audio sample to push.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the sample was successfully added, false if the context is invalid. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the sample was accepted, false if <code>ctx</code> is NULL or has not been initialized. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">FBFE_Ctx::ls_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43">FBFE_Config::ls_mask</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">FBFE_Ctx::ms_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac">FBFE_Config::ms_mask</a>, <a class="el" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e">FBFE_Config::ms_shift</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af">FBFE_Config::branch_bits</a>, <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e">FBFE_AdvanceSampleState()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ad32587576d0c79d08b65d386a3e2cb11">FBFE_ScaleSampleByBranchBits()</a>, <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd()</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>.</p>
 
 </div>
 </div>
@@ -401,25 +1633,25 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Process one frame of data through the filterbank. </p>
-<p>This function executes the filterbank feature extraction process on a complete frame of data using the NPU hardware accelerator. It performs the following steps:</p><ol type="1">
-<li>Initializes NPU registers</li>
-<li>Processes data in blocks, corresponding to channel groups</li>
-<li>For each block, performs multiple stride iterations</li>
-<li>For each stride, executes both MSB and LSB passes</li>
-<li>Combines MSB and LSB results and tracks maximum values</li>
-<li>Applies scaling, offset, and quantization to the output features</li>
-<li>Updates the sliding feature window with the new results</li>
+<p>Process one complete frame through the filterbank NPU pipeline. </p>
+<p>Run the filterbank NPU pipeline on the current input frame.</p>
+<p>Executes the full filterbank feature extraction sequence:</p><ol type="1">
+<li>Computes NPU addressing parameters from the current input/output buffers.</li>
+<li>Iterates over MODEL_NUM_OUTPUT_BLOCKS output blocks.</li>
+<li>For each block: initializes max accumulators, loads MMR coefficients, programs common NPU state, loads instructions (block 0 only), and loads the block weight parameters.</li>
+<li>For each stride within the block: runs an MSB pass and an LSB pass via <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97" title="Execute one MSB or LSB TINIE pass and capture the output. ">FBFE_RunTiniePass()</a>, then updates the per-channel maximum values.</li>
+<li>Applies scale, offset, shift, and uint8_t quantization to each channel.</li>
+<li>Appends the resulting feature vector to the sliding NN input window.</li>
 </ol>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the frame was successfully processed, false if the context is invalid. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the frame was processed successfully, false if <code>ctx</code> is NULL or uninitialized, or if a parameter block exceeds MODEL_PARAMS_LOAD_CAPACITY. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a49fc4dda9af37d26efc05a484f3e3694">FBFE_ARBIAS0_ROW_WORD64</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae5ae7236ffc471d5675aec0d3ad4fb91">FBFE_CTL1_ADDR_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#adda8244148989c389c1beefd827948a0">FBFE_CTL1_ADDR_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae4bea5e9375a2075b9974fef5d60ef1a">FBFE_CTL1_OFMAP_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46">FBFE_MMR_STRIDE_STEP</a>, <a class="el" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca">FBFE_MSB_COMBINE_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af">FBFE_WORD_ADDR_16BIT_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a">FBFE_WORD_ADDR_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c">FE_CTL0_LSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#a9ea4fd4ecae38febbe0eb35148fd5970">FE_CTL0_MSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#aec8a2e478772ab924e4507342b92a105">FE_SIGNCHK_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae9b8074f516df7bc9e5a96fde1225a62">FE_SIGNCHK_VAL</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae9b5ea91860429d45cb988d1ddf19db5">FE_SIGNEXT_OR</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start()</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4c721bd4b13f51c5168de523d6293320">FBFE_GetAROUT0Base()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a42dae8a4c8348ade59a19a402c86b876">FBFE_GetCTL1Value()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a452a5db677b156d57beddb31f18d1c55">FBFE_GetMMR0Value()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d">FBFE_InitBlockMaxValues()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a0606db02a3cbe7ec4e7ccc0a999900f5">FBFE_LoadInstructions()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a21fd0baaa051c8c26fbb947b5048917f">FBFE_LoadMMR()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a2b00f18cee2704762a4dc3f00f11b50d">FBFE_LoadParamsForBlock()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock()</a>, <a class="el" href="filterbank__feature__extract_8c.html#acb819c4fff3a508731f296f903d81f34">FBFE_ProgramCommonNpuState()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride()</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="filterbank__feature__extract_8c.html#a2260b812fd4ee224aff0748adacee06f">MODEL_FE_CTL0_LSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#a52df4c3d1acd00ebc7cdb506958f587a">MODEL_FE_CTL0_MSB</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
 
 </div>
 </div>
@@ -447,7 +1679,7 @@ Variables</h2></td></tr>
 <p>Global buffer for storing frame samples. </p>
 <p>This buffer holds the raw samples for a complete processing frame. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -474,7 +1706,7 @@ Variables</h2></td></tr>
 <p>Global buffer for NPU input data. </p>
 <p>This buffer holds the packed byte representation of the data, with proper overlapping between frames for continuous processing. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -499,9 +1731,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Temporary buffer for storing MSB pass results. </p>
-<p>Used during the NPU processing to store most significant byte results before combining with LSB results. </p>
+<p>Used during NPU processing to store most significant byte results before combining with LSB results. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -526,9 +1758,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Temporary buffer for storing LSB pass results. </p>
-<p>Used during the NPU processing to store least significant byte results before combining with MSB results. </p>
+<p>Used during NPU processing to store least significant byte results before combining with MSB results. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -555,7 +1787,7 @@ Variables</h2></td></tr>
 <p>Buffer for storing maximum values across all strides. </p>
 <p>This buffer holds the maximum activation values for each output channel across all stride iterations. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -582,7 +1814,7 @@ Variables</h2></td></tr>
 <p>Buffer for storing single iteration outputs. </p>
 <p>This buffer holds the output from a single iteration of the NPU processing. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>.</p>
 
 </div>
 </div>
@@ -609,7 +1841,7 @@ Variables</h2></td></tr>
 <p>Buffer for storing maxpool operation results. </p>
 <p>This buffer holds the final maxpooled feature values after processing and scaling. </p>
 
-<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init()</a>.</p>
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, and <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>.</p>
 
 </div>
 </div>

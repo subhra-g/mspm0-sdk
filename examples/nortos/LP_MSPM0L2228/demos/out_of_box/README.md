@@ -9,7 +9,7 @@ The out of box demo is a simple demo that implements various examples that
 showcase the functionality of the MSPM0L2228 LaunchPad.
 A GUI can be used with this demo, and the user can interact with the
 LaunchPad using the GUI. The GUI for this demo can be found
-[here](https://dev.ti.com/gallery/view/TIMSPGC/LP_MSPM0L2228_OOBE/).
+[here](https://dev.ti.com/gallery/view/6687478/LP_MSPM0L2228_OOB).
 
 ### Demo Examples
 

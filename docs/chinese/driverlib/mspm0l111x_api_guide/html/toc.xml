@@ -5051,6 +5051,7 @@
         <topic label="DL_SYSCTL_RESET_CAUSE_BOOTRST_EXTERNAL_NRST" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a32f13a84287cb475a3ece1325d4a7e6a"/>
         <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_EXIT" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a35a4d8706bc7db707d77a0aa45181348"/>
         <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_ENTRY" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a9813d61a110213e9d9d9aacf1dddfd07"/>
+        <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT0_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a6d68291dbc3d2ef9b008e4167b36ea56"/>
         <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT1_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a675864d237067e66f6817c30e55992a9"/>
         <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_FLASH_ECC_ERROR" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74ad301368ad5c66087c12b93c990010ad4"/>
         <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_CPU_LOCKUP_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74ae135df8b36832289fbc3fdcaebbcbcf9"/>
@@ -7964,6 +7965,7 @@
           <topic label="DL_SYSCTL_RESET_CAUSE_BOOTRST_EXTERNAL_NRST" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a32f13a84287cb475a3ece1325d4a7e6a"/>
           <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_EXIT" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a35a4d8706bc7db707d77a0aa45181348"/>
           <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_ENTRY" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a9813d61a110213e9d9d9aacf1dddfd07"/>
+          <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT0_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a6d68291dbc3d2ef9b008e4167b36ea56"/>
           <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT1_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74a675864d237067e66f6817c30e55992a9"/>
           <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_FLASH_ECC_ERROR" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74ad301368ad5c66087c12b93c990010ad4"/>
           <topic label="DL_SYSCTL_RESET_CAUSE_SYSRST_CPU_LOCKUP_VIOLATION" href="group___s_y_s_c_t_l___m_s_p_m0_l111_x.html#gga72bea3c6a78a3a5c0d389ac78cacce74ae135df8b36832289fbc3fdcaebbcbcf9"/>

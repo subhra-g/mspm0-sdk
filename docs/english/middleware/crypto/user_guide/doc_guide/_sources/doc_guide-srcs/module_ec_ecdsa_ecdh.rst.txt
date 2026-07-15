@@ -1,0 +1,356 @@
+################################################################################
+Elliptic Curve Digital Signature Algorithm (ECDSA) 
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The elliptic curve module implements cryptographic operations over elliptic 
+curves defined over prime fields (Fp). It provides functionality for:
+
+* ECDSA (Elliptic Curve Digital Signature Algorithm) for digital signatures
+* ECDH (Elliptic Curve Diffie-Hellman) for key agreement
+* Key pair generation for use with elliptic curve cryptography
+
+The implementation supports standard curves, including:
+
+* NIST P-256 (secp256r1)
+* NIST P-384 (secp384r1)
+* NIST P-521 (secp521r1)
+
+================================================================================
+Security Levels
+================================================================================
+
+This library supports three security levels based on the selected curve.
+In general, the security strength for an elliptic curve is directly related to
+the base point order (security strength is approximately 1/2 the bit length of
+the base point order).
+
+=============== ================ ================ =============== ==================
+Security Level  Secret Key Size  Public Key Size  Signature Size  Security Strength
+=============== ================ ================ =============== ==================
+NIST P-256      32 bytes         64 bytes         64 bytes        Apprx. 128 bits
+NIST P-384      48 bytes         96 bytes         96 bytes        Apprx. 192 bits
+NIST P-521      68 bytes         136 bytes        136 bytes       Apprx. 256 bits
+=============== ================ ================ =============== ==================
+
+================================================================================
+Memory Requirements
+================================================================================
+
+The EC module functions typically require between 1000-3000 bytes of stack space
+depending on the selected curve and API choice.  Refer to the memory
+requirements section of this guide for more information.
+
+********************************************************************************
+Hardware Support
+********************************************************************************
+
+The library supports the PKA hardware accelerator module on compatible 
+MSPM33 devices. Currently supported device families include:
+
+* MSPM33C32xx (MSPM33C321A), supporting ECDSA P-256 and P-384 sign and verify
+
+********************************************************************************
+Status Codes
+********************************************************************************
+
+Elliptic curve (EC) functions return status codes to indicate the result of 
+requested operations.  The EC functions return status codes defined by 
+the `crypto_ec_stat_t` enumeration.  Commonly used status codes for the EC
+module are given in the table below.
+
+========================================== ====== =============================================================
+Status Code                                Value  Description
+========================================== ====== =============================================================
+`CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE`     0xA5   ECDSA signature verification result: signature valid
+`CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE`   0x5A   ECDSA signature verification result: siganture not valid
+`CRYPTO_EC_STAT_ECDSA_SIGN_OK`             0x32   ECDSA signature was generated successfully
+`CRYPTO_EC_STAT_ECDSA_SIGN_PKA_ERROR`      0x34   ECDSA signature was not generated due to PKA error
+`CRYPTO_EC_STAT_KEYGEN_OK`                 0x99   EC keys were generated successfully
+`CRYPTO_EC_STAT_SHARED_KEY_OK`             0x99   ECDH shared key was generated successfully
+========================================== ====== =============================================================
+
+Additional error codes exist for various error causes, including invalid 
+parameters.  Review the `crypto_ec_stat_t` structure for a compelte list.
+
+********************************************************************************
+Curve Definitions and Selection
+********************************************************************************
+
+The library provides predefined curve parameter data structures for the
+standard NIST P-curves in the `ec_curves.h` file.  The data structure
+`crypto_ec_curve_t` is used to hold pointers to vectors that contain all of the
+information need to define a curve, including:
+
+* Prime modulus
+* R-value
+* A coefficient
+* B coefficient
+* X-coordinate of the base point
+* Y-coordinate of the base point
+* Size of the data buffers, in 32-bit words
+
+A generic API for ECDSA key generation, sign, and verify operations is provbied
+that can take a pointer to one of the three pre-defined NIST P-curves below.
+Alternate curves may also be defined.
+
+.. code-block:: c
+
+    /* NIST P-256 (secp256r1) */
+    extern const crypto_ec_curve_t Crypto_EC_Curve_NIST256;
+    /* NIST P-384 (secp384r1) */
+    extern const crypto_ec_curve_t Crypto_EC_Curve_NIST384;
+    /* NIST P-521 (secp521r1) */
+    extern const crypto_ec_curve_t Crypto_EC_Curve_NIST521;
+
+The generic API supports up to P-521 but uses more stack space than is required
+for smaller curves like P-256.  To enable the smallest stack usage, dedicated
+functions for ECDSA sign and verify are also provided for each curve type.
+These dedicated functions provide the same functionality as the
+generic function but they only support the named curve, and they use only
+the amount of stack space that is required for that specific curve.
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for EC is defined below.
+
+================================================================================
+Key Generation
+================================================================================
+
+The module supports key generation with the `Crypto_EC_keyGen` function.
+This function supports all curves and takes a pointer to the curve as a
+parameter.  It generates a private/public key pair for the specified curve
+using a random seed value.
+
+.. code-block:: c
+
+    extern crypto_ec_stat_t Crypto_EC_keyGen(
+        const crypto_ec_curve_t *curve,
+        const uint8_t *rand,
+        uint8_t *sk,
+        uint8_t *pk_x, uint8_t *pk_y);
+
+**Parameters:**
+
+* `curve`: The elliptic curve to use for key pair generation
+* `rand`: Pointer to cryptographically random data
+* `sk`: Output buffer for the secret (private) key
+* `pk_x`: Output buffer for the public key X-coordinate
+* `pk_y`: Output buffer for the public key Y-coordinate
+
+**Returns:**
+
+* `CRYPTO_EC_STAT_KEYGEN_OK` on success, other status codes indicate 
+  specific errors.
+
+================================================================================
+ECDSA Sign Operations
+================================================================================
+
+A curve-agnostic sign function and curve specific (optimnized) sign functions
+are provided.
+
+**Generic ECDSA Sign**
+
+.. code-block:: c
+
+    extern crypto_ec_stat_t Crypto_ECDSA_sign(
+        const crypto_ec_curve_t *curve, 
+        const uint8_t *sk,
+        const uint8_t *md,
+        const uint8_t *k,
+        uint8_t *sig_r, uint8_t *sig_s);
+
+Computes an ECDSA digital signature for a message digest using a private key `sk`
+and random signing nonce `k`.
+
+**Parameters:**
+
+* `curve`: The elliptic curve to use
+* `sk`: Private key for signing
+* `md`: Message digest to sign
+* `k`: Secret random nonce for this signature
+* `sig_r`: Output buffer for signature r-value
+* `sig_s`: Output buffer for signature s-value
+
+**Returns:**
+
+* `CRYPTO_EC_STAT_ECDSA_SIGN_OK` on success, or an error code.
+
+**Curve-Specific Sign Operations**
+
+The library provides optimized implementations for specific NIST curves that
+reduce the SRAM (stack) usage to the minimum needed for the specific curve:
+
+.. code-block:: c
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P256_sign(
+        const uint8_t *sk,
+        const uint8_t *md,
+        const uint8_t *k,
+        uint8_t *sig_r, uint8_t *sig_s);
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P384_sign(
+        const uint8_t *sk,
+        const uint8_t *md,
+        const uint8_t *k,
+        uint8_t *sig_r, uint8_t *sig_s);
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P521_sign(
+        const uint8_t *sk,
+        const uint8_t *md,
+        const uint8_t *k,
+        uint8_t *sig_r, uint8_t *sig_s);
+
+These APIs are optimized for their respective curves with greater SRAM stack
+optimization than the generic signing API.
+
+================================================================================
+ECDSA Verify Operations
+================================================================================
+
+A curve-agnostic verify function and curve specific (optimnized) verify 
+functions are provided.
+
+**Generic ECDSA Verify**
+
+.. code-block:: c
+
+    extern crypto_ec_stat_t Crypto_ECDSA_verify(
+        const crypto_ec_curve_t *curve,
+        const uint8_t *pk_x, const uint8_t *pk_y,
+        const uint8_t *md,
+        const uint8_t *sig_r, const uint8_t *sig_s);
+
+Verifies an ECDSA digital signature for a message digest using a public key.
+
+**Parameters:**
+
+* `curve`: The elliptic curve to use
+* `pk_x`: Public key X-coordinate
+* `pk_y`: Public key Y-coordinate
+* `md`: Message digest
+* `sig_r`: Signature r-value to verify
+* `sig_s`: Signature s-value to verify
+
+**Returns:**
+
+* `CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE` if the signature is valid, 
+* `CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE` if the signature is invalid but 
+  the operation completed, or other status codes for error conditions.
+
+**Curve-Specific Verify Operations**
+
+Like with signing, the library provides optimized implementations for 
+specific curves:
+
+.. code-block:: c
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P256_verify(
+        const uint8_t *pk_x, const uint8_t *pk_y,
+        const uint8_t *md,
+        const uint8_t *sig_r, const uint8_t *sig_s);
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P384_verify(
+        const uint8_t *pk_x, const uint8_t *pk_y,
+        const uint8_t *md,
+        const uint8_t *sig_r, const uint8_t *sig_s);
+
+    extern crypto_ec_stat_t Crypto_ECDSA_P521_verify(
+        const uint8_t *pk_x, const uint8_t *pk_y,
+        const uint8_t *md,
+        const uint8_t *sig_r, const uint8_t *sig_s);
+
+These APIs are optimized for their respective curves with greater SRAM stack
+optimization than the generic signing API.
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for signing and verification are shown below.  Code examples are
+are also provided in the `/examples` directory of the installation.
+
+================================================================================
+ECDSA Signing with P-256
+================================================================================
+
+Generate a signature for a given message digest, secret key, and signing
+secret nonce:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Key and message data
+    uint8_t privateKey[32];  // 256-bit private key
+    uint8_t messageDigest[32];  // SHA-256 digest
+    uint8_t randomNonce[32];  // Random nonce (must be cryptographically secure)
+    uint8_t signature_r[32];  // Output for r component
+    uint8_t signature_s[32];  // Output for s component
+
+    // Generate signature using P-256 curve
+    crypto_ec_stat_t status = Crypto_ECDSA_P256_sign(
+        privateKey,
+        messageDigest,
+        randomNonce,
+        signature_r, signature_s);
+
+    if (status == CRYPTO_EC_STAT_ECDSA_SIGN_OK) {
+        // Signature created successfully
+    } else {
+        // Error condition
+    }
+
+================================================================================
+ECDSA Verification with Generic API
+================================================================================
+
+Verify a signature for a given message digest, signature, and public key:
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    // Public key and signature data
+    uint8_t publicKey_x[32];  // Public key x-coordinate
+    uint8_t publicKey_y[32];  // Public key y-coordinate
+    uint8_t messageDigest[32];  // SHA-256 digest
+    uint8_t signature_r[32];  // r component of signature
+    uint8_t signature_s[32];  // s component of signature
+
+    // Verify signature using the generic API
+    crypto_ec_stat_t status = Crypto_ECDSA_verify(
+        &Crypto_EC_Curve_NIST256,  // Use P-256 curve
+        publicKey_x, publicKey_y,
+        messageDigest,
+        signature_r, signature_s);
+
+    if (status == CRYPTO_EC_STAT_ECDSA_VALID_SIGNATURE) {
+        // Signature is valid
+    } else if (status == CRYPTO_EC_STAT_ECDSA_INVALID_SIGNATURE) {
+        // Signature is invalid
+    } else {
+        // Other error condition
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. Ensure that the buffers passed to the functions are of the proper lengths
+   based on the selected curve and its parameters.  For P-256, buffers for 
+   parameters are expected to be 32 bytes in length.  For P-384, buffers for
+   parameters are expected to be 48 bytes in length.  For P-521, buffers for
+   parameters are expected to be 68 bytes in length.
+#. For ECDSA, messages are generally pre-hashed, and the resulting hash is
+   taken as the message digest for sign and verify operations.
+#. If using a standard NIST curve (P-256, P-384), the lowest stack
+   size requirement is obtained with the curve specific sign and verify
+   functions.

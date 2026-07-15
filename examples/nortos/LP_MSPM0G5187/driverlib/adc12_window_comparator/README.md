@@ -1,6 +1,6 @@
 ## Example Summary
 
-The following example configures ADC0 to trigger repeated single conversion and turns on an LED is ADC > 0.5VDDA using window comparator feature in ADC12
+The following example configures ADC0 to trigger repeated single conversion and turns on an LED is ADC > 0.5VDDA using the window comparator feature in ADC12.
 
 ## Peripherals, Pin Functions, MCU Pins, Launchpad Pins
 | Peripheral | Function | MCU Pin | Launchpad Pin | Launchpad Settings |
@@ -28,7 +28,7 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0G5187 User's Guide](https://www.ti.com/lit/slau967).
 
 ## Example Usage
-Compile, load and run the example.
+Compile, load, and run the example.
 Provide a valid voltage to A0_2 between 0 - VCC.
 Monitor LED1 while input voltage changes.
 

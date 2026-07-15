@@ -52,6 +52,9 @@
 #define GPIO_UART_RX_IO_FUNC_TUSB  IOMUX_PINCM22_PF_UC0_RX
 #define GPIO_UART_RX_IOMUX_TUSB    (21)
 
+/* Define utilized for Systick configuration */
+#define SYSTICK_FREQ                    (80000)
+
 #ifdef __cplusplus
  extern "C" {
 #endif

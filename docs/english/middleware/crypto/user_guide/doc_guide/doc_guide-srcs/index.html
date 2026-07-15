@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSP Crypto Library User Guide &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. MSP Crypto Library Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>MSP Crypto Library User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="msp-crypto-library-user-guide">
+<h1>MSP Crypto Library User Guide<a class="headerlink" href="#msp-crypto-library-user-guide" title="Permalink to this heading">¶</a></h1>
+<p>The user guide for MSP Crypto Library 0.33.00.07 documents how to
+use the library in applications requiring cryptographic primitives.
+This document provides information on library usage, running the examples,
+and integration.</p>
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#key-features">1.1. Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#additional-information">1.2. Additional Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#project-configuration">1.3. Project Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_cipher_aes.html">2.1. Advanced Encryption Standard (AES)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_hash_sha.html">3.1. Secure Hash Algorithm (SHA2, SHA3, SHAKE)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_ec_ecdsa_ecdh.html">4.1. Elliptic Curve Digital Signature Algorithm (ECDSA)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_curve25519.html#overview">5.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_curve25519.html#status-codes">5.2. Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_curve25519.html#api-functions">5.3. API Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_curve25519.html#usage-examples">5.4. Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_curve25519.html#important-notes">5.5. Important Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_pqc_mldsa.html">6.1. Module Lattice Digital Signature Algorithm (ML-DSA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_pqc_mlkem.html">6.2. Module Lattice Key Encapsulation Mechanism (ML-KEM)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_rand_entropy.html">7.1. Entropy Source (TRNG Interface)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_rand_drbg.html">7.2. Deterministic Random Bit Generator (DRBG)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_rsa_verify.html">8.1. RSA Digital Signature Verification Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks_performance_mspm0g3519.html">9.1. Performance and Throughput - MSPM0G Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks_performance_mspm33c321a.html">9.2. Performance and Throughput - MSPM33C3 Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks_memory.html">9.3. Memory Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#prerequisites">10.1. Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#examples">10.2. Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-right" title="1. MSP Crypto Library Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,6 +4,8 @@
  */
 //@cliArgs --device "MSPM0G351X" --package "LQFP-100(PZ)" --part "Default"
 //@v2CliArgs --device "MSPM0G3519" --package "LQFP-100(PZ)"
+// @cliArgs --board /ti/boards/LP_MSPM0G3519 --rtos nortos
+
 /**
  * Import the modules used in this configuration.
  */
@@ -12,7 +14,6 @@ const CRCP  = scripting.addModule("/ti/driverlib/CRCP");
 const DMA   = scripting.addModule("/ti/driverlib/DMA");
 const I2C   = scripting.addModule("/ti/driverlib/I2C", {}, false);
 const I2C1  = I2C.addInstance();
-// @cliArgs --board /ti/boards/LP_MSPM0G3519 --rtos nortos
 
 /**
  * Write custom configuration values to the imported modules.
@@ -34,8 +35,6 @@ I2C1.intTarget                             = ["START","STOP","TXFIFO_EMPTY"];
 I2C1.peripheral.$assign                    = "I2C0";
 I2C1.peripheral.sdaPin.$assign             = "PA0";
 I2C1.peripheral.sclPin.$assign             = "PA1";
-I2C1.sdaPinConfig.$name                    = "ti_driverlib_gpio_GPIOPinGeneric0";
-I2C1.sclPinConfig.$name                    = "ti_driverlib_gpio_GPIOPinGeneric1";
 I2C1.DMA_CHANNEL_EVENT2.addressMode        = "f2b";
 I2C1.DMA_CHANNEL_EVENT2.dstLength          = "BYTE";
 I2C1.DMA_CHANNEL_EVENT2.$name              = "DMA_CH_RX";

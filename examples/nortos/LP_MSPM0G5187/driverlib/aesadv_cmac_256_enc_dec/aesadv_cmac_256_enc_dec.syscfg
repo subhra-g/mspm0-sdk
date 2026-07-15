@@ -34,7 +34,6 @@ DMA.associatedChannels[1].enableInterrupt = true;
 DMA.associatedChannels[1].srcLength       = "LONGLONG";
 DMA.associatedChannels[1].dstLength       = "LONGLONG";
 
-
 NONMAIN.nonmainWarning = true;
 NONMAIN.cscExists      = true;
 
@@ -55,4 +54,3 @@ SYSCTL.clockTreeEn           = true;
 SYSCTL.forceDefaultClkConfig = true;
 
 ProjectConfig.genLinker = false;
-

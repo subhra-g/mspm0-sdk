@@ -341,6 +341,11 @@
   #define TUP_USBIP_MUSB_TI
   #define TUP_DCD_ENDPOINT_MAX    8
 
+#elif TU_CHECK_MCU(OPT_MCU_MSPM0C511X)
+  #define TUP_USBIP_MUSB
+  #define TUP_USBIP_MUSB_TI
+  #define TUP_DCD_ENDPOINT_MAX    9
+
 //--------------------------------------------------------------------+
 // ValentyUSB (Litex)
 //--------------------------------------------------------------------+

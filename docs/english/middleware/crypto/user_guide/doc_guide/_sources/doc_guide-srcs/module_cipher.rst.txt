@@ -1,0 +1,11 @@
+################################################################################
+Cipher Module
+################################################################################
+
+The cipher module provides implementations of block ciphers, block cipher
+modes of operation, and stream ciphers.
+
+.. toctree::
+   :maxdepth: 1
+
+   module_cipher_aes

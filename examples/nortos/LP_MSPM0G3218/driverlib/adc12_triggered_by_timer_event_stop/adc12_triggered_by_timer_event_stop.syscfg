@@ -32,7 +32,6 @@ ADC121.adcMem0chansel              = "DL_ADC12_INPUT_CHAN_14";
 ADC121.peripheral.$assign          = "ADC1";
 ADC121.peripheral.adcPin14.$assign = "PB27";
 
-
 const Board                       = scripting.addModule("/ti/driverlib/Board", {}, false);
 Board.configureUnused             = true;
 Board.peripheral.$assign          = "DEBUGSS";

@@ -30,7 +30,6 @@
             -Iexamples/demos/evse_controller_TIDA-010939/pb/nanopb
             -Iexamples/demos/evse_controller_TIDA-010939/pb/protobuf
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source
-            -gdwarf-3
             -mcpu=cortex-m0plus
             -march=thumbv6m
             -mfloat-abi=soft

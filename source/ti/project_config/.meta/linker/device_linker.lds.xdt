@@ -69,6 +69,9 @@ MEMORY
 % } else {
     SRAM            (RWX) : ORIGIN = `Options.SRAMOrigin[gpn]`, LENGTH = `Options.SRAMLength[gpn]`
 % }
+% if(Common.hasSD24Region()){
+    SD24            (RW)  : ORIGIN = `Options.SD24Origin[gpn]`, LENGTH = `Options.SD24Length[gpn]`
+% }
     BCR_CONFIG      (R)   : ORIGIN = `Options.BCROrigin[gpn]`, LENGTH = `Options.BCRLength[gpn]`
 % if(Common.hasBSLConfig()){
     BSL_CONFIG      (R)   : ORIGIN = `Options.BSLOrigin[gpn]`, LENGTH = `Options.BSLLength[gpn]`
@@ -247,6 +250,12 @@ SECTIONS
     {
         KEEP(*(.DataBank))
     } > DATA
+% }
+% if(Common.hasSD24Region()){
+    .sd24 :
+    {
+        KEEP(*(.sd24))
+    } > SD24
 % }
 
     __StackTop = ORIGIN(REGION_STACK) + LENGTH(REGION_STACK);

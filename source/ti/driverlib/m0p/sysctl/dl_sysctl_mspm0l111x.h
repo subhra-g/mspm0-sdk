@@ -685,6 +685,9 @@ typedef enum {
     DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_EXIT = SYSCTL_RSTCAUSE_ID_SYSBSLEXIT,
     /*! BSL entry */
     DL_SYSCTL_RESET_CAUSE_SYSRST_BSL_ENTRY = SYSCTL_RSTCAUSE_ID_SYSBSLENTRY,
+    /*! WWDT0 violation */
+    DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT0_VIOLATION =
+        SYSCTL_RSTCAUSE_ID_BOOTWWDT0,
     /*! WWDT1 violation */
     DL_SYSCTL_RESET_CAUSE_SYSRST_WWDT1_VIOLATION = SYSCTL_RSTCAUSE_ID_SYSWWDT1,
     /*! Uncorrectable flash ECC error */
@@ -1131,7 +1134,7 @@ __STATIC_INLINE void DL_SYSCTL_setBORThreshold(
  */
 __STATIC_INLINE DL_SYSCTL_BOR_THRESHOLD_LEVEL DL_SYSCTL_getBORThreshold(void)
 {
-    return (DL_SYSCTL_BOR_THRESHOLD_LEVEL)(SYSCTL->SOCLOCK.BORTHRESHOLD);
+    return (DL_SYSCTL_BOR_THRESHOLD_LEVEL) (SYSCTL->SOCLOCK.BORTHRESHOLD);
 }
 
 /**
@@ -1258,7 +1261,7 @@ __STATIC_INLINE uint32_t DL_SYSCTL_getRawInterruptStatus(
  */
 __STATIC_INLINE DL_SYSCTL_IIDX DL_SYSCTL_getPendingInterrupt(void)
 {
-    return (DL_SYSCTL_IIDX)(SYSCTL->SOCLOCK.IIDX);
+    return (DL_SYSCTL_IIDX) (SYSCTL->SOCLOCK.IIDX);
 }
 
 /**
@@ -1304,7 +1307,7 @@ __STATIC_INLINE uint32_t DL_SYSCTL_getRawNonMaskableInterruptStatus(
 __STATIC_INLINE DL_SYSCTL_NMI_IIDX DL_SYSCTL_getPendingNonMaskableInterrupt(
     void)
 {
-    return (DL_SYSCTL_NMI_IIDX)(SYSCTL->SOCLOCK.NMIIIDX);
+    return (DL_SYSCTL_NMI_IIDX) (SYSCTL->SOCLOCK.NMIIIDX);
 }
 
 /**
@@ -1353,7 +1356,7 @@ __STATIC_INLINE DL_SYSCTL_ERROR_BEHAVIOR DL_SYSCTL_getWWDT0ErrorBehavior(void)
         (SYSCTL->SOCLOCK.SYSTEMCFG & SYSCTL_SYSTEMCFG_WWDTLP0RSTDIS_MASK) >>
         SYSCTL_SYSTEMCFG_WWDTLP0RSTDIS_OFS;
 
-    return (DL_SYSCTL_ERROR_BEHAVIOR)(behavior);
+    return (DL_SYSCTL_ERROR_BEHAVIOR) (behavior);
 }
 
 /**
@@ -1385,7 +1388,7 @@ __STATIC_INLINE DL_SYSCTL_MCLK_DIVIDER DL_SYSCTL_getMCLKDivider(void)
 {
     uint32_t divider = SYSCTL->SOCLOCK.MCLKCFG & SYSCTL_MCLKCFG_MDIV_MASK;
 
-    return (DL_SYSCTL_MCLK_DIVIDER)(divider);
+    return (DL_SYSCTL_MCLK_DIVIDER) (divider);
 }
 
 /**
@@ -1401,7 +1404,7 @@ __STATIC_INLINE DL_SYSCTL_MCLK_SOURCE DL_SYSCTL_getMCLKSource(void)
         SYSCTL->SOCLOCK.MCLKCFG &
         (SYSCTL_MCLKCFG_USEHSCLK_MASK | SYSCTL_MCLKCFG_USELFCLK_MASK);
 
-    return (DL_SYSCTL_MCLK_SOURCE)(source);
+    return (DL_SYSCTL_MCLK_SOURCE) (source);
 }
 
 /**
@@ -1478,7 +1481,7 @@ __STATIC_INLINE DL_SYSCTL_SYSOSC_FREQ DL_SYSCTL_getTargetSYSOSCFreq(void)
 {
     uint32_t freq = SYSCTL->SOCLOCK.SYSOSCCFG & SYSCTL_SYSOSCCFG_FREQ_MASK;
 
-    return (DL_SYSCTL_SYSOSC_FREQ)(freq);
+    return (DL_SYSCTL_SYSOSC_FREQ) (freq);
 }
 
 /**
@@ -1494,7 +1497,7 @@ __STATIC_INLINE DL_SYSCTL_SYSOSC_FREQ DL_SYSCTL_getCurrentSYSOSCFreq(void)
     uint32_t freq =
         SYSCTL->SOCLOCK.CLKSTATUS & SYSCTL_CLKSTATUS_SYSOSCFREQ_MASK;
 
-    return (DL_SYSCTL_SYSOSC_FREQ)(freq);
+    return (DL_SYSCTL_SYSOSC_FREQ) (freq);
 }
 
 /**
@@ -1620,7 +1623,7 @@ __STATIC_INLINE DL_SYSCTL_MFPCLK_SOURCE DL_SYSCTL_getMFPCLKSource(void)
     uint32_t source =
         SYSCTL->SOCLOCK.GENCLKCFG & SYSCTL_GENCLKCFG_MFPCLKSRC_MASK;
 
-    return (DL_SYSCTL_MFPCLK_SOURCE)(source);
+    return (DL_SYSCTL_MFPCLK_SOURCE) (source);
 }
 
 /**
@@ -1726,7 +1729,7 @@ DL_SYSCTL_getHFCLKDividerForMFPCLK(void)
         (SYSCTL->SOCLOCK.GENCLKCFG & SYSCTL_GENCLKCFG_HFCLK4MFPCLKDIV_MASK) >>
         SYSCTL_GENCLKCFG_HFCLK4MFPCLKDIV_OFS;
 
-    return (DL_SYSCTL_HFCLK_MFPCLK_DIVIDER)(divider);
+    return (DL_SYSCTL_HFCLK_MFPCLK_DIVIDER) (divider);
 }
 
 /**
@@ -1915,7 +1918,7 @@ __STATIC_INLINE DL_SYSCTL_FLASH_WAIT_STATE DL_SYSCTL_getFlashWaitState(void)
     uint32_t waitState =
         SYSCTL->SOCLOCK.MCLKCFG & SYSCTL_MCLKCFG_FLASHWAIT_MASK;
 
-    return (DL_SYSCTL_FLASH_WAIT_STATE)(waitState);
+    return (DL_SYSCTL_FLASH_WAIT_STATE) (waitState);
 }
 
 /**
@@ -1999,7 +2002,7 @@ __STATIC_INLINE DL_SYSCTL_FCC_TRIG_CNT DL_SYSCTL_getFCCPeriods(void)
     uint32_t periods =
         SYSCTL->SOCLOCK.GENCLKCFG & SYSCTL_GENCLKCFG_FCCTRIGCNT_MASK;
 
-    return (DL_SYSCTL_FCC_TRIG_CNT)(periods);
+    return (DL_SYSCTL_FCC_TRIG_CNT) (periods);
 }
 
 /**
@@ -2102,7 +2105,7 @@ __STATIC_INLINE DL_SYSCTL_VBOOST DL_SYSCTL_getVBOOSTConfig(void)
     uint32_t setting =
         SYSCTL->SOCLOCK.GENCLKCFG & SYSCTL_GENCLKCFG_ANACPUMPCFG_MASK;
 
-    return (DL_SYSCTL_VBOOST)(setting);
+    return (DL_SYSCTL_VBOOST) (setting);
 }
 
 /**
@@ -2121,8 +2124,8 @@ __STATIC_INLINE uint8_t DL_SYSCTL_getShutdownStorageByte(
 {
     const volatile uint32_t *pReg = &SYSCTL->SOCLOCK.SHUTDNSTORE0;
 
-    return (uint8_t)(
-        *(pReg + (uint32_t) index) & SYSCTL_SHUTDNSTORE0_DATA_MASK);
+    return (
+        uint8_t) (*(pReg + (uint32_t) index) & SYSCTL_SHUTDNSTORE0_DATA_MASK);
 }
 
 /**
@@ -2195,7 +2198,7 @@ __STATIC_INLINE DL_SYSCTL_RESET_CAUSE DL_SYSCTL_getResetCause(void)
 {
     uint32_t resetCause = SYSCTL->SOCLOCK.RSTCAUSE & SYSCTL_RSTCAUSE_ID_MASK;
 
-    return (DL_SYSCTL_RESET_CAUSE)(resetCause);
+    return (DL_SYSCTL_RESET_CAUSE) (resetCause);
 }
 
 /**

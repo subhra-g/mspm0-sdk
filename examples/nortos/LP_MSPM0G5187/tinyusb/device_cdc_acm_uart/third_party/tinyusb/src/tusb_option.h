@@ -105,6 +105,7 @@
 #define OPT_MCU_TM4C129           512 ///< TI Tiva-C 129x
 #define OPT_MCU_MSPM0G511X        513 ///< TI MSPM0G511X
 #define OPT_MCU_MSPM0G518X        514 ///< TI MSPM0G518X
+#define OPT_MCU_MSPM0C511X        515 ///< TI MSPM0C511X
 
 // ValentyUSB eptri
 #define OPT_MCU_VALENTYUSB_EPTRI  600 ///< Fomu eptri config

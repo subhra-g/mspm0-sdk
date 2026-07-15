@@ -202,7 +202,7 @@ The best way to start a SysConfig project in Keil is to import it from the SDK; 
    .. figure:: ./images/sysconfig_guide/keil_customize_bat.png
       :alt: 
 
-4. On the same folder, open ``<MSPM0_SDK_INSTALL_DIR/tools/keil/MSPM0_SDK_syscfg_menu_import.cfg`` for editing.
+4. On the same folder, open ``<MSPM0_SDK_INSTALL_DIR>/tools/keil/MSPM0_SDK_syscfg_menu_import.cfg`` for editing.
 
 5. Modify the SysConfig and SDK versions and paths.
 
@@ -212,30 +212,30 @@ The best way to start a SysConfig project in Keil is to import it from the SDK; 
    .. figure:: ./images/sysconfig_guide/keil_customize_cfg.png
       :alt: 
 
-5. In Keil uVision, select **Tools → Customize Tools Menu** from the menu.
+6.  In Keil uVision, select **Tools → Customize Tools Menu** from the menu.
 
-   .. figure:: ./images/sysconfig_guide/keil_customize_tools.png
-      :alt: 
+    .. figure:: ./images/sysconfig_guide/keil_customize_tools.png
+       :alt: 
 
-6. Click **Import**
+7.  Click **Import**
 
-   .. figure:: ./images/sysconfig_guide/keil_customize_tools_import.png
-      :alt: 
+    .. figure:: ./images/sysconfig_guide/keil_customize_tools_import.png
+       :alt: 
 
-7. Navigate to your SDK folder into ``<MSPM0_SDK_INSTALL_DIR>/tools/keil/`` and open **MSPM0\_SDK\_syscfg\_menu\_import.cfg**.
+8.  Navigate to your SDK folder into ``<MSPM0_SDK_INSTALL_DIR>/tools/keil/`` and open **MSPM0\_SDK\_syscfg\_menu\_import.cfg**.
 
-   .. figure:: ./images/sysconfig_guide/keil_customize_tools_import_file.png
-      :alt: 
+    .. figure:: ./images/sysconfig_guide/keil_customize_tools_import_file.png
+       :alt: 
 
-8. Click OK to close window.
+9.  Click OK to close window.
 
-   .. figure:: ./images/sysconfig_guide/keil_customize_tools_title.png
-      :alt: 
+    .. figure:: ./images/sysconfig_guide/keil_customize_tools_title.png
+       :alt: 
 
-9. The Tool will now appear on the menu. It will be used to open the GUI as explained on the next section.
+10. The Tool will now appear on the menu. It will be used to open the GUI as explained on the next section.
 
-   .. figure:: ./images/sysconfig_guide/keil_customize_tools_view.png
-      :alt: 
+    .. figure:: ./images/sysconfig_guide/keil_customize_tools_view.png
+       :alt: 
 
 3.3.2 Importing MSPM0 SysConfig Project using Keil
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

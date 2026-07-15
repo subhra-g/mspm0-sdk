@@ -88,29 +88,29 @@ Getting started with model deployment from the command line interface (CLI) is e
 
 The table below lists all of the tools used in this guide. Windows and Linux environments are equally supported. Step by step setup instructions are also provided below. Versions for the tools are defined where relevant, with a disposition of "required" (implies it is mandatory to use the stated version of the tool), "minimum" (implies that this is the minimum required version), or "tested with" which implies that this workflow was evaluated with these versions but it is expected that other versions (especially newer versions) may work without issue as well.
 
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| Tool                                            | Tool Version                         | Purpose                                                                                         | Where to obtain                                                                                   |
-+=================================================+======================================+=================================================================================================+===================================================================================================+
-| Command line interface                          | Windows: PowerShell or Linux: Bash   | Serves as the primary interface to execute tools like Python and TI's neural network compiler   | Usually installed by default on your desktop or notebook computer                                 |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| Python                                          | 3.10 (required)                      | Interpreter for running model training                                                          | `Link <https://www.python.org/downloads/release/python-31011/>`__                                 |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| Python PIP                                      | 24.3.1 (tested with)                 | Used for installing additional required Python packages                                         | Included by default in Python 3.10                                                                |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| PyTorch                                         | 2.7.1 (tested with)                  | Deep learning framework for defining and training models based around tensors                   | Installed via Python PIP                                                                          |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| Torchvision                                     | 0.22.1 (tested with)                 | PyTorch package providing datasets and image transformations for computer vision                | Installed via Python PIP                                                                          |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| ONNX                                            | 1.18.0 (tested with)                 | Export of trained model for transfer from PyTorch to neural network compiler                    | Installed via Python PIP                                                                          |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| TI Neural Network Compiler for MCUs             | 2.0.0 RC4 (minimum)                  | Compilation of ONNX trained model into an executable library                                    | Installed via Python PIP, supplied by TI                                                          |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| TI MSPM0-SDK                                    | 2.08.00.xx (minimum)                 | Software development kit for TI MSPM0 MCUs                                                      | Available at `SDK Link <https://www.ti.com/tool/MSPM0-SDK>`__                                     |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| TI Code Composer Studio IDE                     | 20.x.x (tested with)                 | Integrated development environment for MSPM0 MCUs                                               | Available at `CCS Link <https://www.ti.com/tool/CCSTUDIO>`__                                      |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
-| TI EdgeAI studio CLI tools (tinyml-tensorlab)   | r1.3 (minimum)                       | TI provided CLI tools for developing ML models on TI MCUs                                       | Available at `tinyml-tensorlab github <https://github.com/TexasInstruments/tinyml-tensorlab>`__   |
-+-------------------------------------------------+--------------------------------------+-------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| Tool                                      | Tool Version                         | Purpose                                                                                                                                        | Where to obtain                                                                                   |
++===========================================+======================================+================================================================================================================================================+===================================================================================================+
+| Command line interface                    | Windows: PowerShell or Linux: Bash   | Serves as the primary interface to execute tools like Python and TI's neural network compiler                                                  | Usually installed by default on your desktop or notebook computer                                 |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| Python                                    | 3.10 (required)                      | Interpreter for running model training                                                                                                         | `Link <https://www.python.org/downloads/release/python-31011/>`__                                 |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| Python PIP                                | 24.3.1 (tested with)                 | Used for installing additional required Python packages                                                                                        | Included by default in Python 3.10                                                                |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| PyTorch                                   | 2.7.1 (tested with)                  | Deep learning framework for defining and training models based around tensors                                                                  | Installed via Python PIP                                                                          |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| Torchvision                               | 0.22.1 (tested with)                 | PyTorch package providing datasets and image transformations for computer vision                                                               | Installed via Python PIP                                                                          |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| ONNX                                      | 1.18.0 (tested with)                 | Export of trained model for transfer from PyTorch to neural network compiler                                                                   | Installed via Python PIP                                                                          |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| TI Neural Network Compiler for MCUs       | 2.1.2 (minimum)                      | Compilation of ONNX trained model into an executable library                                                                                   | Installed via Python PIP, supplied by TI                                                          |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| TI MSPM0-SDK                              | 2.08.00.xx (minimum)                 | Software development kit for TI MSPM0 MCUs                                                                                                     | Available at `SDK Link <https://www.ti.com/tool/MSPM0-SDK>`__                                     |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| TI Code Composer Studio IDE               | 20.x.x (tested with)                 | Integrated development environment for MSPM0 MCUs                                                                                              | Available at `CCS Link <https://www.ti.com/tool/CCSTUDIO>`__                                      |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| TI Tiny ML Tensorlab (tinyml-tensorlab)   | v1.4.0 (minimum)                     | TI provided CLI tools for developing ML models on TI MCUs (Classification, Regression, Forecasting, Anomaly Detection, Image Classification)   | Available at `tinyml-tensorlab github <https://github.com/TexasInstruments/tinyml-tensorlab>`__   |
++-------------------------------------------+--------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
 
 2.2 Tool Installation and Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,13 +183,15 @@ For more information on installing PyTorch for your hardware, review the detaile
 
 4. **Install the TI Neural Network Compiler (NNC) for MCUs**
 
-TI provides an advanced neural network compiler (NNC) for MCUs, available as a Python wheel package for easy installation into the Python virtual environment. Install the TI NNC using the steps shown below. Note that it is important to remain within the Python virtual environment (venv) when executing this step.
+TI provides an advanced neural network compiler (NNC) for MCUs (v2.1.2), available as a Python wheel package for Linux, Windows, and macOS. Install the TI NNC using the steps shown below. Note that it is important to remain within the Python virtual environment (venv) when executing this step.
 
-Windows (PowerShell)/ Linux:
+Windows (PowerShell) / Linux / macOS:
 
 ::
 
       (ti-ml-venv) PS > pip3 install --extra-index-url https://software-dl.ti.com/mctools/esd/tvm/mcu ti_mcu_nnc
+
+To install a specific version: ``pip3 install --extra-index-url https://software-dl.ti.com/mctools/esd/tvm/mcu ti_mcu_nnc==2.1.2``
 
 5. **Install the TI MSPM0-SDK**
 
@@ -414,7 +416,7 @@ These files are the outputs which are taken into the MSPM0 software development 
 
 **Learning More about TI's Neural Network Compiler for MCUs**
 
-For a complete detailed description of TI's neural network compiler for MCUs, including additional configuration options and guidelines for use, visit the `TI NNC for MCUs User's Guide <https://software-dl.ti.com/mctools/nnc/mcu/users_guide/>`__.
+For a complete description of TI's neural network compiler for MCUs, including configuration options, supported device families, performance options, and inference integration, refer to the `TI NNC for MCUs User's Guide (v2.1.2) <https://software-dl.ti.com/mctools/nnc/mcu/users_guide/>`__.
 
 4. Train Your Own Model (Using EdgeAI Studio CLI: tinyml-tensorlab)
 -------------------------------------------------------------------
@@ -422,13 +424,18 @@ For a complete detailed description of TI's neural network compiler for MCUs, in
 4.1 tinyml-tensorlab
 ~~~~~~~~~~~~~~~~~~~~
 
-The Tiny ML Tensorlab repository available on `GitHub <https://github.com/TexasInstruments/tinyml-tensorlab/>`__ is meant to be a starting point to install and explore TI's AI offering for MCUs. It helps to install all the required repositories to get started. Currently, it can handle Image Classification, Time Series Classification, Regression and Anomaly Detection tasks.
+The Tiny ML Tensorlab repository available on `GitHub <https://github.com/TexasInstruments/tinyml-tensorlab/>`__ is the starting point to install and explore TI's AI offering for MCUs. It provides all the required repositories to get started with Time Series Classification, Regression, Forecasting, Anomaly Detection, and Image Classification tasks across 40+ TI microcontrollers with 31 example applications.
 
 Once you clone this repository, you will find the following repositories present within the tinyml-tensorlab directory:
 
--  tinyml-modelmaker: Based on user configuration (yaml files), stitches a flow with relevant scripts to call from tinyverse. This stitches the scripts into a flow of data loading/training/compilation **This is your home repo. Most of your work will be taking place from this directory.**
--  tinyml-tinyverse: Individual scripts to load data, do preprocessing, AI training, compilation (using NNC/TVM)
--  tinyml-modeloptimization: Model optimization toolkit that is necessary for quantization for 2bit/4bit/8bit weights in QAT (Quantization Aware Training)/PTQ (Post Training Quantization) flows for TI devices with or without NPU. As a customer developing models/flows, it is highly likely that you would not have to edit files in this repo.
+-  tinyml-modelzoo: Contains the supported devices, a variety of models, and all example applications. Browse here to find examples and model configurations for your target device and task type.
+-  tinyml-modelmaker: Based on user configuration (yaml files), stitches a flow with relevant scripts to call from tinyverse. This stitches the scripts into a flow of data loading/training/compilation. **This is your home repo. Most of your work will be taking place from this directory.**
+-  tinyml-tinyverse: Individual scripts to load data, do preprocessing, AI training, and compilation (using NNC/TVM).
+-  tinyml-modeloptimization: Model optimization toolkit for quantization with 2-bit/4-bit/8-bit weights in QAT (Quantization Aware Training)/PTQ (Post Training Quantization) flows for TI devices with or without NPU. Supports Hessian Aware Quantization for automatic recommendation of quantization bitwidths. As a customer developing models/flows, it is highly likely that you would not have to edit files in this repo.
+
+**Installation Options**
+
+tinyml-tensorlab supports two install modes: - **User Install** (recommended for most users): ``pip install tinyml-modelmaker`` installs a ready-to-use package with bundled examples. See `User Installation Guide <https://software-dl.ti.com/C2000/esd/mcu_ai/user_guide/index.html>`__ for steps. - **Developer Install**: Clone the repository and install from source (steps below). Required if you intend to modify tinyverse or modeloptimization internals.
 
 **Python Environment**
 
@@ -461,12 +468,13 @@ Once you clone this repository, you will find the following repositories present
     python -m venv py310
     .\py310\Scripts\activate
 
--  **NOTE: MSPM0 Customers:**
+-  **NOTE:**
 -  Please download and install `TI Arm Codegen Tools (TI Arm CGT Clang) <https://www.ti.com/tool/download/ARM-CGT-CLANG>`__
 
    -  Please set the installed path in your terminal:
-   -  Linux: ``export ARM_LLVM_CGT_PATH="/path/to/ti-cgt-armllvm_4.0.3.LTS"``
-   -  Windows: ``$env:ARM_LLVM_CGT_PATH="C:\path\to\wherever\present\ti-cgt-armllvm_4.0.3.LTS"``
+   -  Linux / macOS: ``export ARM_CGT_PATH="/path/to/ti-cgt-armllvm_4.0.3.LTS"`` and ``export PATH=$ARM_CGT_PATH/bin:$PATH``
+   -  Windows PowerShell: ``$env:ARM_CGT_PATH="C:\path\to\ti-cgt-armllvm_4.0.3.LTS"`` and ``$env:PATH=$env:ARM_CGT_PATH + "\bin;" + $env:PATH``
+   -  Windows Git BASH: ``export ARM_CGT_PATH="\path\to\ti-cgt-armllvm_4.0.3.LTS"`` and ``export PATH=$ARM_CGT_PATH/bin:$PATH``
 
 Installation
 ^^^^^^^^^^^^
@@ -623,11 +631,28 @@ Section 6: Compilation
 
 Once the YAML is configured, execute the command below to start the full training → quantization → compilation pipeline:
 
+**Linux (Bash):**
+
 .. code:: bash
 
     ./run_tinyml_modelmaker.sh ./examples/MNIST_image_classification/config_image_classification_mnist.yaml
 
+**Windows (PowerShell):**
+
+.. code:: powershell
+
+    python .\tinyml_modelmaker\run_tinyml_modelmaker.py .\examples\MNIST_image_classification\config_image_classification_mnist.yaml
+
 At the end of the run, both the trained model and compiled artifacts (for deployment on MSPM0 devices) will be generated.
+
+**Other Task Types**
+
+The same workflow applies to all supported task types. Example configs for each task type are available under ``tinyml-modelmaker/examples/`` in the cloned repository:
+
+-  **Time Series Classification**: ``examples/dc_arc_fault/config_dsk.yaml``
+-  **Time Series Regression**, **Forecasting**, **Anomaly Detection**, and additional **Image Classification** examples are included in ``tinyml-modelzoo``
+
+For the full list of example configs and task-specific configuration options, refer to the `TI Tiny ML Tensorlab User Guide <https://software-dl.ti.com/C2000/esd/mcu_ai/user_guide/index.html>`__ and browse the ``tinyml-modelmaker/examples/`` directory after cloning.
 
 5. Bring Your Own Model
 -----------------------
@@ -644,7 +669,7 @@ If you want to use the repository as it is, i.e a Python package, then you can s
 
 .. code:: bash
 
-    pip install git+https://github.com/TexasInstruments/tinyml-tensorlab.git@r1.3#subdirectory=tinyml-modeloptimization/torchmodelopt
+    pip install git+https://github.com/TexasInstruments/tinyml-tensorlab.git@r1.4#subdirectory=tinyml-modeloptimization/torchmodelopt
 
 To setup the repository for development, this python package and the dependencies can be installed by using the setup file.
 

@@ -1,0 +1,228 @@
+################################################################################
+Module Lattice Key Encapsulation Mechanism (ML-KEM)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The Module Lattice Key Encapsulation Mechanism (ML-KEM) implementation provides
+post-quantum resistant key encapsulation based on the FIPS 203 standard
+(also known as Crystals-Kyber). ML-KEM is designed to establish shared secrets
+between parties for secure communication.
+
+ML-KEM provides both IND-CPA (indistinguishability under chosen plaintext attack)
+and IND-CCA (indistinguishability under chosen ciphertext attack) security
+properties, making it suitable for key establishment in post-quantum cryptographic
+systems.
+
+================================================================================
+Security Levels
+================================================================================
+
+This library supports three security levels: ML-KEM-512, ML-KEM-768,
+and ML-KEM-1024, with increasing security strength. These levels correspond to
+the NIST security categories 1, 3, and 5, respectively.
+
+=============== ====================== ====================== =================== ==================
+Security Level  Encapsulation Key Size Decapsulation Key Size Ciphertext Size     Security Strength
+=============== ====================== ====================== =================== ==================
+ML-KEM-512      800 bytes              1632 bytes             768 bytes           NIST Level 1
+ML-KEM-768      1184 bytes             2400 bytes             1088 bytes          NIST Level 3
+ML-KEM-1024     1568 bytes             3168 bytes             1568 bytes          NIST Level 5
+=============== ====================== ====================== =================== ==================
+
+All security levels generate a 32-byte shared secret.
+
+================================================================================
+Status Codes
+================================================================================
+
+The ML-KEM functions return status codes defined in the `crypto_mlkem_stat_t`
+enumeration to indicate the result of operations.
+
+====================================== ====== ================================================================
+Status Code                            Value  Description
+====================================== ====== ================================================================
+`CRYPTO_MLKEM_STAT_SEED_TOO_SMALL`     -4     Seed was less than the required minimum size
+`CRYPTO_MLKEM_STAT_OK`                 0      The operation completed successfully
+====================================== ====== ================================================================
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for ML-KEM is defined below.
+
+================================================================================
+Key Generation
+================================================================================
+
+Generate a key pair for ML-KEM at the specified security level:
+
+.. code-block:: c
+
+    crypto_mlkem_stat_t Crypto_MLKEM_512_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *ek, uint8_t *dk);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_768_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *ek, uint8_t *dk);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_1024_keyGen(
+        const uint8_t *seed, size_t seedLen,
+        uint8_t *ek, uint8_t *dk);
+
+**Parameters:**
+
+* `seed`: Pointer to the random seed (64 bytes minimum)
+* `seedLen`: Length of the seed in bytes
+* `ek`: Pointer to store the encapsulation (public) key
+* `dk`: Pointer to store the decapsulation (private) key
+
+The buffer sizes for ek, dk are security level dependent (see the above table indicating
+the sizes by security level).
+
+**Returns:**
+
+* `CRYPTO_MLKEM_STAT_OK`: Success
+* `CRYPTO_MLKEM_STAT_SEED_TOO_SMALL`: Seed length less than 64 bytes
+
+================================================================================
+Encapsulation
+================================================================================
+
+Generate a shared secret and associated ciphertext using the encapsulation key:
+
+.. code-block:: c
+
+    crypto_mlkem_stat_t Crypto_MLKEM_512_encaps(
+        const uint8_t *seed, size_t seedLen,
+        const uint8_t *ek,
+        uint8_t *ct,
+        uint8_t *sharedSecret);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_768_encaps(
+        const uint8_t *seed, size_t seedLen,
+        const uint8_t *ek,
+        uint8_t *ct,
+        uint8_t *sharedSecret);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_1024_encaps(
+        const uint8_t *seed, size_t seedLen,
+        const uint8_t *ek,
+        uint8_t *ct,
+        uint8_t *sharedSecret);
+
+**Parameters:**
+
+* `seed`: Pointer to the random seed (32 bytes minimum)
+* `seedLen`: Length of the seed in bytes
+* `ek`: Pointer to the encapsulation (public) key
+* `ct`: Pointer to store the ciphertext output
+* `sharedSecret`: Pointer to store the shared secret output (32 bytes)
+
+**Returns:**
+
+* `CRYPTO_MLKEM_STAT_OK`: Success
+* `CRYPTO_MLKEM_STAT_SEED_TOO_SMALL`: Seed length less than 32 bytes
+
+================================================================================
+Decapsulation
+================================================================================
+
+Compute the shared secret from a ciphertext using the decapsulation key:
+
+.. code-block:: c
+
+    crypto_mlkem_stat_t Crypto_MLKEM_512_decaps(
+        const uint8_t *dk,
+        const uint8_t *ct,
+        uint8_t *sharedSecret);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_768_decaps(
+        const uint8_t *dk,
+        const uint8_t *ct,
+        uint8_t *sharedSecret);
+
+    crypto_mlkem_stat_t Crypto_MLKEM_1024_decaps(
+        const uint8_t *dk,
+        const uint8_t *ct,
+        uint8_t *sharedSecret);
+
+**Parameters:**
+
+* `dk`: Pointer to the decapsulation (private) key
+* `ct`: Pointer to the ciphertext input
+* `sharedSecret`: Pointer to store the shared secret output (32 bytes)
+
+**Returns:**
+
+* `CRYPTO_MLKEM_STAT_OK`: Success (always returned)
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for using the ML-KEM programming interface are given below.
+
+================================================================================
+Basic Key Encapsulation Flow
+================================================================================
+
+.. code-block:: c
+
+    // Key generation
+    uint8_t keygen_seed[CRYPTO_MLKEM_KEYGEN_SEED_LEN];  // 64 bytes
+    // Fill keygen_seed with random data from a DRBG or entropy source
+
+    uint8_t ek[CRYPTO_MLKEM_512_EK_LEN];
+    uint8_t dk[CRYPTO_MLKEM_512_DK_LEN];
+    crypto_mlkem_stat_t status = Crypto_MLKEM_512_keyGen(
+        keygen_seed, sizeof(keygen_seed), ek, dk);
+
+    if (status != CRYPTO_MLKEM_STAT_OK) {
+        // Handle error
+    }
+
+    // Encapsulation (sender side)
+    uint8_t encaps_seed[CRYPTO_MLKEM_ENCAPS_SEED_LEN];  // 32 bytes
+    // Fill encaps_seed with random data from a DRBG or entropy source
+
+    uint8_t ct[CRYPTO_MLKEM_512_CIPHER_TEXT_LEN];
+    uint8_t sharedSecret_sender[CRYPTO_MLKEM_SHARED_SECRET_LEN];
+    status = Crypto_MLKEM_512_encaps(
+        encaps_seed, sizeof(encaps_seed),
+        ek,
+        ct,
+        sharedSecret_sender);
+
+    if (status != CRYPTO_MLKEM_STAT_OK) {
+        // Handle error
+    }
+
+    // Decapsulation (receiver side)
+    uint8_t sharedSecret_receiver[CRYPTO_MLKEM_SHARED_SECRET_LEN];
+    status = Crypto_MLKEM_512_decaps(dk, ct, sharedSecret_receiver);
+
+    // Verify shared secrets match
+    if (memcmp(sharedSecret_sender, sharedSecret_receiver,
+               CRYPTO_MLKEM_SHARED_SECRET_LEN) == 0) {
+        // Shared secret established successfully
+        // Use the shared secret to derive symmetric keys
+    }
+
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. For highest security and CNSA 2.0 compatibility, use ML-KEM-1024. For a
+   balance of security and performance, ML-KEM-768 is recommended.
+#. Random seeds must be generated from a cryptographically secure random
+   number generator (e.g., DRBG or hardware entropy source).
+#. The encapsulation (public) key can be freely distributed, while the
+   decapsulation (private) key must be kept secret.
+#. ML-KEM operations are deterministic given the same seed values.
+   Always use fresh random seeds for each operation.

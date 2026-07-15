@@ -1,7 +1,6 @@
 ## Example Summary
 
-This example configures the UART as a LIN Commander, and demonstrates basic
-transmit and receive of LIN 2.0 packets using enhanced checksum.
+This example configures the UART as a LIN Commander and demonstrates LIN 2.0 protocol operations including transmit, receive, sleep/wakeup, and error handling using enhanced checksums. The application implements a state machine that cycles through various operational modes triggered by button presses, including normal publish/subscribe frames, responder-to-responder frames, and error condition generation for testing error detection and recovery.
 LIN is a feature only usable with a UART Extend instance.
 This example is provided for reference purposes only.
 
@@ -76,39 +75,42 @@ the Network Analyzer and LIN BoosterPack:
 - Network Analyzer GND    -> BoosterPack GND
 - Network Analyzer LINbus -> BoosterPack LIN_TERM
 
-The LIN Commander is configured to run at 24MHz at 19200 baud. These settings
-can be modified in the application.
-The commander can transmit data either in polling mode or interrupt mode.
-
-The list of acceptable PID commands are:
-  - PID 0x39 / 0x3A / 0x3B
-      - Usage: LIN Commander sends a packet containing 8 bytes of data for LIN Responder to receive and store.
-      - Packet: [PID, DATA1, DATA2, DATA3, DATA4, DATA5, DATA6, DATA7, DATA8, ENHANCED_CHECKSUM]
-      - Example Packet: [0x39, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xA2]
-  - PID 0x08 / 0x09 / 0x0A
-      - Usage: LIN Commander tells the LIN Responder to respond with 5 bytes of stored data.
-      - Packet: [PID]
-      - Example Packet: [0x8]
-The PIDs, message size, and functionality of the callback handlers can be modified
-and customized in the "gCommanderMessageTable" array in lin_commander.c.
+The LIN Commander is configured to run at 24MHz at 19200 baud. These settings can be modified in the application.
 
 Compile, load and run the example.
 
-When S2 button is pressed, the packet type will alternate between the following two packets:
+### Operation Modes
 
-LIN 2.0 Packet 1
-  - PID: 0x39
-  - Data: [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]
-  - Enhanced Checksum: 0xA2
+Press the S2 button to cycle through the following LIN operations:
 
-LIN 2.0 Packet 2
-  - PID: 0x08
+1. **OP_STATE_PUBLISH** - Sends an 8-byte frame (Frame ID 0x10) to responder
+2. **OP_STATE_SUBSCRIBE** - Requests 8-byte response from responder (Frame ID 0x20)
+3. **OP_STATE_RESP_TO_RESP_1** - Sends responder-to-responder header (Frame ID 0x30)
+4. **OP_STATE_RESP_TO_RESP_2** - Sends responder-to-responder header (Frame ID 0x31)
+5. **OP_STATE_SLEEP** - Transmits LIN sleep command to put bus to sleep
+6. **OP_STATE_WAKEUP** - Sends wake-up pulse to wake the bus
+7. **OP_STATE_SYNC_ERROR** - Tests sync byte error detection (sends 0xAA instead of 0x55)
+8. **OP_STATE_CHKSUM_ERROR** - Tests checksum error detection (sends wrong checksum)
+9. **OP_STATE_PID_PARITY_ERROR** - Tests PID parity error detection (flips parity bits)
+10. **OP_STATE_COM_NO_RES_ERROR** - Tests no response error detection (unknown PID)
+11. **OP_STATE_COM_INCMPLT_RES_ERROR** - Tests incomplete response error (expects 9 bytes, gets 8)
+12. **OP_STATE_RES_NO_RES_ERROR** - Tests missing responder data error (zero length frame)
+13. **OP_STATE_RES_INCMPLT_RES_ERROR** - Tests incomplete responder data (expects 8, sends 5)
 
-Each time packet 1 is sent, LED1 will toggle and the value of the first and last data bytes will be incremented by one.
+### LED Indicators
 
-It is expected for the LIN Commander to receive 5 bytes of data after in response to PID 0x08.
+- LED1 pulses (50ms) when a PUBLISH frame or responder-to-responder header is transmitted
+- LED1 pulses when data is successfully received on a SUBSCRIBE frame
+- Both LEDs blink 3 times (50ms each) when any LIN error is detected
+- LED1 stays on for 500ms during sleep state
+- LED1 pulses (100ms) during wake-up state
 
-If the LIN Responder correctly sends a response, then LED1 will toggle and the variable "gDataReceived" will be set to true.
+### Message Table Configuration
 
-The received bytes will be stored in "gCommanderRXBuffer". Each time a new packet of data is received, it will overwrite what was
-previously stored in "gCommanderRXBuffer".
+The message table (`commanderMessageTable`) in lin_commander.c defines the 4 frames:
+- Frame 0: PUBLISH (0x10) - 8 bytes, enhanced checksum, commander sends
+- Frame 1: SUBSCRIBE (0x20) - 8 bytes, enhanced checksum, commander receives
+- Frame 2: RESPONDER_TO_RESPONDER_1 (0x30) - 8 bytes, enhanced checksum, header only
+- Frame 3: RESPONDER_TO_RESPONDER_2 (0x31) - 8 bytes, enhanced checksum, header only
+
+The message table, message sizes, frame IDs, and callback functions can be modified in the `commanderMessageTable` array in lin_commander.c.

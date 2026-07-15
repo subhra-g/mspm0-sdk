@@ -110,17 +110,40 @@ let ADC12_internalSignals = {
     MSPM0GX218_GX207: {
         ADC0: {
             CH11: "Temperature Sensor",
-            CH30: "Internal VREF", // TODO: Keep name ? or "VREF 1"?
+            CH30: "Internal VREF", // VREF 1
         },
         ADC1: {
-            CH30: "Internal VREF", // TODO: Keep name ? or "VREF 2"?
+            CH30: "Internal VREF", // VREF 2
+            CH31: "Supply Monitor",
+        }
+    },
+    MSPM0GX70X_GX73X: {
+        ADC0: {
+            CH11: "Temperature Sensor",
+            CH30: "Internal VREF", // VREF 1
+        },
+        ADC1: {
+            CH30: "Internal VREF", // VREF 2
+            CH31: "Supply Monitor",
+        }
+    },
+    MSPM0H821X: {
+        ADC0: {
+            CH11: "Temperature Sensor",
+            CH15: "VDDA",
+            CH30: "Internal VREF",
+            CH31: "Supply Monitor",
+        },
+        ADC1: {
+            CH15: "VDDA",
+            CH30: "Internal VREF",
             CH31: "Supply Monitor",
         }
     },
     MSPM0G122X: {
         ADC0: {
             CH11: "Temperature Sensor",
-            CH30: "Internal VREF", // VREF 1?
+            CH30: "Internal VREF", // VREF 1
             CH31: "Supply Monitor",
         }
     },
@@ -157,6 +180,8 @@ let ADC12_adcMemRange = {
     MSPM0L211X_L112X    : 11,
     MSPM0L210X          : 11,
     MSPM0GX218_GX207    : 11,
+    MSPM0GX70X_GX73X          : 11,
+    MSPM0H821X          : 11,
     MSPM0G122X          : 11,
     MSPM0C511X          : 11,
 }

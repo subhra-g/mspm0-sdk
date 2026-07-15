@@ -25,6 +25,8 @@ OBJECTS = dali_target_main.obj ti_eeprom_emulation_type_a_eeprom_emulation_type_
 NAME = dali_led_demo
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -32,12 +34,17 @@ CFLAGS += -I.. \
     @device.opt \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -ldevice.cmd.genlibs \
     "-L$(MSPM0_SDK_INSTALL_DIR)/source" \
@@ -88,19 +95,19 @@ ti_eeprom_emulation_type_a_eeprom_emulation_type_a.obj: ../ti/eeprom/emulation_t
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_dali_dali_102_dali_gpio_comm.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2555/execroot/__main__/source/ti/dali/dali_102/dali_gpio_comm.c $(SYSCFG_H_FILES)
+ti_dali_dali_102_dali_gpio_comm.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/11480/execroot/__main__/source/ti/dali/dali_102/dali_gpio_comm.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_dali_dali_102_dali_target_comm.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2555/execroot/__main__/source/ti/dali/dali_102/dali_target_comm.c $(SYSCFG_H_FILES)
+ti_dali_dali_102_dali_target_comm.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/11480/execroot/__main__/source/ti/dali/dali_102/dali_target_comm.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_dali_dali_102_dali_target_command.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2555/execroot/__main__/source/ti/dali/dali_102/dali_target_command.c $(SYSCFG_H_FILES)
+ti_dali_dali_102_dali_target_command.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/11480/execroot/__main__/source/ti/dali/dali_102/dali_target_command.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_dali_dali_102_dali_207_dali_target_led_command.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2555/execroot/__main__/source/ti/dali/dali_102/dali_207/dali_target_led_command.c $(SYSCFG_H_FILES)
+ti_dali_dali_102_dali_207_dali_target_led_command.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/11480/execroot/__main__/source/ti/dali/dali_102/dali_207/dali_target_led_command.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

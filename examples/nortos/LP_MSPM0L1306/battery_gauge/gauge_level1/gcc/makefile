@@ -16,6 +16,8 @@ OBJECTS = Driver_MSPM0Lxx_BSP.obj Driver_MSPM0Lxx_Driver.obj Gauge_Algorithm_Vol
 NAME = gauge_level1
 
 
+DFLAGS += -gstrict-dwarf
+
 CFLAGS += -I.. \
     -D__MSPM0L1306__ \
     -O2 \
@@ -29,10 +31,15 @@ CFLAGS += -I.. \
     -ffunction-sections \
     -fdata-sections \
     -g \
-    -gstrict-dwarf \
     -Wall \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include/newlib-nano" \
     "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += "-L$(MSPM0_SDK_INSTALL_DIR)/source/ti/iqmath/lib/gcc/m0p/rts/mspm0l11xx_l13xx" \
     -l:iqmath.a \

@@ -47,8 +47,8 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0G3507 User's Guide](https://www.ti.com/lit/slau873).
 
 ## Example Usage
-Compile, load and run the example. Provide a valid voltage to A0_2
-and monitor LED1 (Voltage source for ADC is excepted to be between
+Compile, load and run the example. Provide a valid voltage to A0_6
+and monitor LED1 (Voltage source for ADC is expected to be between
 0v and MCU supply voltage).
 
 On powerup, the ADC pin(s) used in this example are by default set to

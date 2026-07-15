@@ -250,9 +250,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga0de0c501fa01964c9081c50fea483e2f"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0de0c501fa01964c9081c50fea483e2f">DRV8706Q1_setNSleep</a> (<a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html">DRV8706Q1_INSTANCE</a> drv, bool value)</td></tr>
 <tr class="memdesc:ga0de0c501fa01964c9081c50fea483e2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Help function that controls the MCU pin connected to nSleep pin on the motor driver. Note if you manually set nSLEEP low for more than 1 ms then all the register values will be reset to their default values. Therefore, it would be important to immediately call <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaa60458c6b32d88364b830781989d887b">DRV8706Q1_powerOnResetVal</a> whenver you set nSLEEP to high to make sure internal structures are sync.  <a href="#ga0de0c501fa01964c9081c50fea483e2f">More...</a><br /></td></tr>
 <tr class="separator:ga0de0c501fa01964c9081c50fea483e2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga42f1e7f51dc897e193417166fae3ecc1"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga42f1e7f51dc897e193417166fae3ecc1">DRV8706Q1_setDrvOff</a> (<a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html">DRV8706Q1_INSTANCE</a> drv, bool value)</td></tr>
-<tr class="memdesc:ga42f1e7f51dc897e193417166fae3ecc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Help function that controls the MCU pin connected to DrvOff pin on the motor driver.  <a href="#ga42f1e7f51dc897e193417166fae3ecc1">More...</a><br /></td></tr>
-<tr class="separator:ga42f1e7f51dc897e193417166fae3ecc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0274f30bd4838b0f227cd9a0a701d79d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0274f30bd4838b0f227cd9a0a701d79d">DRV8706Q1_setDrvOff</a> (<a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html">DRV8706Q1_INSTANCE</a> drv, bool value)</td></tr>
+<tr class="memdesc:ga0274f30bd4838b0f227cd9a0a701d79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Help function that controls the MCU pin connected to DrvOff pin on the motor driver.  <a href="#ga0274f30bd4838b0f227cd9a0a701d79d">More...</a><br /></td></tr>
+<tr class="separator:ga0274f30bd4838b0f227cd9a0a701d79d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6aeb321103928449c50a7f7a26d60b02"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga6aeb321103928449c50a7f7a26d60b02">DRV8706Q1_setNHiZ1</a> (<a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html">DRV8706Q1_INSTANCE</a> drv, bool value)</td></tr>
 <tr class="memdesc:ga6aeb321103928449c50a7f7a26d60b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Help function that controls the MCU pin connected to nHiZ1 pin on the motor driver.  <a href="#ga6aeb321103928449c50a7f7a26d60b02">More...</a><br /></td></tr>
 <tr class="separator:ga6aeb321103928449c50a7f7a26d60b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -932,7 +932,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga8449b45dc4c9537e6753af8dffe1b3c6">DRV8706Q1_spiReadCmd()</a>, and <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaad09632830b0064fab3d50dfaf3e1934">DRV8706Q1_spiWriteCmd()</a>.</p>
 
-<p>Referenced by <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gacb2589cf0999288ed8216274f24fcd27">DRV8706Q1_setAnalogReferenceDivider()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga5c23b407ae7e894c066533ea1e8b4572">DRV8706Q1_setCurrentSenseGain()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga7bb35a940edcbdd382593b28df5c35d5">DRV8706Q1_switchToHalfBridgeDrive()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gae3b6619ba638ed632937090a660c0ae9">DRV8706Q1_switchToHBridgeDrive()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaf56531b9abd9dd7a379ee7ea79c9c452">DRV8706Q1_switchToPhaseDrive()</a>, and <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga404a75331846576d0657b8104acba82f">DRV8706Q1_switchToSolenoidDrive()</a>.</p>
+<p>Referenced by <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gacb2589cf0999288ed8216274f24fcd27">DRV8706Q1_setAnalogReferenceDivider()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga5c23b407ae7e894c066533ea1e8b4572">DRV8706Q1_setCurrentSenseGain()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0274f30bd4838b0f227cd9a0a701d79d">DRV8706Q1_setDrvOff()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga7bb35a940edcbdd382593b28df5c35d5">DRV8706Q1_switchToHalfBridgeDrive()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gae3b6619ba638ed632937090a660c0ae9">DRV8706Q1_switchToHBridgeDrive()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gaf56531b9abd9dd7a379ee7ea79c9c452">DRV8706Q1_switchToPhaseDrive()</a>, and <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga404a75331846576d0657b8104acba82f">DRV8706Q1_switchToSolenoidDrive()</a>.</p>
 
 </div>
 </div>
@@ -1249,20 +1249,20 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gaf439c7934f8a59d8b9a3b8b3732f1971">HAL_delayMilliSeconds()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gac0d78298925494e1e5f78c7ccefd5374">HAL_setGPIOOutput()</a>, and <a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html#a9a52b74000f8d7bf28419c35360352a7">DRV8706Q1_INSTANCE::nSleep</a>.</p>
+<p>References <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0274f30bd4838b0f227cd9a0a701d79d">DRV8706Q1_setDrvOff()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gaf439c7934f8a59d8b9a3b8b3732f1971">HAL_delayMilliSeconds()</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gac0d78298925494e1e5f78c7ccefd5374">HAL_setGPIOOutput()</a>, and <a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html#a9a52b74000f8d7bf28419c35360352a7">DRV8706Q1_INSTANCE::nSleep</a>.</p>
 
 <p>Referenced by <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gadf57d1431824d1d01f3b13ca320e99fb">DRV8706Q1_reset()</a>.</p>
 
 </div>
 </div>
-<a id="ga42f1e7f51dc897e193417166fae3ecc1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga42f1e7f51dc897e193417166fae3ecc1">&sect;&nbsp;</a></span>DRV8706Q1_setDrvOff()</h2>
+<a id="ga0274f30bd4838b0f227cd9a0a701d79d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0274f30bd4838b0f227cd9a0a701d79d">&sect;&nbsp;</a></span>DRV8706Q1_setDrvOff()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">__STATIC_INLINE void DRV8706Q1_setDrvOff </td>
+          <td class="memname">void DRV8706Q1_setDrvOff </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html">DRV8706Q1_INSTANCE</a>&#160;</td>
           <td class="paramname"><em>drv</em>, </td>
@@ -1290,7 +1290,9 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html#a0a1e7dc1aee1bd4e283715c0d9f93185">DRV8706Q1_INSTANCE::drvOff</a>, and <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gac0d78298925494e1e5f78c7ccefd5374">HAL_setGPIOOutput()</a>.</p>
+<p>References <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ggaef31dd7c95117efb9d5ec1a34331850ca22ed43ae2257a782fa00ffe412c586b1">DRV8706Q1_SPI_ADDR_IC_CTRL</a>, <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#gad697586908ba822d8953cd5db684b029">DRV8706Q1_spiUpdateRegister()</a>, <a class="el" href="struct_d_r_v8706_q1___i_n_s_t_a_n_c_e.html#a0a1e7dc1aee1bd4e283715c0d9f93185">DRV8706Q1_INSTANCE::drvOff</a>, and <a class="el" href="group___b_s_m_____m_s_p_m0_l___h_a_l.html#gac0d78298925494e1e5f78c7ccefd5374">HAL_setGPIOOutput()</a>.</p>
+
+<p>Referenced by <a class="el" href="group___b_s_m_____m_s_p_m0_l___d_r_v8706_q1.html#ga0de0c501fa01964c9081c50fea483e2f">DRV8706Q1_setNSleep()</a>.</p>
 
 </div>
 </div>

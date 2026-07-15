@@ -33,18 +33,19 @@
             -Iexamples/edgeAI/tida_010997_data_capture/sensors/hall_effect
             -Iexamples/edgeAI/tida_010997_data_capture/sensors/humidity_temperature
             -Iexamples/edgeAI/tida_010997_data_capture/sensors/imu
+            -Iexamples/edgeAI/tida_010997_data_capture/sensors/analog_mic
             -Iexamples/edgeAI/tida_010997_data_capture/sensors/pressure
             -I${PROJECT_ROOT}/comm
             -I${PROJECT_ROOT}/sensors
             -I${PROJECT_ROOT}/sensors/hall_effect
             -I${PROJECT_ROOT}/sensors/humidity_temperature
             -I${PROJECT_ROOT}/sensors/imu
+            -I${PROJECT_ROOT}/sensors/analog_mic
             -I${PROJECT_ROOT}/sensors/pressure
             -I${PROJECT_ROOT}/sensors/ambient_light
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/edgeAI/device_agent_protocol/core
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/edgeAI/device_agent_protocol/uart_comm
             -I${COM_TI_MSPM0_SDK_INSTALL_DIR}/source
-            -gdwarf-3
             -mcpu=cortex-m0plus
             -march=thumbv6m
             -mfloat-abi=soft
@@ -107,6 +108,10 @@
         <file path="../sensors/pressure/sensor_BMP384.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="sensors/pressure">
         </file>
         <file path="../sensors/pressure/sensor_BMP384.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="sensors/pressure">
+        </file>
+        <file path="../sensors/analog_mic/sensor_TAA3020.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="sensors/analog_mic">
+        </file>
+        <file path="../sensors/analog_mic/sensor_TAA3020.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="sensors/analog_mic">
         </file>
         <file path="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/edgeAI/device_agent_protocol/core/dap_core.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="ti/edgeAI/device_agent_protocol/core">
         </file>

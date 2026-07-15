@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.2. Module Lattice Key Encapsulation Mechanism (ML-KEM) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Random Module" href="module_rand.html" />
+    <link rel="prev" title="6.1. Module Lattice Digital Signature Algorithm (ML-DSA)" href="module_pqc_mldsa.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="module_pqc_mldsa.html">6.1. Module Lattice Digital Signature Algorithm (ML-DSA)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6.2. Module Lattice Key Encapsulation Mechanism (ML-KEM)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">6.2.1. Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#security-levels">6.2.1.1. Security Levels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#status-codes">6.2.1.2. Status Codes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#api-functions">6.2.2. API Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#key-generation">6.2.2.1. Key Generation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encapsulation">6.2.2.2. Encapsulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#decapsulation">6.2.2.3. Decapsulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-examples">6.2.3. Usage Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-key-encapsulation-flow">6.2.3.1. Basic Key Encapsulation Flow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes">6.2.4. Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_rand.html">7. Random Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_pqc.html"><span class="section-number">6. </span>Post Quantum Cryptography Module</a> &raquo;</li>
+      <li><span class="section-number">6.2. </span>Module Lattice Key Encapsulation Mechanism (ML-KEM)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lattice-key-encapsulation-mechanism-ml-kem">
+<h1><span class="section-number">6.2. </span>Module Lattice Key Encapsulation Mechanism (ML-KEM)<a class="headerlink" href="#module-lattice-key-encapsulation-mechanism-ml-kem" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">6.2.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The Module Lattice Key Encapsulation Mechanism (ML-KEM) implementation provides
+post-quantum resistant key encapsulation based on the FIPS 203 standard
+(also known as Crystals-Kyber). ML-KEM is designed to establish shared secrets
+between parties for secure communication.</p>
+<p>ML-KEM provides both IND-CPA (indistinguishability under chosen plaintext attack)
+and IND-CCA (indistinguishability under chosen ciphertext attack) security
+properties, making it suitable for key establishment in post-quantum cryptographic
+systems.</p>
+<section id="security-levels">
+<h3><span class="section-number">6.2.1.1. </span>Security Levels<a class="headerlink" href="#security-levels" title="Permalink to this heading">¶</a></h3>
+<p>This library supports three security levels: ML-KEM-512, ML-KEM-768,
+and ML-KEM-1024, with increasing security strength. These levels correspond to
+the NIST security categories 1, 3, and 5, respectively.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Security Level</p></th>
+<th class="head"><p>Encapsulation Key Size</p></th>
+<th class="head"><p>Decapsulation Key Size</p></th>
+<th class="head"><p>Ciphertext Size</p></th>
+<th class="head"><p>Security Strength</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ML-KEM-512</p></td>
+<td><p>800 bytes</p></td>
+<td><p>1632 bytes</p></td>
+<td><p>768 bytes</p></td>
+<td><p>NIST Level 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>ML-KEM-768</p></td>
+<td><p>1184 bytes</p></td>
+<td><p>2400 bytes</p></td>
+<td><p>1088 bytes</p></td>
+<td><p>NIST Level 3</p></td>
+</tr>
+<tr class="row-even"><td><p>ML-KEM-1024</p></td>
+<td><p>1568 bytes</p></td>
+<td><p>3168 bytes</p></td>
+<td><p>1568 bytes</p></td>
+<td><p>NIST Level 5</p></td>
+</tr>
+</tbody>
+</table>
+<p>All security levels generate a 32-byte shared secret.</p>
+</section>
+<section id="status-codes">
+<h3><span class="section-number">6.2.1.2. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h3>
+<p>The ML-KEM functions return status codes defined in the <cite>crypto_mlkem_stat_t</cite>
+enumeration to indicate the result of operations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_MLKEM_STAT_SEED_TOO_SMALL</cite></p></td>
+<td><p>-4</p></td>
+<td><p>Seed was less than the required minimum size</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_MLKEM_STAT_OK</cite></p></td>
+<td><p>0</p></td>
+<td><p>The operation completed successfully</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="api-functions">
+<h2><span class="section-number">6.2.2. </span>API Functions<a class="headerlink" href="#api-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for ML-KEM is defined below.</p>
+<section id="key-generation">
+<h3><span class="section-number">6.2.2.1. </span>Key Generation<a class="headerlink" href="#key-generation" title="Permalink to this heading">¶</a></h3>
+<p>Generate a key pair for ML-KEM at the specified security level:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_512_keyGen</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_768_keyGen</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_1024_keyGen</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>seed</cite>: Pointer to the random seed (64 bytes minimum)</p></li>
+<li><p><cite>seedLen</cite>: Length of the seed in bytes</p></li>
+<li><p><cite>ek</cite>: Pointer to store the encapsulation (public) key</p></li>
+<li><p><cite>dk</cite>: Pointer to store the decapsulation (private) key</p></li>
+</ul>
+<p>The buffer sizes for ek, dk are security level dependent (see the above table indicating
+the sizes by security level).</p>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_MLKEM_STAT_OK</cite>: Success</p></li>
+<li><p><cite>CRYPTO_MLKEM_STAT_SEED_TOO_SMALL</cite>: Seed length less than 64 bytes</p></li>
+</ul>
+</section>
+<section id="encapsulation">
+<h3><span class="section-number">6.2.2.2. </span>Encapsulation<a class="headerlink" href="#encapsulation" title="Permalink to this heading">¶</a></h3>
+<p>Generate a shared secret and associated ciphertext using the encapsulation key:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_512_encaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_768_encaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_1024_encaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">seedLen</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ek</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>seed</cite>: Pointer to the random seed (32 bytes minimum)</p></li>
+<li><p><cite>seedLen</cite>: Length of the seed in bytes</p></li>
+<li><p><cite>ek</cite>: Pointer to the encapsulation (public) key</p></li>
+<li><p><cite>ct</cite>: Pointer to store the ciphertext output</p></li>
+<li><p><cite>sharedSecret</cite>: Pointer to store the shared secret output (32 bytes)</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_MLKEM_STAT_OK</cite>: Success</p></li>
+<li><p><cite>CRYPTO_MLKEM_STAT_SEED_TOO_SMALL</cite>: Seed length less than 32 bytes</p></li>
+</ul>
+</section>
+<section id="decapsulation">
+<h3><span class="section-number">6.2.2.3. </span>Decapsulation<a class="headerlink" href="#decapsulation" title="Permalink to this heading">¶</a></h3>
+<p>Compute the shared secret from a ciphertext using the decapsulation key:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_512_decaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_768_decaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="nf">Crypto_MLKEM_1024_decaps</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">dk</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sharedSecret</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>dk</cite>: Pointer to the decapsulation (private) key</p></li>
+<li><p><cite>ct</cite>: Pointer to the ciphertext input</p></li>
+<li><p><cite>sharedSecret</cite>: Pointer to store the shared secret output (32 bytes)</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_MLKEM_STAT_OK</cite>: Success (always returned)</p></li>
+</ul>
+</section>
+</section>
+<section id="usage-examples">
+<h2><span class="section-number">6.2.3. </span>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this heading">¶</a></h2>
+<p>Examples for using the ML-KEM programming interface are given below.</p>
+<section id="basic-key-encapsulation-flow">
+<h3><span class="section-number">6.2.3.1. </span>Basic Key Encapsulation Flow<a class="headerlink" href="#basic-key-encapsulation-flow" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// Key generation</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">keygen_seed</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_KEYGEN_SEED_LEN</span><span class="p">];</span><span class="w">  </span><span class="c1">// 64 bytes</span>
+<span class="c1">// Fill keygen_seed with random data from a DRBG or entropy source</span>
+
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">ek</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_512_EK_LEN</span><span class="p">];</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">dk</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_512_DK_LEN</span><span class="p">];</span>
+<span class="n">crypto_mlkem_stat_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_MLKEM_512_keyGen</span><span class="p">(</span>
+<span class="w">    </span><span class="n">keygen_seed</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">keygen_seed</span><span class="p">),</span><span class="w"> </span><span class="n">ek</span><span class="p">,</span><span class="w"> </span><span class="n">dk</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_MLKEM_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle error</span>
+<span class="p">}</span>
+
+<span class="c1">// Encapsulation (sender side)</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">encaps_seed</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_ENCAPS_SEED_LEN</span><span class="p">];</span><span class="w">  </span><span class="c1">// 32 bytes</span>
+<span class="c1">// Fill encaps_seed with random data from a DRBG or entropy source</span>
+
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">ct</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_512_CIPHER_TEXT_LEN</span><span class="p">];</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">sharedSecret_sender</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_SHARED_SECRET_LEN</span><span class="p">];</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_MLKEM_512_encaps</span><span class="p">(</span>
+<span class="w">    </span><span class="n">encaps_seed</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">encaps_seed</span><span class="p">),</span>
+<span class="w">    </span><span class="n">ek</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ct</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sharedSecret_sender</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_MLKEM_STAT_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle error</span>
+<span class="p">}</span>
+
+<span class="c1">// Decapsulation (receiver side)</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">sharedSecret_receiver</span><span class="p">[</span><span class="n">CRYPTO_MLKEM_SHARED_SECRET_LEN</span><span class="p">];</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_MLKEM_512_decaps</span><span class="p">(</span><span class="n">dk</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">,</span><span class="w"> </span><span class="n">sharedSecret_receiver</span><span class="p">);</span>
+
+<span class="c1">// Verify shared secrets match</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">memcmp</span><span class="p">(</span><span class="n">sharedSecret_sender</span><span class="p">,</span><span class="w"> </span><span class="n">sharedSecret_receiver</span><span class="p">,</span>
+<span class="w">           </span><span class="n">CRYPTO_MLKEM_SHARED_SECRET_LEN</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Shared secret established successfully</span>
+<span class="w">    </span><span class="c1">// Use the shared secret to derive symmetric keys</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="important-notes">
+<h2><span class="section-number">6.2.4. </span>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>For highest security and CNSA 2.0 compatibility, use ML-KEM-1024. For a
+balance of security and performance, ML-KEM-768 is recommended.</p></li>
+<li><p>Random seeds must be generated from a cryptographically secure random
+number generator (e.g., DRBG or hardware entropy source).</p></li>
+<li><p>The encapsulation (public) key can be freely distributed, while the
+decapsulation (private) key must be kept secret.</p></li>
+<li><p>ML-KEM operations are deterministic given the same seed values.
+Always use fresh random seeds for each operation.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_pqc_mldsa.html" class="btn btn-neutral float-left" title="6.1. Module Lattice Digital Signature Algorithm (ML-DSA)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_rand.html" class="btn btn-neutral float-right" title="7. Random Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -73,7 +73,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Configuration structure for the Filterbank Feature Extraction.  
+<p>Configuration parameters for the filterbank feature extraction.  
  <a href="struct_f_b_f_e___config.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="filterbank__feature__extract_8h_source.html">filterbank_feature_extract.h</a>&gt;</code></p>
@@ -84,27 +84,28 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a8460822b3b5ec383da3d0876333e7475"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input sampling rate in Hz.  <a href="#a8460822b3b5ec383da3d0876333e7475">More...</a><br /></td></tr>
 <tr class="separator:a8460822b3b5ec383da3d0876333e7475"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc000c976e26230443526f1044f0a2f1"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#afc000c976e26230443526f1044f0a2f1">window_size_ms</a></td></tr>
-<tr class="memdesc:afc000c976e26230443526f1044f0a2f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the processing window in milliseconds.  <a href="#afc000c976e26230443526f1044f0a2f1">More...</a><br /></td></tr>
+<tr class="memdesc:afc000c976e26230443526f1044f0a2f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing window size in milliseconds.  <a href="#afc000c976e26230443526f1044f0a2f1">More...</a><br /></td></tr>
 <tr class="separator:afc000c976e26230443526f1044f0a2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac83c95566541ea533372c470b50766db"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#ac83c95566541ea533372c470b50766db">context_ms</a></td></tr>
-<tr class="memdesc:ac83c95566541ea533372c470b50766db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Context size in milliseconds.  <a href="#ac83c95566541ea533372c470b50766db">More...</a><br /></td></tr>
+<tr class="memdesc:ac83c95566541ea533372c470b50766db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporal context size in milliseconds.  <a href="#ac83c95566541ea533372c470b50766db">More...</a><br /></td></tr>
 <tr class="separator:ac83c95566541ea533372c470b50766db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed449beb140624985e264d0ae8490e43"><td class="memItemLeft" align="right" valign="top"><a id="aed449beb140624985e264d0ae8490e43"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43">ls_mask</a></td></tr>
-<tr class="memdesc:aed449beb140624985e264d0ae8490e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for extracting least significant bits. <br /></td></tr>
+<tr class="memitem:aed449beb140624985e264d0ae8490e43"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43">ls_mask</a></td></tr>
+<tr class="memdesc:aed449beb140624985e264d0ae8490e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitmask for extracting the least-significant byte of a sample.  <a href="#aed449beb140624985e264d0ae8490e43">More...</a><br /></td></tr>
 <tr class="separator:aed449beb140624985e264d0ae8490e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add77f612aa5a057552d824554d74b2ac"><td class="memItemLeft" align="right" valign="top"><a id="add77f612aa5a057552d824554d74b2ac"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac">ms_mask</a></td></tr>
-<tr class="memdesc:add77f612aa5a057552d824554d74b2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for extracting most significant bits. <br /></td></tr>
+<tr class="memitem:add77f612aa5a057552d824554d74b2ac"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac">ms_mask</a></td></tr>
+<tr class="memdesc:add77f612aa5a057552d824554d74b2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitmask for extracting the most-significant byte of a sample.  <a href="#add77f612aa5a057552d824554d74b2ac">More...</a><br /></td></tr>
 <tr class="separator:add77f612aa5a057552d824554d74b2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55bafbe94c7514bdc5b48b13f34dd57e"><td class="memItemLeft" align="right" valign="top"><a id="a55bafbe94c7514bdc5b48b13f34dd57e"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e">ms_shift</a></td></tr>
-<tr class="memdesc:a55bafbe94c7514bdc5b48b13f34dd57e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift value for most significant bits. <br /></td></tr>
+<tr class="memitem:a55bafbe94c7514bdc5b48b13f34dd57e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e">ms_shift</a></td></tr>
+<tr class="memdesc:a55bafbe94c7514bdc5b48b13f34dd57e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Right-shift amount applied after masking the MSB portion.  <a href="#a55bafbe94c7514bdc5b48b13f34dd57e">More...</a><br /></td></tr>
 <tr class="separator:a55bafbe94c7514bdc5b48b13f34dd57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a469a29eb3a43a2b755158958324a81af"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af">branch_bits</a></td></tr>
+<tr class="memdesc:a469a29eb3a43a2b755158958324a81af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effective branch bit-width for input sample scaling.  <a href="#a469a29eb3a43a2b755158958324a81af">More...</a><br /></td></tr>
+<tr class="separator:a469a29eb3a43a2b755158958324a81af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Configuration structure for the Filterbank Feature Extraction. </p>
-<p>This structure holds all the necessary parameters for configuring the filterbank feature extraction process, including sampling rate, window parameters, and bit manipulation settings. </p>
+<div class="textblock"><p>Configuration parameters for the filterbank feature extraction. </p>
+<p>Populate this structure before calling <a class="el" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c" title="Initialize the filterbank feature extraction context. ">FBFE_Init()</a>. The entire structure is copied into the context during initialization, so the caller does not need to keep it alive afterwards.</p>
+<p>The bit-manipulation fields (ls_mask, ms_mask, ms_shift, branch_bits) must be consistent with the model's expected input encoding. Incorrect values will produce silently wrong feature vectors. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a8460822b3b5ec383da3d0876333e7475"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8460822b3b5ec383da3d0876333e7475">&sect;&nbsp;</a></span>sampling_rate_hz</h2>
@@ -119,7 +120,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 </div><div class="memdoc">
 
 <p>Input sampling rate in Hz. </p>
-<p>This parameter defines the sampling frequency of the input data. </p>
+<p>Defines the sampling frequency of the incoming PCM audio stream (e.g., 16000 for 16 kHz). Used to derive frame and context lengths in samples from the millisecond-based window parameters. </p>
 
 </div>
 </div>
@@ -135,8 +136,8 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
       </table>
 </div><div class="memdoc">
 
-<p>Size of the processing window in milliseconds. </p>
-<p>This parameter defines the time duration of each processing frame. </p>
+<p>Processing window size in milliseconds. </p>
+<p>Duration of each analysis frame. Together with sampling_rate_hz this determines NUM_SAMPLES (the number of PCM samples consumed per call to <a class="el" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b" title="Process one complete frame through the filterbank NPU pipeline. ">FBFE_RunOneFrame()</a>). </p>
 
 </div>
 </div>
@@ -152,8 +153,84 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
       </table>
 </div><div class="memdoc">
 
-<p>Context size in milliseconds. </p>
-<p>This parameter defines the amount of contextual information to maintain between frames. </p>
+<p>Temporal context size in milliseconds. </p>
+<p>Amount of past audio retained between consecutive frames to provide temporal context for the neural network. Controls the overlap region copied at each frame boundary inside the NPU input buffer. </p>
+
+</div>
+</div>
+<a id="aed449beb140624985e264d0ae8490e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed449beb140624985e264d0ae8490e43">&sect;&nbsp;</a></span>ls_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t FBFE_Config::ls_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bitmask for extracting the least-significant byte of a sample. </p>
+<p>Applied to the uint16_t view of the scaled sample to isolate the low-order bits before packing into <code>ls_bytes</code>[]. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="add77f612aa5a057552d824554d74b2ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add77f612aa5a057552d824554d74b2ac">&sect;&nbsp;</a></span>ms_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t FBFE_Config::ms_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bitmask for extracting the most-significant byte of a sample. </p>
+<p>Applied to the uint16_t view of the scaled sample to isolate the high-order bits before they are right-shifted by ms_shift and packed into <code>ms_bytes</code>[]. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a55bafbe94c7514bdc5b48b13f34dd57e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55bafbe94c7514bdc5b48b13f34dd57e">&sect;&nbsp;</a></span>ms_shift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t FBFE_Config::ms_shift</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Right-shift amount applied after masking the MSB portion. </p>
+<p>After ms_mask isolates the high-order bits, this shift aligns them to the least-significant position of the staging byte stored in <code>ms_bytes</code>[]. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a469a29eb3a43a2b755158958324a81af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a469a29eb3a43a2b755158958324a81af">&sect;&nbsp;</a></span>branch_bits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t FBFE_Config::branch_bits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Effective branch bit-width for input sample scaling. </p>
+<p>Controls how much the raw 16-bit PCM sample is scaled down before it is split into MSB/LSB bytes for NPU packing. The scaling is: </p><div class="fragment"><div class="line">scale_shift = 16 - <a class="code" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af">branch_bits</a></div><div class="line">scaled      = round(sample / 2^scale_shift)</div></div><!-- fragment --><p> Valid range is 1–16. A value of 16 disables scaling entirely. </p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample()</a>.</p>
 
 </div>
 </div>

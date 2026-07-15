@@ -2,10 +2,9 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  */
- // @cliArgs --device "MSPM0L222X" --package "LQFP-80(PN)" --part "Default"
- // @v2CliArgs --device "MSPM0L2228" --package "LQFP-80(PN)"
+//@cliArgs --device "MSPM0L222X" --package "LQFP-80(PN)" --part "Default"
+//@v2CliArgs --device "MSPM0L2228" --package "LQFP-80(PN)"
 // @cliArgs --board /ti/boards/LP_MSPM0L2228 --rtos nortos
-
 
 /**
  * Import the modules used in this configuration.
@@ -54,7 +53,6 @@ PWM1.peripheral.ccp1Pin.$assign = "PA1";
 PWM1.PWM_CHANNEL_0.$name        = "ti_driverlib_pwm_PWMTimerCC0";
 PWM1.PWM_CHANNEL_0.dutyCycle    = 10;
 PWM1.PWM_CHANNEL_1.$name        = "ti_driverlib_pwm_PWMTimerCC1";
-
 
 SYSCTL.powerPolicy = "STANDBY0";
 SYSCTL.clockTreeEn = true;

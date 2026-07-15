@@ -118,6 +118,7 @@ exports = {
     isDeviceFamily_PARENT_MSPM0C110X        : isDeviceFamily_PARENT_MSPM0C110X,
     isDeviceFamily_PARENT_MSPM0L111X        : isDeviceFamily_PARENT_MSPM0L111X,
     isDeviceFamily_PARENT_MSPM0H321X        : isDeviceFamily_PARENT_MSPM0H321X,
+    isDeviceFamily_PARENT_MSPM0H821X        : isDeviceFamily_PARENT_MSPM0H821X,
     isDeviceFamily_PARENT_MSPM0C1105_C1106  : isDeviceFamily_PARENT_MSPM0C1105_C1106,
     isDeviceFamily_PARENT_MSPM0G511X        : isDeviceFamily_PARENT_MSPM0G511X,
     isDeviceFamily_PARENT_MSPM0G518X        : isDeviceFamily_PARENT_MSPM0G518X,
@@ -131,8 +132,10 @@ exports = {
     isDeviceFamily_PARENT_MSPM0G320X        : isDeviceFamily_PARENT_MSPM0G320X,
     isDeviceFamily_PARENT_MSPM0G120X        : isDeviceFamily_PARENT_MSPM0G120X,
     isDeviceFamily_PARENT_MSPM0G122X        : isDeviceFamily_PARENT_MSPM0G122X,
+    isDeviceFamily_PARENT_MSPM0GX70X        : isDeviceFamily_PARENT_MSPM0GX70X,
+    isDeviceFamily_PARENT_MSPM0GX73X        : isDeviceFamily_PARENT_MSPM0GX73X,
+    isDeviceFamily_PARENT_MSPM0GX70X_GX73X  : isDeviceFamily_PARENT_MSPM0GX70X_GX73X,
     isDeviceFamily_MSPS003FX                : isDeviceFamily_MSPS003FX,
-    /* [IN DEVELOPMENT] N1_USB */
     isDeviceFamily_PARENT_MSPM0C511X        : isDeviceFamily_PARENT_MSPM0C511X,
     isDeviceFamily_MSP32G031CX              : isDeviceFamily_MSP32G031CX,
     isDeviceFamily_MSP32C031CX              : isDeviceFamily_MSP32C031CX,
@@ -150,6 +153,7 @@ exports = {
     hasBSLConfig                            : hasBSLConfig,
     hasDataRegionConfig                     : hasDataRegionConfig,
     hasTrimTable                            : hasTrimTable,
+    hasSD24Region                           : hasSD24Region,
 
     isInternalTimerChannel                  : isInternalTimerChannel,
 
@@ -207,6 +211,8 @@ exports = {
     vrefCanSetBothModes     : vrefCanSetBothModes,
     vrefOnlyInternal        : vrefOnlyInternal,
     vrefHasLegacyBasicMode  : vrefHasLegacyBasicMode,
+    vrefHasSampleHold       : vrefHasSampleHold,
+    vrefHas5VIP             : vrefHas5VIP,
     hasLegacyRTC            : hasLegacyRTC,
 
     hasCOMPDACOutput        : hasCOMPDACOutput,
@@ -1850,6 +1856,11 @@ function isDeviceFamily_PARENT_MSPM0H321X(){
     var deviceName = system.deviceData.device;
     return (["MSPM0H321X"].includes(deviceName));
 }
+/* Checks if device is part of MSPM0H821X device family */
+function isDeviceFamily_PARENT_MSPM0H821X(){
+    var deviceName = system.deviceData.device;
+    return (["MSPM0H821X"].includes(deviceName));
+}
 
 function isDeviceFamily_MSP32G031CX() {
     var deviceName = system.deviceData.device;
@@ -1950,6 +1961,22 @@ function isDeviceFamily_PARENT_MSPM0G122X(){
     return (["MSPM0G122X"].includes(deviceName));
 }
 
+/* Checks if current device is one of MSPM0GX70X series */
+function isDeviceFamily_PARENT_MSPM0GX70X(){
+    var deviceName = system.deviceData.device;
+    return (["MSPM0G370X", "MSPM0G170X"].includes(deviceName));
+}
+/* Checks if current device is one of MSPM0GX73X series */
+function isDeviceFamily_PARENT_MSPM0GX73X(){
+    var deviceName = system.deviceData.device;
+    return (["MSPM0G373X", "MSPM0G173X"].includes(deviceName));
+}
+
+/* Checks if current device is one of MSPM0GX70X_GX73X family */
+function isDeviceFamily_PARENT_MSPM0GX70X_GX73X(){
+    return (isDeviceFamily_PARENT_MSPM0GX70X() || isDeviceFamily_PARENT_MSPM0GX73X());
+}
+
 /* Checks if current device is one of MSPM0C511X series */
 function isDeviceFamily_PARENT_MSPM0C511X(){
     var deviceName = system.deviceData.device;
@@ -1966,7 +1993,8 @@ function isDeviceM0G()
             isDeviceFamily_PARENT_MSPM0G511X() ||
             isDeviceFamily_PARENT_MSPM0G518X() ||
             isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
-            isDeviceFamily_PARENT_MSPM0G122X());
+            isDeviceFamily_PARENT_MSPM0G122X() ||
+            isDeviceFamily_PARENT_MSPM0GX70X_GX73X());
 }
 /* checks if current device is one of MSPM0L-series */
 function isDeviceM0L(){
@@ -1984,7 +2012,8 @@ function isDeviceM0C(){
 }
 /* checks if current device is one of MSPM0H-series */
 function isDeviceM0H(){
-    return (isDeviceFamily_PARENT_MSPM0H321X());
+    return (isDeviceFamily_PARENT_MSPM0H321X()
+        || isDeviceFamily_PARENT_MSPM0H821X());
 }
 
 /* gets the device family name */
@@ -2013,6 +2042,9 @@ function getDeviceFamily(){
     else if(isDeviceFamily_PARENT_MSPM0H321X()){
         return "MSPM0H321X";
     }
+    else if(isDeviceFamily_PARENT_MSPM0H821X()){
+        return "MSPM0H821X";
+    }
     else if(isDeviceFamily_PARENT_MSPM0C1105_C1106()) {
         return "MSPM0C1105_C1106";
     }
@@ -2033,6 +2065,9 @@ function getDeviceFamily(){
     }
     else if(isDeviceFamily_PARENT_MSPM0G122X()) {
         return "MSPM0G122X";
+    }
+    else if(isDeviceFamily_PARENT_MSPM0GX70X_GX73X()) {
+        return "MSPM0GX70X_GX73X";
     }
     else if(isDeviceFamily_PARENT_MSPM0C511X()) {
         return "MSPM0C511X";
@@ -2064,9 +2099,14 @@ function hasDataRegionConfig(){
     return (isDeviceFamily_PARENT_MSPM0GX51X() ||
             isDeviceFamily_PARENT_MSPM0G352X() ||
             isDeviceFamily_PARENT_MSPM0G511X() ||
-            isDeviceFamily_PARENT_MSPM0G518X());
+            isDeviceFamily_PARENT_MSPM0G518X() ||
+            isDeviceFamily_PARENT_MSPM0GX70X_GX73X());
 }
 
+/* Check if device has SD24 memory region in linker */
+function hasSD24Region(){
+    return isDeviceFamily_PARENT_MSPM0GX70X_GX73X();
+}
 
 /* Check if device supports Timer A configuration */
 function hasTimerA(){
@@ -2886,7 +2926,7 @@ function getBUSCLKFreq(inst, peripheralName){
         let peripheralIndex = system.deviceData.interfaces[peripheralName].peripherals.findIndex(object => { return object.name === inst.peripheral.$solution.peripheralName });
 
         // (1) Access Updated Power Domain parameter (returns 0 / 1)
-        powerDomain = getAttribute((system.deviceData.interfaces[peripheralName].peripherals[peripheralIndex]),("power_domain_id"));
+        powerDomain = getAttribute((system.deviceData.interfaces[peripheralName].peripherals[peripheralIndex]),("power_domain_number"));
         if(powerDomain == undefined){
             // (2) Access Deprecated Power Domain parameter (returns PD_ULP_AON / PD_ULP_AAON)
             powerDomain = getAttribute((system.deviceData.interfaces[peripheralName].peripherals[peripheralIndex]),("power_domain"));
@@ -3371,6 +3411,38 @@ function getMainTriggerETSELValue(inst) {
                 break;
         }
     }
+    else if(isDeviceFamily_PARENT_MSPM0GX70X_GX73X()){
+        switch (true) {
+            case (main_timer == "TIMA0" || main_timer == "TIMG0"):
+                return 0;
+                break;
+            case (main_timer == "TIMA1" || main_timer == "TIMG1"):
+                return 1;
+                break;
+            case (main_timer == "TIMG8"):
+                return 2;
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
+    else if(isDeviceFamily_PARENT_MSPM0H821X()){
+        switch (true) {
+            case (main_timer == "TIMA0" || main_timer == "TIMG0"):
+                return 0;
+                break;
+            case (main_timer == "TIMG12" || main_timer == "TIMG14"):
+                return 1;
+                break;
+            case (main_timer == "TIMG8"):
+                return 2;
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
     else if(isDeviceFamily_PARENT_MSPM0G122X()){
         switch (true) {
             case (main_timer == "TIMA0" || main_timer == "TIMG0"):
@@ -3461,6 +3533,31 @@ function vrefHasLegacyBasicMode(){
     return (isDeviceFamily_PARENT_MSPM0L11XX_L13XX()
             || isDeviceFamily_PARENT_MSPM0L122X_L222X()
             || isDeviceFamily_PARENT_MSPM0L111X());
+}
+/*
+ *  ======== vrefHasSampleHold ========
+ *  Check if VREF Sample-and-Hold mode is functional on this device.
+ *  On some devices (e.g. M0H821X 5V IP), S&H config registers have no
+ *  effect — sample mode is controlled directly by the comparator DAC.
+ *
+ *  @return boolean answer
+ *
+ */
+function vrefHasSampleHold(){
+    return !(isDeviceFamily_PARENT_MSPM0H821X());
+}
+/*
+ *  ======== vrefHas5VIP ========
+ *  Returns true if this device uses the 5V VREF IP.
+ *  On the 5V IP, DL_VREF_BUFCONFIG_OUTPUT_1_4V (bit encoding 0x80)
+ *  produces 4V output rather than 1.4V, and voltage options differ
+ *  from the standard 3V IP.
+ *
+ *  @return boolean answer
+ *
+ */
+function vrefHas5VIP(){
+    return isDeviceFamily_PARENT_MSPM0H821X();
 }
 /*
  *  ======== hasMATHACL ========
@@ -3554,7 +3651,9 @@ function hasCOMPDACOutput() {
     || isDeviceFamily_PARENT_MSPM0H321X()
     || isDeviceFamily_PARENT_MSPM0L211X_L112X()
     || isDeviceFamily_PARENT_MSPM0L210X()
-    || isDeviceFamily_PARENT_MSPM0GX218_GX207());
+    || isDeviceFamily_PARENT_MSPM0GX218_GX207()
+    || isDeviceFamily_PARENT_MSPM0GX70X_GX73X()
+    || isDeviceFamily_PARENT_MSPM0H821X());
 }
 
 /*

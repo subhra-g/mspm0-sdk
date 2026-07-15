@@ -79,7 +79,7 @@ Once the example is started, the SPI Controller will automatically start to tran
 The transmitted data packet is {'M', 'S', 'P', 'x'}, where 'x' starts at '0' and will increment with each new transfer. LED0 and USER_TEST pin will toggle every time a new transmission starts.
 
 An optional SW breakpoint can be uncommented in the application to check the results of the received data.
-If this example is used with the spi_peripheral_repeated_multibyte_fifo_dma_interruptsexample, the expected data that will be received in gRxPacket is {'x', 0x2, 0x3, 0x4}, where 'x' starts at 0x0 and should increment every time the Peripheral example sends a new data packet.
+If this example is used with the spi_peripheral_repeated_multibyte_fifo_dma_interrupts example, the expected data that will be received in gRxPacket is {'x', 0x2, 0x3, 0x4}, where 'x' starts at 0x0 and should increment every time the Peripheral example sends a new data packet.
 
 The SPI is initialized with the following configuration:
 - SPI Controller

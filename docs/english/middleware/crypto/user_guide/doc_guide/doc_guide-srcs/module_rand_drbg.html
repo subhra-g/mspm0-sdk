@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7.2. Deterministic Random Bit Generator (DRBG) &mdash; MSP Crypto Library 0.33.00.07 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. RSA Module" href="module_rsa.html" />
+    <link rel="prev" title="7.1. Entropy Source (TRNG Interface)" href="module_rand_entropy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> MSP Crypto Library
+          </a>
+              <div class="version">
+                0.33.00.07
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. MSP Crypto Library Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_cipher.html">2. Cipher Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_hash.html">3. Hash Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_ec.html">4. Elliptic Curve Cryptography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_curve25519.html">5. Curve25519 and Ed25519 Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_pqc.html">6. Post Quantum Cryptography Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="module_rand.html">7. Random Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="module_rand_entropy.html">7.1. Entropy Source (TRNG Interface)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7.2. Deterministic Random Bit Generator (DRBG)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">7.2.1. Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#key-features">7.2.1.1. Key Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#status-codes">7.2.1.2. Status Codes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#context-structure">7.2.1.3. Context Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#api-functions">7.2.2. API Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#drbg-initialization">7.2.2.1. DRBG Initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drbg-generate-pseudorandom-values">7.2.2.2. DRBG Generate Pseudorandom Values</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drbg-uninitialization">7.2.2.3. DRBG Uninitialization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-example">7.2.3. Usage Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">7.2.4. Best Practices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">7.2.4.1. Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">7.2.5. Related Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_rsa.html">8. RSA Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">9. Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">10. MSP Crypto Library Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSP Crypto Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="module_rand.html"><span class="section-number">7. </span>Random Module</a> &raquo;</li>
+      <li><span class="section-number">7.2. </span>Deterministic Random Bit Generator (DRBG)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deterministic-random-bit-generator-drbg">
+<h1><span class="section-number">7.2. </span>Deterministic Random Bit Generator (DRBG)<a class="headerlink" href="#deterministic-random-bit-generator-drbg" title="Permalink to this heading">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">7.2.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>The DRBG module implements a deterministic random bit generator based on the
+NIST SP 800-90A recommendations. It provides a secure way to generate
+cryptographically strong pseudorandom numbers for cryptographic operations
+such as key generation, initialization vectors, and more.</p>
+<section id="key-features">
+<h3><span class="section-number">7.2.1.1. </span>Key Features<a class="headerlink" href="#key-features" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Implementation of CTR-DRBG based on AES-256</p></li>
+<li><p>Built-in derivation function (DF)</p></li>
+<li><p>256-bit security strength</p></li>
+<li><p>384-bit seed size (256 bits entropy + 128 bits nonce)</p></li>
+<li><p>Maximum of 2^32-1 requests before reseed is required</p></li>
+<li><p>Maximum request size of 16KiB per generate operation</p></li>
+</ul>
+</section>
+<section id="status-codes">
+<h3><span class="section-number">7.2.1.2. </span>Status Codes<a class="headerlink" href="#status-codes" title="Permalink to this heading">¶</a></h3>
+<p>The DRBG functions return status codes defined in the <cite>crypto_drbg_stat_t</cite>
+enumeration to indicate the result of operations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status Code</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>CRYPTO_DRBG_AES_ERR</cite></p></td>
+<td><p>-4</p></td>
+<td><p>An error with the HW AES module occurred</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_DRBG_RESEED_REQUIRED</cite></p></td>
+<td><p>-3</p></td>
+<td><p>Reseed (re-init) required before more values</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_DRBG_NOINIT_ERR</cite></p></td>
+<td><p>-2</p></td>
+<td><p>Context was not initialized first</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>CRYPTO_DRBG_PARAM_ERR</cite></p></td>
+<td><p>-1</p></td>
+<td><p>Parameter / pointer error</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>CRYPTO_DRBG_OK</cite></p></td>
+<td><p>0</p></td>
+<td><p>The operation completed successfully</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="context-structure">
+<h3><span class="section-number">7.2.1.3. </span>Context Structure<a class="headerlink" href="#context-structure" title="Permalink to this heading">¶</a></h3>
+<p>The DRBG maintains state in a context structure that must be initialized before
+use through the <cite>Crypto_DRBG_initialize</cite> function.  This structure contains
+the state of the DRBG and should be considered as a security sensitive
+data structure in the context of the application.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Stores the current state AES key &#39;k&#39;, 256 bits */</span>
+<span class="w">    </span><span class="n">crypto_block256_t</span><span class="w"> </span><span class="n">k</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/* Stores the current state AES block &#39;v&#39;, 128 bits */</span>
+<span class="w">    </span><span class="n">crypto_block128_t</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/* Stores the current count value since seed / reseed */</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">reseedCounter</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/* Stores a magic value once initialized */</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">initialized</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">crypto_drbg_ctx_t</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-functions">
+<h2><span class="section-number">7.2.2. </span>API Functions<a class="headerlink" href="#api-functions" title="Permalink to this heading">¶</a></h2>
+<p>The application programming interface (API) for the DRBG is defined below.</p>
+<section id="drbg-initialization">
+<h3><span class="section-number">7.2.2.1. </span>DRBG Initialization<a class="headerlink" href="#drbg-initialization" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_drbg_stat_t</span><span class="w"> </span><span class="nf">Crypto_DRBG_initialize</span><span class="p">(</span><span class="n">crypto_drbg_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">entropy</span><span class="p">,</span>
+<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">nonce</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Description:</strong>
+This function initializes a counter DRBG instance with entropy and nonce inputs.
+This function implements NIST SP 800-90A CTR-DRBG with AES-256, and the use of
+the derivation function.  It does not support personalization strings.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>ctx</cite>: Pointer to the context structure to initialize</p></li>
+<li><p><cite>entropy</cite>: Pointer to buffer containing entropy input (256 bits/8 words)</p></li>
+<li><p><cite>nonce</cite>: Pointer to buffer containing nonce input (128 bits/4 words)</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_DRBG_OK</cite>: Successfully initialized</p></li>
+<li><p><cite>CRYPTO_DRBG_PARAM_ERR</cite>: Invalid parameter/pointer</p></li>
+<li><p><cite>CRYPTO_DRBG_AES_ERR</cite>: AES module error</p></li>
+</ul>
+<p><strong>Note:</strong> Both entropy and nonce buffers must be 32-bit aligned.</p>
+</section>
+<section id="drbg-generate-pseudorandom-values">
+<h3><span class="section-number">7.2.2.2. </span>DRBG Generate Pseudorandom Values<a class="headerlink" href="#drbg-generate-pseudorandom-values" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_drbg_stat_t</span><span class="w"> </span><span class="nf">Crypto_DRBG_generate</span><span class="p">(</span><span class="n">crypto_drbg_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+<span class="w">                                        </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">output</span><span class="p">,</span>
+<span class="w">                                        </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">outputLen</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Description:</strong>
+Generates random values from an initialized DRBG instance.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>ctx</cite>: Pointer to the initialized DRBG context</p></li>
+<li><p><cite>output</cite>: Pointer to buffer where random values will be stored</p></li>
+<li><p><cite>outputLen</cite>: Number of 32-bit words to generate</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_DRBG_OK</cite>: Successfully generated random values</p></li>
+<li><p><cite>CRYPTO_DRBG_PARAM_ERR</cite>: Invalid parameter/pointer</p></li>
+<li><p><cite>CRYPTO_DRBG_NOINIT_ERR</cite>: Context was not initialized</p></li>
+<li><p><cite>CRYPTO_DRBG_RESEED_REQUIRED</cite>: Reseed required before more values can be generated</p></li>
+<li><p><cite>CRYPTO_DRBG_AES_ERR</cite>: AES module error occured</p></li>
+</ul>
+<p><strong>Note:</strong> The maximum output length is limited to
+<cite>CRYPTO_DRBG_CTR_MAX_WORDS_PER_REQ</cite> (16,384 words).</p>
+</section>
+<section id="drbg-uninitialization">
+<h3><span class="section-number">7.2.2.3. </span>DRBG Uninitialization<a class="headerlink" href="#drbg-uninitialization" title="Permalink to this heading">¶</a></h3>
+<p>After a DRBG instance is no longer requried for use, it may be uninitialized.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_drbg_stat_t</span><span class="w"> </span><span class="nf">Crypto_DRBG_uninit</span><span class="p">(</span><span class="n">crypto_drbg_ctx_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Description:</strong>
+Uninitializes a DRBG instance by clearing the state from memory and
+removing the initialization tag.</p>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>ctx</cite>: Pointer to the context structure to uninitialize</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul class="simple">
+<li><p><cite>CRYPTO_DRBG_OK</cite>: Successfully uninitialized</p></li>
+<li><p><cite>CRYPTO_DRBG_PARAM_ERR</cite>: Invalid context pointer</p></li>
+<li><p><cite>CRYPTO_DRBG_NOINIT_ERR</cite>: Context was not initialized</p></li>
+</ul>
+</section>
+</section>
+<section id="usage-example">
+<h2><span class="section-number">7.2.3. </span>Usage Example<a class="headerlink" href="#usage-example" title="Permalink to this heading">¶</a></h2>
+<p>An example is given below for using the DRBG module.  This example uses the
+entropy module to obtain a seed and nonce value.  It then initializes the DRBG.
+After initialization, the DRBG may be used to generate random data.  Once the
+instance is no longer required, it may be uninitialized.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/rand/drbg.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ti/crypto/include/rand/entropy.h&quot;</span>
+
+<span class="cm">/* Create context */</span>
+<span class="n">crypto_drbg_ctx_t</span><span class="w"> </span><span class="n">drbgContext</span><span class="p">;</span>
+
+<span class="cm">/* Get entropy and nonce from hardware RNG */</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">entropyInput</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">  </span><span class="cm">/* 256 bits */</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">nonceInput</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w">    </span><span class="cm">/* 128 bits */</span>
+
+<span class="cm">/* Get entropy from hardware RNG */</span>
+<span class="n">crypto_entropy_stat_t</span><span class="w"> </span><span class="n">entropyStatus</span><span class="p">;</span>
+<span class="n">entropyStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_getEntropy</span><span class="p">(</span><span class="n">entropyInput</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">48000000U</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">entropyStatus</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_ENTROPY_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle entropy error */</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Get nonce from hardware RNG */</span>
+<span class="n">entropyStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_getEntropy</span><span class="p">(</span><span class="n">nonceInput</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">48000000U</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">entropyStatus</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_ENTROPY_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle entropy error */</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Initialize DRBG */</span>
+<span class="n">crypto_drbg_stat_t</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_DRBG_initialize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">drbgContext</span><span class="p">,</span><span class="w"> </span><span class="n">entropyInput</span><span class="p">,</span><span class="w"> </span><span class="n">nonceInput</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_DRBG_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle initialization error */</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Generate random values */</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">randomData</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_DRBG_generate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">drbgContext</span><span class="p">,</span><span class="w"> </span><span class="n">randomData</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_DRBG_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle generation error */</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Use randomData for cryptographic operations */</span>
+
+<span class="cm">/* When done, uninitialize the DRBG */</span>
+<span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Crypto_DRBG_uninit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">drbgContext</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CRYPTO_DRBG_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Handle uninitialization error */</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2><span class="section-number">7.2.4. </span>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Entropy Quality</strong>: Use a high-quality entropy source (like hardware TRNG)
+for the initial seed.</p></li>
+<li><p><strong>Secure Storage</strong>: Guard the DRBG context in memory to prevent state
+compromise.</p></li>
+<li><p><strong>Reseeding</strong>: When <cite>CRYPTO_DRBG_RESEED_REQUIRED</cite> is returned, uninitialize
+the context and reinitialize with fresh entropy.</p></li>
+<li><p><strong>Memory Cleanup</strong>: After using generated random values for sensitive
+operations (like key generation), securely erase them from memory.</p></li>
+<li><p><strong>Context Isolation</strong>: Consider using separate DRBG instances for different
+security domains or purposes as an additional protective measure.</p></li>
+</ol>
+<section id="limitations">
+<h3><span class="section-number">7.2.4.1. </span>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>This implementation does not support additional input data or personalization
+strings as specified in NIST SP 800-90A.</p></li>
+<li><p>Maximum of 2^32-1 requests before reseed is required</p></li>
+<li><p>Maximum request size of 16KiB per generate operation</p></li>
+<li><p>No support for additional input data or personalization strings</p></li>
+<li><p>No automatic reseeding; applications must handle reseed if required</p></li>
+</ul>
+</section>
+</section>
+<section id="related-modules">
+<h2><span class="section-number">7.2.5. </span>Related Modules<a class="headerlink" href="#related-modules" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use with the Entropy module (<cite>entropy.h</cite>) to obtain high-quality seed material</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="module_rand_entropy.html" class="btn btn-neutral float-left" title="7.1. Entropy Source (TRNG Interface)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_rsa.html" class="btn btn-neutral float-right" title="8. RSA Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">1995-2023, Texas Instruments Incorporated. All rights reserved</a>, Texas Instruments Incorporated. All rights reserved. <br/>
+      <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

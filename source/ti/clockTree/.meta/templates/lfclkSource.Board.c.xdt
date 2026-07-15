@@ -37,6 +37,7 @@
  */
 
     let Common = system.getScript("/ti/driverlib/Common.js");
+    let { ClockSignals } = system.getScript("/ti/driverlib/sysctl/SYSCTLMSPM0Clocks.js");
 
     let mod = system.modules["/ti/clockTree/mux.js"];
 
@@ -49,7 +50,7 @@
 
     if(_.isUndefined(exlfMuxInst) || _.isUndefined(lfxtMuxInst) ||
        _.isUndefined(lfxtInst) || _.isUndefined(exlfInst)) {
-        if(Common.isDeviceM0G()){
+        if(ClockSignals.includes("LFXT")){
             throw 'Not all LFCLK elements are defined appropriately';
         }
     } else if ((_.isUndefined(exlfMuxInst) ||  _.isUndefined(exlfInst))) {
@@ -62,13 +63,7 @@
 
     let lfclkStr = ""
 
-    if(Common.isDeviceM0G()
-        || Common.isDeviceFamily_PARENT_MSPM0L122X_L222X()
-        || Common.isDeviceFamily_PARENT_MSPM0L111X()
-        || Common.isDeviceFamily_PARENT_MSPM0H321X()
-        || Common.isDeviceFamily_PARENT_MSPM0C1105_C1106()
-        || Common.isDeviceFamily_PARENT_MSPM0L211X_L112X()
-        || Common.isDeviceFamily_PARENT_MSPM0L210X()){
+    if(ClockSignals.includes("LFXT")){
 
         /* Traverse the MCLK table to look for clock source */
         if(_.endsWith(lfxtMuxInst.inputSelect, "FALSE")){

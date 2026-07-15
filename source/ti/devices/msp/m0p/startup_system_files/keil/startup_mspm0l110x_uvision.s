@@ -30,7 +30,7 @@
 ;// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ;// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;//
-;// MSPM0L1306 startup file
+;// MSPM0L110X startup file
 ;//
 ;//****************************************************************************
 ;//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------

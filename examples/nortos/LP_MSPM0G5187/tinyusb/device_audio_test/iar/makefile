@@ -21,7 +21,7 @@ ifeq ($(VERBOSE), 1)
   V :=
 endif
 
-OBJECTS = main.obj usb_descriptors.obj third_party_tinyusb_hw_bsp_board.obj third_party_tinyusb_hw_bsp_mspm0_family.obj third_party_tinyusb_src_class_audio_audio_device.obj third_party_tinyusb_src_class_bth_bth_device.obj third_party_tinyusb_src_class_cdc_cdc_device.obj third_party_tinyusb_src_class_cdc_cdc_host.obj third_party_tinyusb_src_class_cdc_cdc_rndis_host.obj third_party_tinyusb_src_class_dfu_dfu_device.obj third_party_tinyusb_src_class_dfu_dfu_rt_device.obj third_party_tinyusb_src_class_hid_hid_device.obj third_party_tinyusb_src_class_hid_hid_host.obj third_party_tinyusb_src_class_midi_midi_device.obj third_party_tinyusb_src_class_msc_msc_device.obj third_party_tinyusb_src_class_msc_msc_host.obj third_party_tinyusb_src_class_net_ecm_rndis_device.obj third_party_tinyusb_src_class_net_ncm_device.obj third_party_tinyusb_src_class_usbtmc_usbtmc_device.obj third_party_tinyusb_src_class_vendor_vendor_device.obj third_party_tinyusb_src_class_vendor_vendor_host.obj third_party_tinyusb_src_class_video_video_device.obj third_party_tinyusb_src_common_tusb_fifo.obj third_party_tinyusb_src_device_usbd.obj third_party_tinyusb_src_device_usbd_control.obj third_party_tinyusb_src_host_hub.obj third_party_tinyusb_src_host_usbh.obj third_party_tinyusb_src_portable_mentor_musb_dcd_musb.obj third_party_tinyusb_src_portable_mentor_musb_hcd_musb.obj third_party_tinyusb_src_tusb.obj iar_startup_mspm0g518x_iar.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
+OBJECTS = third_party_tinyusb_src_portable_mentor_musb_dcd_musb.obj third_party_tinyusb_src_portable_mentor_musb_hcd_musb.obj main.obj usb_descriptors.obj third_party_tinyusb_hw_bsp_board.obj third_party_tinyusb_hw_bsp_mspm0_family.obj third_party_tinyusb_src_class_audio_audio_device.obj third_party_tinyusb_src_class_bth_bth_device.obj third_party_tinyusb_src_class_cdc_cdc_device.obj third_party_tinyusb_src_class_cdc_cdc_host.obj third_party_tinyusb_src_class_cdc_cdc_rndis_host.obj third_party_tinyusb_src_class_dfu_dfu_device.obj third_party_tinyusb_src_class_dfu_dfu_rt_device.obj third_party_tinyusb_src_class_hid_hid_device.obj third_party_tinyusb_src_class_hid_hid_host.obj third_party_tinyusb_src_class_midi_midi_device.obj third_party_tinyusb_src_class_msc_msc_device.obj third_party_tinyusb_src_class_msc_msc_host.obj third_party_tinyusb_src_class_net_ecm_rndis_device.obj third_party_tinyusb_src_class_net_ncm_device.obj third_party_tinyusb_src_class_usbtmc_usbtmc_device.obj third_party_tinyusb_src_class_vendor_vendor_device.obj third_party_tinyusb_src_class_vendor_vendor_host.obj third_party_tinyusb_src_class_video_video_device.obj third_party_tinyusb_src_common_tusb_fifo.obj third_party_tinyusb_src_device_usbd.obj third_party_tinyusb_src_device_usbd_control.obj third_party_tinyusb_src_host_hub.obj third_party_tinyusb_src_host_usbh.obj third_party_tinyusb_src_tusb.obj iar_startup_mspm0g518x_iar.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
 SYSCFG_ASM_FILES = $(filter %.s,$(SYSCFG_FILES))
 OBJECTS += $(patsubst %.s,%.obj,$(notdir $(SYSCFG_ASM_FILES)))
 
@@ -35,15 +35,17 @@ AFLAGS += -I.. \
     "-I$(IAR_ARMCOMPILER)/inc/c" \
     --cpu Cortex-M0+
 
+DFLAGS += --debug
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix -f,$(SYSCFG_OPT_FILES)) \
     -D__MSPM0G5187__ \
-    -D__MSPM0G518X__ \
-    -DCFG_TUSB_MCU=OPT_MCU_MSPM0G518X \
     -D__USE_SYSCONFIG__ \
     --diag_suppress=Pa039 \
     --diag_suppress=Pe1143 \
+    -D__MSPM0G518X__ \
+    -DCFG_TUSB_MCU=OPT_MCU_MSPM0G518X \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/third_party/CMSIS/Core/Include" \
     -I../third_party/tinyusb/src \
     -I../third_party/tinyusb/hw \
@@ -54,7 +56,6 @@ CFLAGS += -I.. \
     -I$MSPM0_SDK_INSTALL_DIR$/source/ti \
     -I$MSPM0_SDK_INSTALL_DIR$/source/ti/devices/msp \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    --debug \
     --silent \
     -e \
     --aeabi \
@@ -63,6 +64,12 @@ CFLAGS += -I.. \
     --cpu=Cortex-M0+ \
     --vla
 
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
+
 LFLAGS += -L${CG_TOOL_ROOT}/arm-none-eabi/lib/thumb/v6-m/nofp \
     "$(MSPM0_SDK_INSTALL_DIR)/source/ti/driverlib/lib/iar/m0p/mspm0g518x/driverlib.a" \
     "-L$(MSPM0_SDK_INSTALL_DIR)/source" \
@@ -70,7 +77,7 @@ LFLAGS += -L${CG_TOOL_ROOT}/arm-none-eabi/lib/thumb/v6-m/nofp \
     --config ../iar/mspm0g5187.icf \
     --map "$(NAME).map" \
     --silent \
-    --semihosting=iar_breakpoint \
+    "$(if $(filter RELEASE,$(CONFIG)),,--semihosting=iar_breakpoint)" \
     --cpu=Cortex-M0+
 
 all: $(NAME).out
@@ -110,6 +117,14 @@ $(basename $(notdir $(1))).obj: $(1) $(SYSCFG_H_FILES)
 endef
 
 $(foreach c_file,$(SYSCFG_C_FILES),$(eval $(call C_RULE,$(c_file))))
+
+third_party_tinyusb_src_portable_mentor_musb_dcd_musb.obj: ../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c $(SYSCFG_H_FILES)
+	@ echo Building $@
+	$(V) $(CC) $(CFLAGS) $< -o $@
+
+third_party_tinyusb_src_portable_mentor_musb_hcd_musb.obj: ../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c $(SYSCFG_H_FILES)
+	@ echo Building $@
+	$(V) $(CC) $(CFLAGS) $< -o $@
 
 main.obj: ../main.c $(SYSCFG_H_FILES)
 	@ echo Building $@
@@ -216,14 +231,6 @@ third_party_tinyusb_src_host_hub.obj: ../third_party/tinyusb/src/host/hub.c $(SY
 	$(V) $(CC) $(CFLAGS) $< -o $@
 
 third_party_tinyusb_src_host_usbh.obj: ../third_party/tinyusb/src/host/usbh.c $(SYSCFG_H_FILES)
-	@ echo Building $@
-	$(V) $(CC) $(CFLAGS) $< -o $@
-
-third_party_tinyusb_src_portable_mentor_musb_dcd_musb.obj: ../third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c $(SYSCFG_H_FILES)
-	@ echo Building $@
-	$(V) $(CC) $(CFLAGS) $< -o $@
-
-third_party_tinyusb_src_portable_mentor_musb_hcd_musb.obj: ../third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) $< -o $@
 

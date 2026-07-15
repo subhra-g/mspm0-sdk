@@ -272,7 +272,7 @@ function validatePinmux(inst, validation){
     }
     if (inst.pinIn1PosUsed == true)
     {
-        let pinConfigInst  = inst.In1PosPinConfige;
+        let pinConfigInst  = inst.In1PosPinConfig;
         if(!Common.isPinMuxable(inst, "In1PosPin") && pinConfigInst.enableConfig){
             validation.logError("Pin Configuration is not available for the selected pin", pinConfigInst, ["enableConfig"])
         }

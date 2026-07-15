@@ -35,7 +35,6 @@ ADC121.hwDenominator        = "DL_ADC12_HW_AVG_DEN_DIV_BY_128";
 ADC121.adcMem0chansel       = "DL_ADC12_INPUT_CHAN_2";
 ADC121.peripheral.$assign   = "ADC0";
 
-
 ADC122.$name                       = "ADC12_1";
 ADC122.sampClkSrc                  = "DL_ADC12_CLOCK_ULPCLK";
 ADC122.sampClkDiv                  = "DL_ADC12_CLOCK_DIVIDE_8";
@@ -49,7 +48,6 @@ ADC122.enabledInterrupts           = ["DL_ADC12_INTERRUPT_MEM0_RESULT_LOADED"];
 ADC122.adcMem0chansel              = "DL_ADC12_INPUT_CHAN_14";
 ADC122.peripheral.$assign          = "ADC1";
 ADC122.peripheral.adcPin14.$assign = "PB27";
-
 
 Board.peripheral.$assign          = "DEBUGSS";
 Board.peripheral.swclkPin.$assign = "PA20";

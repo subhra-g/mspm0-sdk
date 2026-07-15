@@ -51,8 +51,6 @@ PWM1.peripheral.ccp1Pin.$assign = "PA1";
 
 PWM1.PWM_CHANNEL_0.dutyCycle    = 10;
 
-
-
 TIMER1.$name              = "TIMER_0";
 TIMER1.interrupts         = ["ZERO"];
 TIMER1.timerClkSrc        = "LFCLK";

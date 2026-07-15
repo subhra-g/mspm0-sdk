@@ -88,7 +88,7 @@ extern "C" {
 /*! @brief Application Minor FW Version */
 #define APP_MINOR_VER  (0x02)
 /*! @brief Application Patch FW Version */
-#define APP_PATCH_VER  (0x01)
+#define APP_PATCH_VER  (0x02)
 /*! @brief Application FW Version */
 #define APP_FW_VERSION (APP_MAJOR_VER << 16) + (APP_MINOR_VER<<8) + (APP_PATCH_VER)
 
@@ -285,7 +285,11 @@ calculated using (FULL Scale Voltage(3.3)/2* CSA Gain) */
 #define SYSTEM_TIMER_FREQUENCY_MHZ                  40UL
 
 /*! HALL CAPTURE TIMER CLOCK FREQUENCY*/
+#if defined(__MSPM0G3507__) ||  defined(__MSPM0G3519__)
 #define HALL_TIMER_CAPT_CLK_FREQ                    (80000000U)
+#elif defined(__MSPM0G3218__)
+#define HALL_TIMER_CAPT_CLK_FREQ                    (500000U)
+#endif
 
 /*! @brief BUS current limit fault index */
 #define BUS_CURRENT_LIMIT_INDEX     0x04000000

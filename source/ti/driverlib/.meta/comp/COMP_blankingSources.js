@@ -15,15 +15,15 @@ let blankingSources = {
             channel: "1",
         },
         4: {
-            peripheral: "TIMG12",
-            channel: "1",
-        },
-        5: {
             peripheral: "TIMG6",
             channel: "1",
         },
-        6: {
+        5: {
             peripheral: "TIMG7",
+            channel: "1",
+        },
+        6: {
+            peripheral: "TIMG12",
             channel: "1",
         },
     },
@@ -87,15 +87,15 @@ let blankingSources = {
             channel: "1",
         },
         4: {
-            peripheral: "TIMG12",
-            channel: "1",
-        },
-        5: {
             peripheral: "TIMG6",
             channel: "1",
         },
-        6: {
+        5: {
             peripheral: "TIMG7",
+            channel: "1",
+        },
+        6: {
+            peripheral: "TIMG12",
             channel: "1",
         },
     },
@@ -113,15 +113,15 @@ let blankingSources = {
             channel: "1",
         },
         4: {
-            peripheral: "TIMG12",
-            channel: "1",
-        },
-        5: {
             peripheral: "TIMG6",
             channel: "1",
         },
-        6: {
+        5: {
             peripheral: "TIMG7",
+            channel: "1",
+        },
+        6: {
+            peripheral: "TIMG12",
             channel: "1",
         },
     },
@@ -242,6 +242,58 @@ let blankingSources = {
         },
         5: {
             peripheral: "TIMG1",
+            channel: "1",
+        },
+        6: {
+            peripheral: "TIMG8",
+            channel: "1",
+        }
+    },
+    MSPM0GX70X_GX73X: {
+        1: {
+            peripheral: "TIMA0",
+            channel: "2",
+        },
+        2: {
+            peripheral: "TIMA1",
+            channel: "3",
+        },
+        3: {
+            peripheral: "TIMA1",
+            channel: "1",
+        },
+        4: {
+            peripheral: "TIMG0",
+            channel: "1",
+        },
+        5: {
+            peripheral: "TIMG1",
+            channel: "1",
+        },
+        6: {
+            peripheral: "TIMG8",
+            channel: "1",
+        }
+    },
+    MSPM0H821X: {
+        1: {
+            peripheral: "TIMA0",
+            channel: "2",
+        },
+        2: {
+            peripheral: "TIMA0",
+            channel: "3",
+        },
+        3: {
+            peripheral: "TIMG12",
+            channel: "1",
+        },
+        4: {
+            peripheral: "TIMG0",
+            channel: "1",
+        },
+        5: {
+            peripheral: "TIMG14",
             channel: "1",
         },
         6: {

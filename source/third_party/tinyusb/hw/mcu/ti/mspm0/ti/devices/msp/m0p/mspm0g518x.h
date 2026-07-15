@@ -379,7 +379,7 @@ static UNICOMM_Inst_Regs                        * const UC3                     
 * SYS parameters                                                              *
 ******************************************************************************/
 
-#define ADC0_SYS_NUM_ANALOG_CHAN                      (16)      /* !< Number of analog channels. */
+#define ADC_SYS_NUM_ANALOG_CHAN                       (16)      /* !< Number of analog channels. */
 #define BTIM_SYS_NUM_COUNTERS                         (4)       /* !< Max number of counters. */
 #define CRCP0_SYS_CRC32_ENABLE                        (1)       /* !< Parameter to exclude or include 32-bit CRC. This is added for
                                                       Lego_N1 products where 32-bit CRC can be excluded in order to save

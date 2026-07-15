@@ -570,9 +570,7 @@ __STATIC_INLINE void DRV8706Q1_setNSleep(DRV8706Q1_INSTANCE drv,bool value) {
  * @param drv Motor driver instance
  * @param value True = pin is HIGH or False = pin is LOW
  */
-__STATIC_INLINE void DRV8706Q1_setDrvOff(DRV8706Q1_INSTANCE drv,bool value) {
-    HAL_setGPIOOutput(drv.drvOff,value);
-}
+void DRV8706Q1_setDrvOff(DRV8706Q1_INSTANCE drv,bool value);
 
 /**
  * @brief Help function that controls the MCU pin connected to nHiZ1 pin on

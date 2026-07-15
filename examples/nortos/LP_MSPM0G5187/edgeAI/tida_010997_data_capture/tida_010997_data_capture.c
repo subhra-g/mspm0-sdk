@@ -42,6 +42,7 @@
 /* DAP Variables */
 UART_Instance gUART;
 
+#define DMA_CH2_CHAN_ID  (2)
 
 int main(void)
 {
@@ -52,6 +53,8 @@ int main(void)
     /* DAP INIT */
     NVIC_EnableIRQ(DMA_INT_IRQn);
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
+    NVIC_ClearPendingIRQ(I2S0_INT_IRQn);
+    NVIC_EnableIRQ(I2S0_INT_IRQn);
 
     UART_init(&gUART);
 
@@ -84,7 +87,7 @@ int main(void)
                 gStartStream = false;
 
                 gUART.TxStatus = UART_STATUS_TX_TRANSMITTING;
-                Sensor_AcquireSamples(gPipelineConfig.sensorIndex[0], gProperties[0]->value.u32);
+                Sensor_AcquireSamples(&gUART, gPipelineConfig.sensorIndex[0], gProperties[0]->value.u32);
 
                 gUART.TxStatus = UART_STATUS_IDLE;
             }
@@ -146,6 +149,17 @@ void DMA_IRQHandler(void)
             gUART.TxStatus = UART_STATUS_IDLE;
             break;
 
+        case DL_DMA_EVENT_IIDX_DMACH2:
+                if(gDMA_I2S_dataTransfer > 0)
+                {
+                    gDMA_I2S_dataTransfer--;
+                }
+
+                if(gDMA_I2S_dataTransfer == 0)
+                {
+                    DL_DMA_disableChannel(DMA, DMA_CH2_CHAN_ID);
+                }
+                break;
         default:
             break;
     }

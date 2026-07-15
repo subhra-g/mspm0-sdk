@@ -255,7 +255,7 @@ In "Train" tab, configure the pre-processing parameters before training. There a
 
 This tool is utilized in the backend of the software to generate optimized executable code based on the processor you selected. If using a device with TinyEngine™ neural processing unit (NPU) the generated function call automatically utilizes the accelerator in parallel to the main MCU core. This option can be disabled by choosing the "forced soft NPU preset" under compilation parameters.
 
-For a complete detailed description of TI's neural network compiler for MCUs, including additional configuration options and guidelines for use, visit the `TI NNC for MCU's User's Guide <https://software-dl.ti.com/mctools/nnc/mcu/users_guide/>`__.
+For a complete description of TI's neural network compiler for MCUs, including configuration options, supported device families, and inference integration, visit the `TI NNC for MCU's User's Guide (v2.1.2) <https://software-dl.ti.com/mctools/nnc/mcu/users_guide/>`__.
 
 .. figure:: images/mc-deploy.png
    :alt: Deployment on CCStudio™ Edge AI Studio

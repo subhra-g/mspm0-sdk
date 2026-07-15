@@ -1,0 +1,244 @@
+################################################################################
+Deterministic Random Bit Generator (DRBG)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The DRBG module implements a deterministic random bit generator based on the
+NIST SP 800-90A recommendations. It provides a secure way to generate 
+cryptographically strong pseudorandom numbers for cryptographic operations 
+such as key generation, initialization vectors, and more.
+
+================================================================================
+Key Features
+================================================================================
+
+* Implementation of CTR-DRBG based on AES-256
+* Built-in derivation function (DF)
+* 256-bit security strength
+* 384-bit seed size (256 bits entropy + 128 bits nonce)
+* Maximum of 2^32-1 requests before reseed is required
+* Maximum request size of 16KiB per generate operation
+
+================================================================================
+Status Codes
+================================================================================
+
+The DRBG functions return status codes defined in the `crypto_drbg_stat_t`
+enumeration to indicate the result of operations.
+
+==================================== ====== =============================================================
+Status Code                          Value  Description
+==================================== ====== =============================================================
+`CRYPTO_DRBG_AES_ERR`                -4     An error with the HW AES module occurred
+`CRYPTO_DRBG_RESEED_REQUIRED`        -3     Reseed (re-init) required before more values
+`CRYPTO_DRBG_NOINIT_ERR`             -2     Context was not initialized first
+`CRYPTO_DRBG_PARAM_ERR`              -1     Parameter / pointer error
+`CRYPTO_DRBG_OK`                     0      The operation completed successfully
+==================================== ====== =============================================================
+
+================================================================================
+Context Structure
+================================================================================
+
+The DRBG maintains state in a context structure that must be initialized before 
+use through the `Crypto_DRBG_initialize` function.  This structure contains
+the state of the DRBG and should be considered as a security sensitive
+data structure in the context of the application.
+
+.. code-block:: c
+
+    typedef struct
+    {
+        /* Stores the current state AES key 'k', 256 bits */
+        crypto_block256_t k;
+        /* Stores the current state AES block 'v', 128 bits */
+        crypto_block128_t v;
+        /* Stores the current count value since seed / reseed */
+        uint32_t reseedCounter;
+        /* Stores a magic value once initialized */
+        uint32_t initialized;
+    } crypto_drbg_ctx_t;
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for the DRBG is defined below.
+
+================================================================================
+DRBG Initialization
+================================================================================
+
+.. code-block:: c
+
+    crypto_drbg_stat_t Crypto_DRBG_initialize(crypto_drbg_ctx_t *ctx,
+                                            const uint32_t *entropy,
+                                            const uint32_t *nonce);
+
+**Description:**  
+This function initializes a counter DRBG instance with entropy and nonce inputs. 
+This function implements NIST SP 800-90A CTR-DRBG with AES-256, and the use of 
+the derivation function.  It does not support personalization strings.
+
+**Parameters:**
+
+* `ctx`: Pointer to the context structure to initialize
+* `entropy`: Pointer to buffer containing entropy input (256 bits/8 words)
+* `nonce`: Pointer to buffer containing nonce input (128 bits/4 words)
+
+**Returns:**
+
+* `CRYPTO_DRBG_OK`: Successfully initialized
+* `CRYPTO_DRBG_PARAM_ERR`: Invalid parameter/pointer
+* `CRYPTO_DRBG_AES_ERR`: AES module error
+
+**Note:** Both entropy and nonce buffers must be 32-bit aligned.
+
+================================================================================
+DRBG Generate Pseudorandom Values
+================================================================================
+
+.. code-block:: c
+
+    crypto_drbg_stat_t Crypto_DRBG_generate(crypto_drbg_ctx_t *ctx,
+                                            uint32_t *output,
+                                            uint32_t outputLen);
+
+
+**Description:**  
+Generates random values from an initialized DRBG instance.
+
+**Parameters:**
+
+* `ctx`: Pointer to the initialized DRBG context
+* `output`: Pointer to buffer where random values will be stored
+* `outputLen`: Number of 32-bit words to generate
+
+**Returns:**
+
+* `CRYPTO_DRBG_OK`: Successfully generated random values
+* `CRYPTO_DRBG_PARAM_ERR`: Invalid parameter/pointer
+* `CRYPTO_DRBG_NOINIT_ERR`: Context was not initialized
+* `CRYPTO_DRBG_RESEED_REQUIRED`: Reseed required before more values can be generated
+* `CRYPTO_DRBG_AES_ERR`: AES module error occured
+
+**Note:** The maximum output length is limited to 
+`CRYPTO_DRBG_CTR_MAX_WORDS_PER_REQ` (16,384 words).
+
+================================================================================
+DRBG Uninitialization
+================================================================================
+
+After a DRBG instance is no longer requried for use, it may be uninitialized.
+
+.. code-block:: c
+
+    crypto_drbg_stat_t Crypto_DRBG_uninit(crypto_drbg_ctx_t *ctx);
+
+**Description:**  
+Uninitializes a DRBG instance by clearing the state from memory and 
+removing the initialization tag.
+
+**Parameters:**
+
+* `ctx`: Pointer to the context structure to uninitialize
+
+**Returns:**
+
+* `CRYPTO_DRBG_OK`: Successfully uninitialized
+* `CRYPTO_DRBG_PARAM_ERR`: Invalid context pointer
+* `CRYPTO_DRBG_NOINIT_ERR`: Context was not initialized
+
+********************************************************************************
+Usage Example
+********************************************************************************
+
+An example is given below for using the DRBG module.  This example uses the
+entropy module to obtain a seed and nonce value.  It then initializes the DRBG.
+After initialization, the DRBG may be used to generate random data.  Once the
+instance is no longer required, it may be uninitialized.
+
+.. code-block:: c
+
+    #include "ti/crypto/include/rand/drbg.h"
+    #include "ti/crypto/include/rand/entropy.h"
+
+    /* Create context */
+    crypto_drbg_ctx_t drbgContext;
+
+    /* Get entropy and nonce from hardware RNG */
+    uint32_t entropyInput[8];  /* 256 bits */
+    uint32_t nonceInput[4];    /* 128 bits */
+
+    /* Get entropy from hardware RNG */
+    crypto_entropy_stat_t entropyStatus;
+    entropyStatus = Crypto_getEntropy(entropyInput, 8, 48000000U);
+    if (entropyStatus != CRYPTO_ENTROPY_OK) {
+        /* Handle entropy error */
+        return;
+    }
+
+    /* Get nonce from hardware RNG */
+    entropyStatus = Crypto_getEntropy(nonceInput, 4, 48000000U);
+    if (entropyStatus != CRYPTO_ENTROPY_OK) {
+        /* Handle entropy error */
+        return;
+    }
+
+    /* Initialize DRBG */
+    crypto_drbg_stat_t status;
+    status = Crypto_DRBG_initialize(&drbgContext, entropyInput, nonceInput);
+    if (status != CRYPTO_DRBG_OK) {
+        /* Handle initialization error */
+        return;
+    }
+
+    /* Generate random values */
+    uint32_t randomData[10];
+    status = Crypto_DRBG_generate(&drbgContext, randomData, 10);
+    if (status != CRYPTO_DRBG_OK) {
+        /* Handle generation error */
+        return;
+    }
+
+    /* Use randomData for cryptographic operations */
+
+    /* When done, uninitialize the DRBG */
+    status = Crypto_DRBG_uninit(&drbgContext);
+    if (status != CRYPTO_DRBG_OK) {
+        /* Handle uninitialization error */
+        return;
+    }
+
+********************************************************************************
+Best Practices
+********************************************************************************
+
+#. **Entropy Quality**: Use a high-quality entropy source (like hardware TRNG) 
+   for the initial seed.
+#. **Secure Storage**: Guard the DRBG context in memory to prevent state 
+   compromise.
+#. **Reseeding**: When `CRYPTO_DRBG_RESEED_REQUIRED` is returned, uninitialize 
+   the context and reinitialize with fresh entropy.
+#. **Memory Cleanup**: After using generated random values for sensitive 
+   operations (like key generation), securely erase them from memory.
+#. **Context Isolation**: Consider using separate DRBG instances for different
+   security domains or purposes as an additional protective measure.
+
+================================================================================
+Limitations
+================================================================================
+* This implementation does not support additional input data or personalization 
+  strings as specified in NIST SP 800-90A.
+* Maximum of 2^32-1 requests before reseed is required
+* Maximum request size of 16KiB per generate operation
+* No support for additional input data or personalization strings
+* No automatic reseeding; applications must handle reseed if required
+
+********************************************************************************
+Related Modules
+********************************************************************************
+* Use with the Entropy module (`entropy.h`) to obtain high-quality seed material

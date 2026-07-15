@@ -257,7 +257,9 @@ Double click on dfu_host_utility_exe_update.bat. If there are no errors then the
 - For programming, all address and length should be 8-byte aligned.
 - By defualt VendorID and ProductID is 2047 and 0210 respectively.
 - The example.bat file is a batch script that demonstrates how to use the dfu host utility to perform a typical device update workflow.
-- Checksum verification option is different from standalone verificaion feature supported by device Bootloader. Checksum verification checks the integrity of the application image before programming into the device and during readback it checks the integrity of the content read from the device, excluding addresses in case of `.txt` file.   
+- Checksum verification option is different from standalone verification feature supported by device Bootloader. Checksum verification checks the integrity of the application image before programming into the device and during readback it checks the integrity of the content read from the device, excluding addresses in case of `.txt` file.
+- Factory reset command erases the entire nonmain location, so the user needs to ensure that a suitable nonmain is loaded after this (before the reset) to avoid locking up the device.
+- To program any location in the memory, first it needs to be erased. For example to program main memory, mass erase has to be used and to program nonmain, factory reset has to be done.
 - When programming across different memory sectors, use `.bin` files rather than `.txt` files. This is because text files represent discontinuous memory segments, while memory readback operations return continuous memory blocks. As a result, CRC checksums for `.txt` files may not match the readback memory CRC even when the programming was successful.
 
 

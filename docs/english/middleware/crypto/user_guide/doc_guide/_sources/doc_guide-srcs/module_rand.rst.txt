@@ -1,0 +1,12 @@
+################################################################################
+Random Module
+################################################################################
+
+The rand module provides cryptographic random number generation services for
+session key generation, nonce generation, and other purposes.
+
+.. toctree::
+   :maxdepth: 1
+
+   module_rand_entropy
+   module_rand_drbg

@@ -14,6 +14,7 @@
         <topic label="ls_mask" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43"/>
         <topic label="ms_mask" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac"/>
         <topic label="ms_shift" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e"/>
+        <topic label="branch_bits" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af"/>
       </topic>
       <topic label="FBFE_Ctx" href="struct_f_b_f_e___ctx.html">
         <topic label="cfg" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868"/>
@@ -58,7 +59,6 @@
         <topic label="FBFE_CTL1_OFMAP_SHIFT_BITS" href="filterbank__feature__extract_8c.html#ae4bea5e9375a2075b9974fef5d60ef1a"/>
         <topic label="FBFE_MMR_STRIDE_STEP" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46"/>
         <topic label="FBFE_MSB_COMBINE_SHIFT_BITS" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca"/>
-        <topic label="FBFE_ARBIAS0_ROW_WORD64" href="filterbank__feature__extract_8c.html#a49fc4dda9af37d26efc05a484f3e3694"/>
         <topic label="FBFE_WORD_ADDR_SHIFT_BITS" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a"/>
         <topic label="FBFE_WORD_ADDR_16BIT_MASK" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af"/>
         <topic label="FE_SIGNCHK_MASK" href="filterbank__feature__extract_8c.html#aec8a2e478772ab924e4507342b92a105"/>
@@ -66,10 +66,35 @@
         <topic label="FE_SIGNEXT_OR" href="filterbank__feature__extract_8c.html#ae9b5ea91860429d45cb988d1ddf19db5"/>
         <topic label="FE_CTL0_MSB" href="filterbank__feature__extract_8c.html#a9ea4fd4ecae38febbe0eb35148fd5970"/>
         <topic label="FE_CTL0_LSB" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c"/>
-        <topic label="TINIE_start" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee"/>
+        <topic label="MODEL_FE_CTL0_MSB" href="filterbank__feature__extract_8c.html#a52df4c3d1acd00ebc7cdb506958f587a"/>
+        <topic label="MODEL_FE_CTL0_LSB" href="filterbank__feature__extract_8c.html#a2260b812fd4ee224aff0748adacee06f"/>
+        <topic label="FBFE_ReadSignedDREG19" href="filterbank__feature__extract_8c.html#a45dccb58bcd09c42469e3b119b5f96a0"/>
+        <topic label="FBFE_ReadPassOutput" href="filterbank__feature__extract_8c.html#a27b5a6765e7be8a8f159f5bce6c44798"/>
+        <topic label="FBFE_IsReady" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0"/>
+        <topic label="FBFE_InitArgsAreValid" href="filterbank__feature__extract_8c.html#ac2abfc0068ef70e2d208ca8b5a79f488"/>
+        <topic label="FBFE_BindInternalBuffers" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda"/>
+        <topic label="FBFE_ClearInternalBuffers" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517"/>
+        <topic label="FBFE_ScaleSampleByBranchBits" href="filterbank__feature__extract_8c.html#ad32587576d0c79d08b65d386a3e2cb11"/>
+        <topic label="FBFE_StoreSampleBytes" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119"/>
+        <topic label="FBFE_PackFourSamplesIntoFrameBuffer" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e"/>
+        <topic label="FBFE_UpdateInputBufferAtFrameEnd" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181"/>
+        <topic label="FBFE_AdvanceSampleState" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e"/>
         <topic label="FBFE_ShiftNNInputWindow" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6"/>
+        <topic label="FBFE_GetMMR0Value" href="filterbank__feature__extract_8c.html#a452a5db677b156d57beddb31f18d1c55"/>
+        <topic label="FBFE_GetCTL1Value" href="filterbank__feature__extract_8c.html#a42dae8a4c8348ade59a19a402c86b876"/>
+        <topic label="FBFE_GetAROUT0Base" href="filterbank__feature__extract_8c.html#a4c721bd4b13f51c5168de523d6293320"/>
+        <topic label="FBFE_LoadMMR" href="filterbank__feature__extract_8c.html#a21fd0baaa051c8c26fbb947b5048917f"/>
+        <topic label="FBFE_ProgramCommonNpuState" href="filterbank__feature__extract_8c.html#acb819c4fff3a508731f296f903d81f34"/>
+        <topic label="FBFE_LoadInstructions" href="filterbank__feature__extract_8c.html#a0606db02a3cbe7ec4e7ccc0a999900f5"/>
+        <topic label="FBFE_LoadParamsForBlock" href="filterbank__feature__extract_8c.html#a2b00f18cee2704762a4dc3f00f11b50d"/>
+        <topic label="FBFE_RunTiniePass" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97"/>
+        <topic label="FBFE_InitBlockMaxValues" href="filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d"/>
+        <topic label="FBFE_UpdateMaxValuesForStride" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960"/>
+        <topic label="FBFE_PostprocessOneChannel" href="filterbank__feature__extract_8c.html#a58fa67056ffc456361697b162cbb2d35"/>
+        <topic label="FBFE_PostprocessBlock" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340"/>
+        <topic label="TINIE_start" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee"/>
         <topic label="FBFE_Init" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c"/>
-        <topic label="FBFE_PushSample" href="filterbank__feature__extract_8c.html#ae14b90d0f7762297ea475985f60019d9"/>
+        <topic label="FBFE_PushSample" href="filterbank__feature__extract_8c.html#ab0c690f846a85bceee4fb5fe97877ff0"/>
         <topic label="FBFE_RunOneFrame" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b"/>
         <topic label="g_frame_buffer" href="filterbank__feature__extract_8c.html#a76648449cfc4013a44227db613f3ca0c"/>
         <topic label="g_fb_input" href="filterbank__feature__extract_8c.html#ae10836c9151850f81f0634a5caa61e2b"/>
@@ -87,6 +112,7 @@
           <topic label="ls_mask" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43"/>
           <topic label="ms_mask" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac"/>
           <topic label="ms_shift" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e"/>
+          <topic label="branch_bits" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af"/>
         </topic>
         <topic label="FBFE_Ctx" href="struct_f_b_f_e___ctx.html">
           <topic label="cfg" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868"/>
@@ -105,8 +131,9 @@
           <topic label="maxpool_outputs" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de"/>
           <topic label="inited" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17"/>
         </topic>
+        <topic label="TINIE_start" href="filterbank__feature__extract_8h.html#a25f8a4e637a55e5365469947d00954ee"/>
         <topic label="FBFE_Init" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c"/>
-        <topic label="FBFE_PushSample" href="filterbank__feature__extract_8h.html#ae14b90d0f7762297ea475985f60019d9"/>
+        <topic label="FBFE_PushSample" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0"/>
         <topic label="FBFE_RunOneFrame" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b"/>
       </topic>
       <topic label="npu.c" href="npu_8c.html">

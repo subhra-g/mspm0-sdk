@@ -66,8 +66,12 @@
 #include <ti/devices/msp/peripherals/m0p/sysctl/hw_sysctl_mspm0g518x.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_MSPM0C1105_C1106)
 #include <ti/devices/msp/peripherals/m0p/sysctl/hw_sysctl_mspm0c1105_c1106.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_MSPM0G511X)
+#include <ti/devices/msp/peripherals/m0p/sysctl/hw_sysctl_mspm0g511x.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_MSPM0L211X_L112X)
 #include <ti/devices/msp/peripherals/m0p/sysctl/hw_sysctl_mspm0l211x_l112x.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_MSPM0C511X)
+#include <ti/devices/msp/peripherals/m0p/sysctl/hw_sysctl_mspm0c511x.h>
 /********************************************************************
  *
  ********************************************************************/

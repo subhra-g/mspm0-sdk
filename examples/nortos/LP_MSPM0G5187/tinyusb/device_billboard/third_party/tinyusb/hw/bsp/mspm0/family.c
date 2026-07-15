@@ -25,6 +25,7 @@
  */
 
 #include "bsp/board_api.h"
+#include "family.h"
 #ifdef __USE_SYSCONFIG__
 #include "ti_msp_dl_config.h"
 #else
@@ -40,6 +41,13 @@
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler
 //--------------------------------------------------------------------+
+#if CFG_TUSB_MCU == OPT_MCU_MSPM0C511X
+void USBLC0_IRQHandler(void)
+{
+  USBLC0->CPU_INT.IIDX;
+  tud_int_handler(0);
+}
+#else
 void USBFS0_IRQHandler(void)
 {
 
@@ -55,6 +63,7 @@ void USBFS0_IRQHandler(void)
   tud_int_handler(0);
 #endif
 }
+#endif
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM
@@ -92,7 +101,7 @@ void ConfigureGPIO(void)
   /* Enabling GPIO_LED_TUSB pin as an output */
   GPIO_LED_TUSB->DOESET31_0 = GPIO_LED_PIN_TUSB;
 
-#ifdef CFG_TUH_ENABLED
+#if defined(CFG_TUH_ENABLED) && (CFG_TUSB_MCU != OPT_MCU_MSPM0C511X)
   /*
    * When HOST mode is enabled the device must source the USB clock from
    * an external crystal in combination with the PLL. To utilize the
@@ -189,17 +198,22 @@ void ConfigureUART(void)
 void board_init(void)
 {
   /* Reset the USB peripheral */
-  USBFS0->GPRCM.RSTCTL = (USB_RSTCTL_KEY_UNLOCK_W | USB_RSTCTL_RESETSTKYCLR_CLR |
+  MSPUSB->GPRCM.RSTCTL = (USB_RSTCTL_KEY_UNLOCK_W | USB_RSTCTL_RESETSTKYCLR_CLR |
                           USB_RSTCTL_RESETASSERT_ASSERT);
 
 #ifdef __USE_SYSCONFIG__
   SYSCFG_DL_init();
 #else
+
+#if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   ConfigureGPIO();
+#endif
 
   SystemCoreClockUpdate();
 
+#if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   ConfigureUART();
+#endif
 
 #if CFG_TUSB_OS == OPT_OS_NONE
   /*
@@ -207,18 +221,17 @@ void board_init(void)
    * The device will be running at 80 MHz by default so we will
    * set the value of SysTick_Config to 80000 so the period will be 1ms.
    */
-  SysTick_Config(80000);
+  SysTick_Config(SYSTICK_FREQ);
 #endif
 #endif
 
   /* Enable power to the USB peripheral */
-  USBFS0->GPRCM.PWREN = (USB_PWREN_ENABLE_ENABLE |  USB_PWREN_KEY_UNLOCK_W);
+  MSPUSB->GPRCM.PWREN = (USB_PWREN_ENABLE_ENABLE |  USB_PWREN_KEY_UNLOCK_W);
 
   /*
    * Polling until USB peripheral has been powered on
-   * TODO: MSPMSDKUSB-15 - Confirm SYSCTL_RCGCUSB_R0 is implemented within SYSCTL
    */
-  while (( USBFS0->GPRCM.PWREN & USB_PWREN_ENABLE_ENABLE ) == 0)
+  while (( MSPUSB->GPRCM.PWREN & USB_PWREN_ENABLE_ENABLE ) == 0)
     ;
 
   /* Polling for status of USB peripheral from SYSCTL module */
@@ -233,9 +246,9 @@ void board_init(void)
    * pins are automatically configured and no further configuration is required.
    */
 #if CFG_TUD_ENABLED
-  USBFS0->USBMODE |= (USB_USBMODE_DEVICEONLY_ENABLE | USB_USBMODE_PHYMODE_USB);
+  MSPUSB->USBMODE |= (USB_USBMODE_DEVICEONLY_ENABLE | USB_USBMODE_PHYMODE_USB);
 #else
-  USBFS0->USBMODE |= (USB_USBMODE_HOST_ENABLE | USB_USBMODE_PHYMODE_USB);
+  MSPUSB->USBMODE |= (USB_USBMODE_HOST_ENABLE | USB_USBMODE_PHYMODE_USB);
 #endif
 
   /*
@@ -244,16 +257,16 @@ void board_init(void)
    */
 
   /* Clear any pending USB interrupt */
-  NVIC_ClearPendingIRQ(USBFS0_INT_IRQn);
+  NVIC_ClearPendingIRQ(USB_INT_IRQn);
 
   /* Clearing USB interrupts */
-  USBFS0->CPU_INT.ICLR = (USB_ICLR_INTRUSB_CLR | USB_ICLR_VUSBPWRDN_CLR);
+  MSPUSB->CPU_INT.ICLR = (USB_ICLR_INTRUSB_CLR | USB_ICLR_VUSBPWRDN_CLR);
 
   /* Clearing out USB interrupt status with read */
-  USBFS0->REGISTERS.USBIS;
+  MSPUSB->REGISTERS.USBIS;
 
   /* Enable USB interrupts */
-  NVIC_EnableIRQ(USBFS0_INT_IRQn);
+  NVIC_EnableIRQ(USB_INT_IRQn);
 }
 
 //--------------------------------------------------------------------+
@@ -261,10 +274,14 @@ void board_init(void)
 //--------------------------------------------------------------------+
 
 void board_led_write(bool state) {
+#if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   if (state)
     GPIO_LED_TUSB->DOUTSET31_0 = GPIO_LED_PIN_TUSB;
   else
     GPIO_LED_TUSB->DOUTCLR31_0 = GPIO_LED_PIN_TUSB;
+#else
+  (void) state;
+#endif
 }
 
 int board_uart_read(uint8_t * buf, int len)
@@ -274,13 +291,16 @@ int board_uart_read(uint8_t * buf, int len)
    * is empty, if empty then return. Otherwise if there
    * is something add it to the buffer.
    */
+#if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   if (UART_TUSB->STAT & UNICOMMUART_STAT_RXFE_MASK)
     return 0;
 
   for (int i = 0; i < len; ++i) {
     *buf++ = (UART_TUSB->RXDATA & UNICOMMUART_RXDATA_DATA_MASK);
   }
-
+#else
+  (void) buf;
+#endif
   return len;
 }
 
@@ -292,11 +312,15 @@ int board_uart_write(void const * buf, int len)
    * to the TXDATA register. Upon completion length will
    * be returned.
    */
+#if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   uint8_t const *p = (uint8_t const *)buf;
   for (int i = 0; i < len; ++i) {
     while (UART_TUSB->STAT & UNICOMMUART_STAT_TXFF_MASK);
     UART_TUSB->TXDATA = *p++;
   }
+#else
+  (void) buf;
+#endif
   return len;
 }
 
@@ -314,10 +338,14 @@ uint32_t board_millis(void) {
 
 uint32_t board_button_read(void)
 {
+  #if CFG_TUSB_MCU != OPT_MCU_MSPM0C511X
   /*
    * The button pin is configured as high when idle and low
    * when there is user input. So this function will return
    * 0u when button is idle and 1u when button is pressed.
    */
   return (GPIO_BUTTON_TUSB->DIN31_0 & GPIO_BUTTON_PIN_TUSB) ? 0u : 1u;
+  #else
+  return 0;
+  #endif
 }

@@ -34,20 +34,20 @@
 #define CONSTANTS_H
 
 #include <stdint.h>
-#include "model_AUTOGEN.h"
+#include "fe_model/model_autogen.h"
 
 /* ============================================================
  * User-controlled audio configuration
  * ============================================================ */
 
 /* Sampling rate in Hz (e.g. 8000 or 16000) */
-#define SAMPLING_RATE_HZ        (8000u)
+#define SAMPLING_RATE_HZ             (8000u)
 
 /* Feature extraction hop size */
-#define WINDOW_SIZE_MS          (60u)
+#define WINDOW_SIZE_MS               (60u)
 
 /* Total audio context required by model (ms) */
-#define CONTEXT_MS        (3000u)
+#define CONTEXT_MS                  (3000u)
 
 #define LS_MASK                     (0x00FF)
 #define MS_MASK                     (0xFF00)

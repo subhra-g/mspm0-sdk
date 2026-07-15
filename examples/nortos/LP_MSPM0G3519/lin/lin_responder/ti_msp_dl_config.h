@@ -78,14 +78,6 @@ extern "C" {
 
 
 
-/* Defines for TIMER_0 */
-#define TIMER_0_INST                                                     (TIMG0)
-#define TIMER_0_INST_IRQHandler                                 TIMG0_IRQHandler
-#define TIMER_0_INST_INT_IRQN                                   (TIMG0_INT_IRQn)
-#define TIMER_0_INST_LOAD_VALUE                                             (0U)
-
-
-
 /* Defines for LIN_0 */
 #define LIN_0_INST                                                         UART0
 #define LIN_0_INST_FREQUENCY                                            32000000
@@ -99,12 +91,10 @@ extern "C" {
 #define GPIO_LIN_0_IOMUX_TX                                      (IOMUX_PINCM21)
 #define GPIO_LIN_0_IOMUX_RX_FUNC                       IOMUX_PINCM22_PF_UART0_RX
 #define GPIO_LIN_0_IOMUX_TX_FUNC                       IOMUX_PINCM21_PF_UART0_TX
-#define LIN_0_BAUD_RATE                                                  (19200)
-#define LIN_0_IBRD_32_MHZ_19200_BAUD                                       (104)
-#define LIN_0_FBRD_32_MHZ_19200_BAUD                                        (11)
-#define LIN_0_TBIT_WIDTH                                                  (1666)
-#define LIN_0_TBIT_COUNTER_COEFFICIENT                                     (9.5)
-#define LIN_0_COUNTER_COMPARE_VALUE                                      (15833)
+#define LIN_0_BAUD_RATE                                                   (9600)
+#define LIN_0_IBRD_32_MHZ_9600_BAUD                                        (208)
+#define LIN_0_FBRD_32_MHZ_9600_BAUD                                         (21)
+#define LIN_0_TBIT_WIDTH                                                  (3333)
 
 
 
@@ -133,12 +123,9 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
-void SYSCFG_DL_TIMER_0_init(void);
 void SYSCFG_DL_LIN_0_init(void);
 
 
-bool SYSCFG_DL_saveConfiguration(void);
-bool SYSCFG_DL_restoreConfiguration(void);
 
 #ifdef __cplusplus
 }

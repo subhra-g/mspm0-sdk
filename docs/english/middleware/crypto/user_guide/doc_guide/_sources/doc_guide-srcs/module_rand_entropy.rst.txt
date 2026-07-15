@@ -1,0 +1,181 @@
+################################################################################
+Entropy Source (TRNG Interface)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The entropy module (`entropy.h`) provides an interface to the True Random 
+Number Generator (TRNG) hardware module present on certain MSPM0 devices.
+
+The entropy module is intented to extract entropy data from the TRNG to be used
+as seed material for a deterministic random bit generator.
+
+================================================================================
+Key Features
+================================================================================
+
+* Abstracted access to hardware TRNG entropy source on the microcontroller
+* Built-in power-on self-tests (POST) for both analog and digital components
+* Continuous health monitoring during operation
+* Function call will time out in event hardware TRNG does not respond to a
+  command
+
+================================================================================
+Hardware Support
+================================================================================
+
+This module requires an MSPM0 device with a TRNG hardware module. 
+Consult your device datasheet to confirm TRNG availability.
+
+Currently supported device families include:
+
+* MSPM0Gx51x  (MSPM0G1518, MSPM0G1519, MSPM0G3518, MSPM0G3519)
+* MSPM0Lx22x  (MSPM0L1227, MSPM0L1228, MSPM0L2227, MSPM021228)
+* MSPM33C32xx (MSPM33C321A)
+
+================================================================================
+Status Codes
+================================================================================
+
+The entropy functions return status codes defined in the `crypto_entropy_stat_t`
+enumeration to indicate the result of operations.
+
+==================================== ====== =============================================================
+Status Code                          Value  Description
+==================================== ====== =============================================================
+`CRYPTO_ENTROPY_TRNG_HEATH_FAIL`     -5     Continuous TRNG health monitor test failed
+`CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL`  -4     Analog power-on self test failed
+`CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL`  -3     Digital power-on self test failed
+`CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR`    -2     A command timed out (TRNG did not respond to command)
+`CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR`  -1     Invalid clock frequency (frequency not supported by TRNG)
+`CRYPTO_ENTROPY_OK`                  0      The operation completed successfully
+==================================== ====== =============================================================
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for the entropy source is defined 
+below.
+
+================================================================================
+Getting Random Data
+================================================================================
+
+The `Crypto_getEntropy` function is used to extract entropy from the TRNG.
+
+.. code-block:: c
+
+    crypto_entropy_stat_t Crypto_getEntropy(uint32_t *output, uint32_t len, 
+                                            uint32_t inClkFreq);
+
+**Description:**  
+Generates true random bits (entropy) from the on-chip TRNG entropy source and 
+stores them in an output buffer. This function handles the complete lifecycle 
+of the TRNG operation:
+
+* Powers on the TRNG
+* Executes TRNG self-tests
+* Configures clocking and decimation
+* Extracts the specified number of 32-bit samples
+* Powers down the TRNG after completion
+
+**Parameters:**
+
+* `output`: Pointer to the buffer where entropy will be stored
+* `len`: Number of 32-bit words of entropy to generate
+* `inClkFreq`: The frequency of the bus clock used by the TRNG (in Hz)
+
+**Returns:**
+
+* `CRYPTO_ENTROPY_OK`: Success - `len` words of random data were collected
+* `CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR`: The TRNG input clock frequency is incompatible
+* `CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR`: A command timed out
+* `CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL`: Digital power-on self-test failed
+* `CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL`: Analog power-on self-test failed
+* `CRYPTO_ENTROPY_TRNG_HEATH_FAIL`: Continuous health test failed during operation
+
+********************************************************************************
+Usage Example
+********************************************************************************
+
+An example programming sequence to extract entropy is shown below.
+
+.. code-block:: c
+
+    #include "ti/crypto/include/rand/entropy.h"
+
+    /* Generate 4 words (16 bytes) of random data */
+    uint32_t randomData[4];
+    crypto_entropy_stat_t status;
+
+    /* System clock frequency (example: 48 MHz) */
+    uint32_t systemClockFreq = 48000000U;
+
+    /* Get entropy from the TRNG */
+    status = Crypto_getEntropy(randomData, 4, systemClockFreq);
+
+    if (status == CRYPTO_ENTROPY_OK) {
+        /* Successfully generated random data */
+        /* Use randomData for cryptographic purposes */
+    } else {
+        /* Handle error based on status code */
+        switch (status) {
+            case CRYPTO_ENTROPY_TRNG_CLOCK_SEL_ERR:
+                /* Clock frequency is not compatible with TRNG */
+                break;
+            case CRYPTO_ENTROPY_TRNG_TIMEOUT_ERR:
+                /* TRNG operation timed out */
+                break;
+            case CRYPTO_ENTROPY_TRNG_POST_DIG_FAIL:
+            case CRYPTO_ENTROPY_TRNG_POST_ANA_FAIL:
+                /* POST failure */
+                break;
+            case CRYPTO_ENTROPY_TRNG_HEATH_FAIL:
+                /* Health test failure during operation */
+                break;
+        }
+    }
+
+********************************************************************************
+Best Practices
+********************************************************************************
+
+#. **Error Handling**: Always check return values from `Crypto_getEntropy()`. 
+   A failure could indicate hardware issues that compromise security.
+#. **Clock Configuration**: Ensure the input clock frequency (`inClkFreq`) is 
+   correctly specified. Incorrect clock settings can lead to suboptimal entropy 
+   generation or errors.
+#. **Buffer Allocation**: Make sure the output buffer is large enough to hold 
+   `len` 32-bit words.
+#. **Power Considerations**: The TRNG hardware consumes power during operation. 
+   This module automatically powers down the TRNG after completion to conserve 
+   energy.
+#. **Secure Usage**: Random data generated should be protected in memory and 
+   securely erased when no longer needed. For example, when generating entropy
+   to seed a DRBG, after the DRBG initialization the random seed may be cleared
+   from SRAM.
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+* The TRNG module discards leading samples after initialization to 
+  remove any deterministic information left over from self-tests.
+* The implementation includes continuous health monitoring that checks the 
+  entropy source during operation.
+* The function has a built-in timeout mechanism to prevent indefinite blocking 
+  if the TRNG hardware malfunctions.
+* The TRNG is a hardware resource that may not be available on all devices.
+* The entropy generation rate is limited by the TRNG hardware capabilities.
+* For applications requiring deterministic random number generation based on 
+  entropy seeds, consider using the DRBG (Deterministic Random Bit Generator) 
+  module in conjunction with the entropy source.
+
+********************************************************************************
+Related Modules
+********************************************************************************
+* Use with the DRBG module (`drbg.h`) to condition entropy for further use in
+  generating random values for use with cipher, MAC, and signature modules.

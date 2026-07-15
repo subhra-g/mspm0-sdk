@@ -30,7 +30,6 @@ GPIO1.associatedPins[0].pin.$assign  = "PA0";
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 Board.configureUnused = true;
 
-
 GPIO2.port                          = "PORTB";
 GPIO2.$name                         = "GPIO_LEDS2";
 GPIO2.associatedPins[0].assignedPin = "16";

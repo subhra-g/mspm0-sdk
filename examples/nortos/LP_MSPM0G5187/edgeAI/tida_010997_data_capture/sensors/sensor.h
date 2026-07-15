@@ -38,6 +38,7 @@
 #include "ambient_light/sensor_OPT4001.h"
 #include "imu/sensor_BMI270.h"
 #include "hall_effect/sensor_TMAG5170.h"
+#include "analog_mic/sensor_TAA3020.h"
 
 #include "ti_msp_dl_config.h"
 
@@ -48,10 +49,11 @@
 
 /**
  * @brief Routes sample acquisition to appropriate sensor based on index
+ * @param[in] UART_handle  Pointer to UART_Instance
  * @param[in] index        Sensor index (SENSOR_IDX_PIR, SENSOR_IDX_TEMP, etc.)
  * @param[in] numSamples   Number of samples to acquire from selected sensor
  */
-void Sensor_AcquireSamples(uint8_t index, uint32_t numSamples);
+void Sensor_AcquireSamples(UART_Instance *UART_handle, SensorIndex index, uint32_t numSamples);
 
 
 /* Flag to track number of PIR samples to send */
@@ -62,5 +64,8 @@ extern volatile uint8_t gDataReady_Acc_Gyro;
 
 /* Flag to indicate hall effect sensor data is ready */
 extern volatile uint8_t gDataReady_HallEffect;
+
+/* Number of DMA Transfers to be done for I2S data */
+extern volatile uint32_t gDMA_I2S_dataTransfer;
 
 #endif /* SENSOR_H_ */

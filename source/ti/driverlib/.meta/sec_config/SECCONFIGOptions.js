@@ -16,6 +16,7 @@ let SUPPORT_BANKSWAP = {
     MSPM0L211X_L112X    : false,
     MSPM0L210X          : false,
     MSPM0GX218_GX207    : true,
+    MSPM0C511X          : false,
 }
 
 /* Some devices with CSC have KEYSTORE IP */

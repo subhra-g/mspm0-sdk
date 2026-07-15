@@ -125,6 +125,9 @@
 #elif CFG_TUSB_MCU == OPT_MCU_MSPM0G518X
   #include "msp.h"
 
+#elif CFG_TUSB_MCU == OPT_MCU_MSPM0C511X
+  #include "msp.h"
+
 #elif CFG_TUSB_MCU == OPT_MCU_VALENTYUSB_EPTRI
   // no header needed
 

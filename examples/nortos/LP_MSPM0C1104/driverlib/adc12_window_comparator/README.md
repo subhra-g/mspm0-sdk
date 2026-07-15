@@ -1,7 +1,7 @@
 ## Example Summary
 
 The following example configures ADC0 to trigger repeated single conversion and
-turns on LED1 is ADC > 0.5VDDA using window comparator feature in ADC12. Note that the ADC resolution
+turns on LED1 if ADC > 0.5VDDA using the window comparator feature in ADC12. Note that the ADC resolution
 is 10-bit by default.
 
 **Note**: Example requires Rev E3 or later of the MSPM0C1104 LaunchPad.
@@ -46,7 +46,7 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0C1104 User's Guide](https://www.ti.com/lit/slau908).
 
 ## Example Usage
-Compile, load and run the example.
+Compile, load, and run the example.
 Provide a valid voltage to A0_2 between 0 - VCC.
 Monitor LED1 while input voltage changes.
 

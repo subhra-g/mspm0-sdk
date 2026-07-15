@@ -29,16 +29,15 @@
 
     <defines>
         <define>__MSPM0G5187__</define>
+        <define>__USE_SYSCONFIG__</define>
         <define>__MSPM0G518X__</define>
         <define>CFG_TUSB_MCU=OPT_MCU_MSPM0G518X</define>
-        <define>__USE_SYSCONFIG__</define>
     </defines>
 
     <extraOptions>
         <args>
             <arg>--diag_suppress=Pa039</arg>
             <arg>--diag_suppress=Pe1143</arg>
-            <arg>--debug</arg>
             <arg>--silent</arg>
             <arg>-e</arg>
             <arg>--aeabi</arg>
@@ -120,6 +119,10 @@
         </group>
         <group name="third_party/tinyusb/hw/bsp/mspm0" build="true">
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/hw/bsp/mspm0/family.c">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/hw/bsp/mspm0/family.c</path>
+            <path copyTo="$PROJ_DIR$/third_party/tinyusb/hw/bsp/mspm0/family.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/hw/bsp/mspm0/family.h</path>
+        </group>
+        <group name="third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116" build="true">
+            <path copyTo="$PROJ_DIR$/third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116/board.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0c5116/board.h</path>
         </group>
         <group name="third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117" build="true">
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117/board.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/hw/bsp/mspm0/boards/lp-mspm0g5117/board.h</path>
@@ -241,6 +244,7 @@
         </group>
         <group name="third_party/tinyusb/src/portable/mentor/musb" build="true">
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/src/portable/mentor/musb/dcd_musb.c</path>
+            <path copyTo="$PROJ_DIR$/third_party/tinyusb/src/portable/mentor/musb/dcd_musbfsfc.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/src/portable/mentor/musb/dcd_musbfsfc.h</path>
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/src/portable/mentor/musb/hcd_musb.c</path>
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/src/portable/mentor/musb/musb_ti.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/src/portable/mentor/musb/musb_ti.h</path>
             <path copyTo="$PROJ_DIR$/third_party/tinyusb/src/portable/mentor/musb/musb_type.h">$MSPM0_SDK_INSTALL_DIR$/examples/nortos/LP_MSPM0G5187/tinyusb/device_billboard_cdc/third_party/tinyusb/src/portable/mentor/musb/musb_type.h</path>

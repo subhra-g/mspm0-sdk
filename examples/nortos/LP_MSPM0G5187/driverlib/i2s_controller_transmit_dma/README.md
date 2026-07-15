@@ -10,7 +10,13 @@ enable I2S functionality, or to create custom drivers.
 ## Peripherals, Pin Functions, MCU Pins, Launchpad Pins
 | Peripheral | Function | MCU Pin | Launchpad Pin | Launchpad Settings |
 | --- | --- | --- | --- | --- |
-TODO
+| SYSCTL |  |  |  |  |
+| I2S0 | Data Pin 0 | PA13 | J3_29 |  |
+| I2S0 | Data Pin 1 | PB13 |  |  |
+| I2S0 | BCLK Pin | PA9 | J1_9 |  |
+| I2S0 | WCLK Pin | PB10 | J2_37 |  |
+| BOARD | Debug Clock | PA20 | J101_16 |  |
+| BOARD | Debug Data In Out | PA19 | J101_14 |  |
 
 ### Device Migration Recommendations
 This project was developed for a superset device included in the MSPM0 LaunchPad. Please
@@ -28,10 +34,6 @@ For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the LP-MSPM0G5187 User's Guide.
 
 ## Example Usage
-TODO: The Example Usage section is a rough draft intended only for developers.
-It will go over connecting the LaunchPad to the TAS5805EVM and how to use the
-TAS5805EVM configuration GUI, also known as PurePath Console 3. Again:
+Connect the MPSM0 to an audio amplifier board, following the specific instructions for your board.
 
-FOR INTERNAL TEAM USE ONLY!!
-
-See this Confluence page: https://confluence.itg.ti.com/display/MSPsw/Using+TAS5805EVM+for+A1_USB+I2S+Audio
+Run the example. It will play a continuous tone via I2S from the speaker.

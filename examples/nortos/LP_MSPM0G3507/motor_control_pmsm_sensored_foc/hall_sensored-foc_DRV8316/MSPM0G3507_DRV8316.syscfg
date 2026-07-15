@@ -16,7 +16,6 @@ const Board         = scripting.addModule("/ti/driverlib/Board");
 const CAPTURE       = scripting.addModule("/ti/driverlib/CAPTURE", {}, false);
 const CAPTURE1      = CAPTURE.addInstance();
 const CAPTURE2      = CAPTURE.addInstance();
-const CAPTURE3      = CAPTURE.addInstance();
 const CRC           = scripting.addModule("/ti/driverlib/CRC");
 const DAC12         = scripting.addModule("/ti/driverlib/DAC12");
 const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
@@ -113,16 +112,6 @@ CAPTURE2.subscriberChannel  = 11;
 CAPTURE2.timerPeriod        = "50s";
 CAPTURE2.timerStartTimer    = true;
 CAPTURE2.peripheral.$assign = "TIMG12";
-
-CAPTURE3.timerClkDiv        = 8;
-CAPTURE3.timerClkPrescale   = 250;
-CAPTURE3.captSelect         = "Trigger";
-CAPTURE3.captEdgeDetection  = "EDGE";
-CAPTURE3.subscriberPort     = "FSUB0";
-CAPTURE3.timerStartTimer    = true;
-CAPTURE3.timerPeriod        = "1.5s";
-CAPTURE3.$name              = "HALL_CAPTURE";
-CAPTURE3.peripheral.$assign = "TIMG6";
 
 CRC.polynomial = "16_POLYNOMIAL";
 CRC.seed       = 0xFFFF;

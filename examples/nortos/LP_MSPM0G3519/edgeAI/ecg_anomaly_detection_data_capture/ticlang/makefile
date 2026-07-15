@@ -25,6 +25,8 @@ OBJECTS = device_agent_protocol_dap_interface.obj ecg_anomaly_detection_data_cap
 NAME = ecg_anomaly_detection_data_capture
 
 
+DFLAGS += -gdwarf-3
+
 CFLAGS += -I.. \
     -I. \
     $(addprefix @,$(SYSCFG_OPT_FILES)) \
@@ -34,12 +36,17 @@ CFLAGS += -I.. \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/device_agent_protocol/core" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source/ti/edgeAI/device_agent_protocol/uart_comm" \
     "-I$(MSPM0_SDK_INSTALL_DIR)/source" \
-    -gdwarf-3 \
     -mcpu=cortex-m0plus \
     -march=thumbv6m \
     -mfloat-abi=soft \
     -mthumb \
     -Wall
+
+
+ifneq ($(CONFIG),RELEASE)
+# Add debug flags by default (excluded only when CONFIG=RELEASE)
+CFLAGS += $(DFLAGS)
+endif
 
 LFLAGS += -lAFE1594_lib.a \
     -ldevice.cmd.genlibs \
@@ -91,11 +98,11 @@ ecg_anomaly_detection_data_capture.obj: ../ecg_anomaly_detection_data_capture.c 
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_device_agent_protocol_core_dap_core.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2007/execroot/__main__/source/ti/edgeAI/device_agent_protocol/core/dap_core.c $(SYSCFG_H_FILES)
+ti_edgeAI_device_agent_protocol_core_dap_core.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/9160/execroot/__main__/source/ti/edgeAI/device_agent_protocol/core/dap_core.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
-ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/2007/execroot/__main__/source/ti/edgeAI/device_agent_protocol/uart_comm/uart_comm_target.c $(SYSCFG_H_FILES)
+ti_edgeAI_device_agent_protocol_uart_comm_uart_comm_target.obj: /home/a0226989/.cache/bazel/_bazel_a0226989/4d845513c594c2a2405290acdd717718/sandbox/linux-sandbox/9160/execroot/__main__/source/ti/edgeAI/device_agent_protocol/uart_comm/uart_comm_target.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	$(V) $(CC) $(CFLAGS) -c $< -o $@
 

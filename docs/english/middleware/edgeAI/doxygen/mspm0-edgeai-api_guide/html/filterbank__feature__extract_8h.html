@@ -78,12 +78,19 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Filterbank Feature Extraction API. </p>
+<div class="textblock"><p>Filterbank Feature Extraction — public API and types. </p>
 <hr/>
-<p>This module implements filterbank-based feature extraction functionality for processing and machine learning applications. It provides an efficient implementation of filterbank analysis using NPU hardware acceleration. </p>
-</div><div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<p>This module implements filterbank-based feature extraction for keyword detection and similar machine-learning inference workloads. It provides an efficient pipeline that:</p><ul>
+<li>accepts a continuous stream of signed 16-bit PCM audio samples,</li>
+<li>packs and overlaps frames into the format expected by the NPU,</li>
+<li>runs MSB and LSB weight passes on the NPU hardware accelerator,</li>
+<li>applies maxpool, scale, offset, and quantization post-processing, and</li>
+<li>maintains a sliding feature window for the downstream classifier.</li>
+</ul>
+<p>Typical usage sequence: </p><div class="fragment"><div class="line"><a class="code" href="struct_f_b_f_e___config.html">FBFE_Config</a> cfg = { ... };</div><div class="line"><a class="code" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a>    ctx;</div><div class="line">uint8_t     features[FEATURES_BYTES];</div><div class="line"></div><div class="line"><a class="code" href="filterbank__feature__extract_8c.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init</a>(&amp;ctx, &amp;cfg, features, <span class="keyword">sizeof</span>(features));</div><div class="line"></div><div class="line"><span class="keywordflow">while</span> (audio_available())</div><div class="line">{</div><div class="line">    <a class="code" href="filterbank__feature__extract_8c.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample</a>(&amp;ctx, get_next_sample());</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordflow">if</span> (frame_complete())</div><div class="line">{</div><div class="line">    <a class="code" href="filterbank__feature__extract_8c.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame</a>(&amp;ctx);</div><div class="line">    <span class="comment">// features[] now contains the updated sliding window</span></div><div class="line">}</div></div><!-- fragment --> </div><div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &quot;fe_model/model_autogen.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for filterbank_feature_extract.h:</div>
 <div class="dyncontent">
@@ -105,25 +112,54 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration structure for the Filterbank Feature Extraction.  <a href="struct_f_b_f_e___config.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration parameters for the filterbank feature extraction.  <a href="struct_f_b_f_e___config.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Context structure for the Filterbank Feature Extraction.  <a href="struct_f_b_f_e___ctx.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime state for a single filterbank feature extraction instance.  <a href="struct_f_b_f_e___ctx.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a25f8a4e637a55e5365469947d00954ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8h.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start</a> (void)</td></tr>
+<tr class="memdesc:a25f8a4e637a55e5365469947d00954ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the NPU layer execution.  <a href="#a25f8a4e637a55e5365469947d00954ee">More...</a><br /></td></tr>
+<tr class="separator:a25f8a4e637a55e5365469947d00954ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8h.html#a0aa11eaa317b83ec7556c8fc7e3f360c">FBFE_Init</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, const <a class="el" href="struct_f_b_f_e___config.html">FBFE_Config</a> *cfg, uint8_t *final_features, size_t final_features_bytes)</td></tr>
-<tr class="memdesc:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the filterbank feature extraction context.  <a href="#a0aa11eaa317b83ec7556c8fc7e3f360c">More...</a><br /></td></tr>
+<tr class="memdesc:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a filterbank feature extraction context.  <a href="#a0aa11eaa317b83ec7556c8fc7e3f360c">More...</a><br /></td></tr>
 <tr class="separator:a0aa11eaa317b83ec7556c8fc7e3f360c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae14b90d0f7762297ea475985f60019d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8h.html#ae14b90d0f7762297ea475985f60019d9">FBFE_PushSample</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, uint16_t sample)</td></tr>
-<tr class="memdesc:ae14b90d0f7762297ea475985f60019d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a new sample for processing.  <a href="#ae14b90d0f7762297ea475985f60019d9">More...</a><br /></td></tr>
-<tr class="separator:ae14b90d0f7762297ea475985f60019d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c690f846a85bceee4fb5fe97877ff0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0">FBFE_PushSample</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx, int16_t sample)</td></tr>
+<tr class="memdesc:ab0c690f846a85bceee4fb5fe97877ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push one signed 16-bit PCM sample into the processing pipeline.  <a href="#ab0c690f846a85bceee4fb5fe97877ff0">More...</a><br /></td></tr>
+<tr class="separator:ab0c690f846a85bceee4fb5fe97877ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94e77ae51fd3840aa402f5440915b58b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b">FBFE_RunOneFrame</a> (<a class="el" href="struct_f_b_f_e___ctx.html">FBFE_Ctx</a> *ctx)</td></tr>
-<tr class="memdesc:a94e77ae51fd3840aa402f5440915b58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process one frame of data through the filterbank.  <a href="#a94e77ae51fd3840aa402f5440915b58b">More...</a><br /></td></tr>
+<tr class="memdesc:a94e77ae51fd3840aa402f5440915b58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the filterbank NPU pipeline on the current input frame.  <a href="#a94e77ae51fd3840aa402f5440915b58b">More...</a><br /></td></tr>
 <tr class="separator:a94e77ae51fd3840aa402f5440915b58b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a25f8a4e637a55e5365469947d00954ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25f8a4e637a55e5365469947d00954ee">&sect;&nbsp;</a></span>TINIE_start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TINIE_start </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start the NPU layer execution. </p>
+<p>This function triggers the execution of a layer in the NPU by setting the START bit in the CTL5 register.</p>
+<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="npu_8c.html#abaee13e346de3d356f713935249cdfb8">NPU_getCtlReg()</a>.</p>
+
+<p>Referenced by <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass()</a>.</p>
+
+</div>
+</div>
 <a id="a0aa11eaa317b83ec7556c8fc7e3f360c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0aa11eaa317b83ec7556c8fc7e3f360c">&sect;&nbsp;</a></span>FBFE_Init()</h2>
 
@@ -162,36 +198,40 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialize the filterbank feature extraction context. </p>
-<p>This function initializes the filterbank feature extraction context with the given configuration and output buffer. It sets up all internal buffers and prepares the context for processing.</p>
+<p>Initialize a filterbank feature extraction context. </p>
+<p>Validates all arguments, zeros the context structure, copies the configuration, binds the library-owned internal buffers, clears every buffer to a deterministic all-zero state, and marks the context as ready.</p>
+<p>This function must be called exactly once before any other API function operates on <code>ctx</code>. Calling it a second time on an already-initialized context is safe and resets the pipeline to its initial state.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the context structure to initialize. Must be allocated by the caller </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">cfg</td><td>Pointer to configuration structure containing filterbank parameters. This structure is copied into the context. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to buffer where final features will be stored. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of the final features buffer.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the caller-allocated context structure to initialize. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cfg</td><td>Pointer to the configuration to apply. Copied by value; the caller may free or reuse it after this call returns. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the caller-supplied buffer that will hold the sliding feature window. Must remain valid for the lifetime of <code>ctx</code>. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of <code>final_features</code>. Must be at least FEATURES_BYTES.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if initialization was successful, false otherwise.</dd></dl>
-<p>This function initializes the filterbank feature extraction context with the provided configuration and output buffer. It performs parameter validation, sets up the context structure, binds internal buffers, and ensures a deterministic initial state.</p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the context was successfully initialized. </dd>
+<dd>
+<code>false</code> if any pointer argument is NULL or if <code>final_features_bytes</code> &lt; FEATURES_BYTES.</dd></dl>
+<p>Initialize a filterbank feature extraction context.</p>
+<p>Validates all arguments, clears the context structure, stores the configuration and output buffer, binds the library-owned internal buffers, zeros every buffer for a deterministic startup state, and marks the context as ready.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the context structure to initialize. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cfg</td><td>Pointer to the configuration structure. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the buffer where final features will be stored. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of the final features buffer.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features</td><td>Pointer to the caller-supplied buffer where the sliding feature window will be maintained. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">final_features_bytes</td><td>Size in bytes of <code>final_features</code>; must be at least FEATURES_BYTES.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if initialization was successful, false otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if initialization succeeded, false if any argument is invalid or the buffer is too small. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">FBFE_Ctx::final_features_bytes</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae10836c9151850f81f0634a5caa61e2b">g_fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a76648449cfc4013a44227db613f3ca0c">g_frame_buffer</a>, <a class="el" href="filterbank__feature__extract_8c.html#a138698e45c1982e9db894058c4bcbead">g_lsbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4f36e87e85380b39600a8946c8ac5cc4">g_maxpool</a>, <a class="el" href="filterbank__feature__extract_8c.html#a69160d4cab587f574855779e11599ab7">g_maxValues</a>, <a class="el" href="filterbank__feature__extract_8c.html#a5967d3232cad58ca2c6420c79c39399a">g_msbTemp</a>, <a class="el" href="filterbank__feature__extract_8c.html#a89d7421d2251b6edf245627586c8b321">g_singleOut</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="filterbank__feature__extract_8c.html#a8ef03ae07d312387b4ce7eaf023cfcda">FBFE_BindInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab005daf129b8f62f2c4e8756a3ac1517">FBFE_ClearInternalBuffers()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ac2abfc0068ef70e2d208ca8b5a79f488">FBFE_InitArgsAreValid()</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0">FBFE_Ctx::final_features</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a661873939aff9a7397dec67cf75fa8f6">FBFE_Ctx::final_features_bytes</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
 
 </div>
 </div>
-<a id="ae14b90d0f7762297ea475985f60019d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae14b90d0f7762297ea475985f60019d9">&sect;&nbsp;</a></span>FBFE_PushSample()</h2>
+<a id="ab0c690f846a85bceee4fb5fe97877ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c690f846a85bceee4fb5fe97877ff0">&sect;&nbsp;</a></span>FBFE_PushSample()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,7 +245,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramtype">int16_t&#160;</td>
           <td class="paramname"><em>sample</em>&#160;</td>
         </tr>
         <tr>
@@ -216,34 +256,31 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Push a new sample for processing. </p>
-<p>This function adds a new sample to the processing buffer. Once enough samples are collected to form a complete frame, they will be ready for processing with FBFE_RunOneFrame.</p>
+<p>Push one signed 16-bit PCM sample into the processing pipeline. </p>
+<p>Scales the sample according to the configured <a class="el" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af" title="Effective branch bit-width for input sample scaling. ">FBFE_Config::branch_bits</a>, splits it into MSB and LSB byte components, and stages them in the internal packing arrays. Every fourth call flushes the staged bytes into the frame buffer in the interleaved layout required by the NPU. When the last sample of a complete frame is received (sample_index == NUM_SAMPLES - 1), the NPU input buffer is updated by sliding the overlap region forward and appending the new frame.</p>
+<p>Callers must push exactly NUM_SAMPLES samples between consecutive calls to <a class="el" href="filterbank__feature__extract_8h.html#a94e77ae51fd3840aa402f5440915b58b" title="Run the filterbank NPU pipeline on the current input frame. ">FBFE_RunOneFrame()</a> to keep the pipeline in sync.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The sample value to pack.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to an initialized context. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>Signed 16-bit PCM audio sample to push.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the sample was successfully added, false otherwise.</dd></dl>
-<p>Push a new sample for processing.</p>
-<p>This function adds a new sample to the processing pipeline. It handles the sample packing, byte splitting, and frame buffer management. When enough samples have been collected to form a complete frame, the function prepares the data for NPU processing by properly arranging it in the input buffer. The sample packing process follows these steps:</p><ol type="1">
-<li>Split the 16-bit sample into most and least significant bytes using configured masks</li>
-<li>Store these bytes in temporary buffers</li>
-<li>When enough samples are collected (pack_size=4), pack them into the frame buffer</li>
-<li>When a complete frame is collected, update the input buffer with overlap handling</li>
-</ol>
-<p>The byte packing scheme optimizes memory usage and aligns data for efficient NPU processing by organizing samples in a specific pattern.</p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the sample was accepted and processed. </dd>
+<dd>
+<code>false</code> if <code>ctx</code> is NULL or has not been initialized.</dd></dl>
+<p>Push one signed 16-bit PCM sample into the processing pipeline.</p>
+<p>Scales the incoming sample to the configured branch bit-width, splits it into MSB/LSB byte components, and stages them in the internal packing arrays. When every fourth sample has been staged, the four samples are packed into the frame buffer. When the final sample of a complete frame has been received, the NPU input buffer is updated with the new frame and the appropriate overlap region.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The sample value to process.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample</td><td>The signed 16-bit audio sample to push.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the sample was successfully added, false if the context is invalid. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the sample was accepted, false if <code>ctx</code> is NULL or has not been initialized. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a48ca88e9fd8bb3acb8c6ec6ff9d344a9">FBFE_Ctx::frame_buffer</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#ae62273e106e999a3fde4d522831eab85">FBFE_Ctx::ls_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#aed449beb140624985e264d0ae8490e43">FBFE_Config::ls_mask</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a04fa251a400c9e818e7ac784ddd4a0ed">FBFE_Ctx::ms_bytes</a>, <a class="el" href="struct_f_b_f_e___config.html#add77f612aa5a057552d824554d74b2ac">FBFE_Config::ms_mask</a>, <a class="el" href="struct_f_b_f_e___config.html#a55bafbe94c7514bdc5b48b13f34dd57e">FBFE_Config::ms_shift</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a0463014858678dd61633992a1f106a97">FBFE_Ctx::sample_index</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___config.html#a469a29eb3a43a2b755158958324a81af">FBFE_Config::branch_bits</a>, <a class="el" href="struct_f_b_f_e___ctx.html#aaa533ffced33d11878ca17a08e24d868">FBFE_Ctx::cfg</a>, <a class="el" href="filterbank__feature__extract_8c.html#a7e0891ede3f6415fe73ffe93f9dc1b6e">FBFE_AdvanceSampleState()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ab9b48657ae118f9dddb81e71e8c8225e">FBFE_PackFourSamplesIntoFrameBuffer()</a>, <a class="el" href="filterbank__feature__extract_8c.html#ad32587576d0c79d08b65d386a3e2cb11">FBFE_ScaleSampleByBranchBits()</a>, <a class="el" href="filterbank__feature__extract_8c.html#afebf05c622dbae17819dfb870d0ab119">FBFE_StoreSampleBytes()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a3b227292a2e584e76e865488253ab181">FBFE_UpdateInputBufferAtFrameEnd()</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a26759736ad00118fc3868e808b677f3b">FBFE_Ctx::pack_index</a>.</p>
 
 </div>
 </div>
@@ -263,33 +300,43 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Process one frame of data through the filterbank. </p>
-<p>This function processes a complete frame of data through the filterbank feature extraction pipeline using NPU hardware acceleration. The results are stored in the final features buffer provided during initialization.</p>
+<p>Run the filterbank NPU pipeline on the current input frame. </p>
+<p>Executes the complete feature extraction sequence for one frame:</p><ol type="1">
+<li>Computes NPU addressing registers from the current buffer pointers.</li>
+<li>Iterates over MODEL_NUM_OUTPUT_BLOCKS output channel blocks.</li>
+<li>For each block: loads MMR coefficients, programs common NPU state, loads the instruction stream (first block only), and loads the block-specific weight parameters.</li>
+<li>For each of MAX_FB_STRIDE_ITER stride positions: runs an MSB pass followed by an LSB pass, combines their outputs, and updates the per-channel maximum accumulator.</li>
+<li>Applies scale, offset, right-shift, and uint8_t clamping to each channel's accumulated maximum value.</li>
+<li>Appends the resulting quantized feature vector to the sliding NN input window in <a class="el" href="struct_f_b_f_e___ctx.html#a1ab8be41004c7e19c2cea756052ba5d0" title="Pointer to the caller-supplied sliding feature window buffer. ">FBFE_Ctx::final_features</a>.</li>
+</ol>
+<p>This function should be called once per frame, after NUM_SAMPLES samples have been pushed via <a class="el" href="filterbank__feature__extract_8h.html#ab0c690f846a85bceee4fb5fe97877ff0" title="Push one signed 16-bit PCM sample into the processing pipeline. ">FBFE_PushSample()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to an initialized context. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the frame was successfully processed, false otherwise.</dd></dl>
-<p>This function executes the filterbank feature extraction process on a complete frame of data using the NPU hardware accelerator. It performs the following steps:</p><ol type="1">
-<li>Initializes NPU registers</li>
-<li>Processes data in blocks, corresponding to channel groups</li>
-<li>For each block, performs multiple stride iterations</li>
-<li>For each stride, executes both MSB and LSB passes</li>
-<li>Combines MSB and LSB results and tracks maximum values</li>
-<li>Applies scaling, offset, and quantization to the output features</li>
-<li>Updates the sliding feature window with the new results</li>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the frame was processed successfully. </dd>
+<dd>
+<code>false</code> if <code>ctx</code> is NULL, has not been initialized, or if a weight-parameter block exceeds MODEL_PARAMS_LOAD_CAPACITY.</dd></dl>
+<p>Run the filterbank NPU pipeline on the current input frame.</p>
+<p>Executes the full filterbank feature extraction sequence:</p><ol type="1">
+<li>Computes NPU addressing parameters from the current input/output buffers.</li>
+<li>Iterates over MODEL_NUM_OUTPUT_BLOCKS output blocks.</li>
+<li>For each block: initializes max accumulators, loads MMR coefficients, programs common NPU state, loads instructions (block 0 only), and loads the block weight parameters.</li>
+<li>For each stride within the block: runs an MSB pass and an LSB pass via <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97" title="Execute one MSB or LSB TINIE pass and capture the output. ">FBFE_RunTiniePass()</a>, then updates the per-channel maximum values.</li>
+<li>Applies scale, offset, shift, and uint8_t quantization to each channel.</li>
+<li>Appends the resulting feature vector to the sliding NN input window.</li>
 </ol>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context structure.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Pointer to the initialized context.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the frame was successfully processed, false if the context is invalid. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the frame was processed successfully, false if <code>ctx</code> is NULL or uninitialized, or if a parameter block exceeds MODEL_PARAMS_LOAD_CAPACITY. </dd></dl>
 
-<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a49fc4dda9af37d26efc05a484f3e3694">FBFE_ARBIAS0_ROW_WORD64</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae5ae7236ffc471d5675aec0d3ad4fb91">FBFE_CTL1_ADDR_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#adda8244148989c389c1beefd827948a0">FBFE_CTL1_ADDR_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae4bea5e9375a2075b9974fef5d60ef1a">FBFE_CTL1_OFMAP_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#aa02908e99f24cc4c1a5b212f48182e46">FBFE_MMR_STRIDE_STEP</a>, <a class="el" href="filterbank__feature__extract_8c.html#a9c24e379b5094227513236472c3405ca">FBFE_MSB_COMBINE_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a32c252c84a92d6e1744db0af5d2539af">FBFE_WORD_ADDR_16BIT_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#a61e39a6890e306a0216ca1f13b06aa2a">FBFE_WORD_ADDR_SHIFT_BITS</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae1c9bfed71ad1672e7287f30008b9e0c">FE_CTL0_LSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#a9ea4fd4ecae38febbe0eb35148fd5970">FE_CTL0_MSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#aec8a2e478772ab924e4507342b92a105">FE_SIGNCHK_MASK</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae9b8074f516df7bc9e5a96fde1225a62">FE_SIGNCHK_VAL</a>, <a class="el" href="filterbank__feature__extract_8c.html#ae9b5ea91860429d45cb988d1ddf19db5">FE_SIGNEXT_OR</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a5e7956233acd946503b7e30e7505da17">FBFE_Ctx::inited</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1e35900be227a93a8b90397b86aca8f2">FBFE_Ctx::max_values</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>, and <a class="el" href="filterbank__feature__extract_8c.html#a25f8a4e637a55e5365469947d00954ee">TINIE_start()</a>.</p>
+<p>References <a class="el" href="struct_f_b_f_e___ctx.html#a8b54408420d5ae8452cacab9e2e15943">FBFE_Ctx::fb_input</a>, <a class="el" href="filterbank__feature__extract_8c.html#a4c721bd4b13f51c5168de523d6293320">FBFE_GetAROUT0Base()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a42dae8a4c8348ade59a19a402c86b876">FBFE_GetCTL1Value()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a452a5db677b156d57beddb31f18d1c55">FBFE_GetMMR0Value()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af6ddab1a02f97206d40b4b256a75177d">FBFE_InitBlockMaxValues()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a003859f4d2a37b82b3ff12c5c5506ba0">FBFE_IsReady()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a0606db02a3cbe7ec4e7ccc0a999900f5">FBFE_LoadInstructions()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a21fd0baaa051c8c26fbb947b5048917f">FBFE_LoadMMR()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a2b00f18cee2704762a4dc3f00f11b50d">FBFE_LoadParamsForBlock()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a1dc564ed7c7b7cd370d141beeca02340">FBFE_PostprocessBlock()</a>, <a class="el" href="filterbank__feature__extract_8c.html#acb819c4fff3a508731f296f903d81f34">FBFE_ProgramCommonNpuState()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af05bbccf56a21a6240b88ccda948bf97">FBFE_RunTiniePass()</a>, <a class="el" href="filterbank__feature__extract_8c.html#af7dda403ea9931ac6ff8ab058bd2d7e6">FBFE_ShiftNNInputWindow()</a>, <a class="el" href="filterbank__feature__extract_8c.html#a904343f40089554b63121675b6c1a960">FBFE_UpdateMaxValuesForStride()</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a7218e85434e3f1d90fe69dfee954a973">FBFE_Ctx::lsb_temp</a>, <a class="el" href="struct_f_b_f_e___ctx.html#af8ff3027ab345fc9a189ea10a7b602de">FBFE_Ctx::maxpool_outputs</a>, <a class="el" href="filterbank__feature__extract_8c.html#a2260b812fd4ee224aff0748adacee06f">MODEL_FE_CTL0_LSB</a>, <a class="el" href="filterbank__feature__extract_8c.html#a52df4c3d1acd00ebc7cdb506958f587a">MODEL_FE_CTL0_MSB</a>, <a class="el" href="struct_f_b_f_e___ctx.html#a1f932d70ca5655f51f0831121e6b5315">FBFE_Ctx::msb_temp</a>, and <a class="el" href="struct_f_b_f_e___ctx.html#a2d76ed735dc25976654dd9b42975c286">FBFE_Ctx::single_out</a>.</p>
 
 </div>
 </div>

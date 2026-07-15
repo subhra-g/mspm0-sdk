@@ -27,7 +27,6 @@
 
     <extraOptions>
         <args>
-            <arg>--debug</arg>
             <arg>--silent</arg>
             <arg>-e</arg>
             <arg>--aeabi</arg>

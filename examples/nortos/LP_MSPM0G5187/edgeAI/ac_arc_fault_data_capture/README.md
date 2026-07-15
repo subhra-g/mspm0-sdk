@@ -32,5 +32,6 @@ To capture data:
 ## References
 
 - [AFCI ModelZoo Example](https://github.com/TexasInstruments/tinyml-tensorlab/tree/r1.3/tinyml-modelzoo/examples/ac_arc_fault)
+- AC Arc Fault Detection Using Edge AI on MSPM0 LowPower MCU : [Applicvation Note](https://www.ti.com/lit/an/sdaa252/sdaa252.pdf)
 - MSPM0G5187 Technical Reference Manual [Link](https://www.ti.com/product/MSPM0G5187)
 - EdgeAI Software Guide: SDK_INSTALL_DIR/docs/english/middleware/edgeAI/MSPM0_EdgeAI_User_Guide.html

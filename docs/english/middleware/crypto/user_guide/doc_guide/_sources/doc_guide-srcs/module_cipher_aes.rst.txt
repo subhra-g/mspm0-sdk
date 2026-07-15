@@ -1,0 +1,587 @@
+################################################################################
+Advanced Encryption Standard (AES)
+################################################################################
+
+********************************************************************************
+Overview
+********************************************************************************
+
+The AES (Advanced Encryption Standard) cipher module provides cryptographic 
+functionality for encryption and decryption operations. This implementation 
+supports both single block operations and multi-block cipher modes.
+
+AES operations are usually performed on data buffers that are 32-bit word
+aligned.  In such cases, this alignment is mandatory and is also checked 
+by the library at run time.
+
+Most AES operations are performed on plaintext, ciphertext, and
+associated data buffers which are integer multiples of the AES block size,
+which is 128 bits (16 bytes).  In such cases, this is mandatory and is also 
+checked by the library at run time.  If padding is required, the application 
+must provide the desired padding before executing an encrypt, decrypt, or 
+MAC operation.
+
+Some operations, such as CCM AEAD operations, do accept byte arrays as input for
+the payload, associated data, and nonce, as it is not mantatory that these
+data lengths be block or even word multiples.
+
+********************************************************************************
+Hardware Support
+********************************************************************************
+
+The library requires the AESADV hardware accelerator module on compatible 
+MSPM0 and MSPM33 devices. Currently supported device families include:
+
+* MSPM0Gx51x  (MSPM0G1518, MSPM0G1519, MSPM0G3518, MSPM0G3519)
+* MSPM0Lx22x  (MSPM0L1227, MSPM0L1228, MSPM0L2227, MSPM021228)
+* MSPM0L111x  (MSPM0L1116, MSPM0L1117)
+* MSPM33C32xx (MSPM33C321A)
+
+********************************************************************************
+Key Features
+********************************************************************************
+
+* AES single block encryption/decryption
+* AES CBC mode encryption/decryption
+* AES CTR mode encryption/decryption
+* AES CBC-MAC message authentication code generation for fixed size messages
+* AES CMAC message authentication code generation and verification
+* AES CCM AEAD authenticated encryption with additional data
+* Support for 128-bit and 256-bit keys
+* Hardware acceleration
+
+********************************************************************************
+Status Codes
+********************************************************************************
+
+The AES functions return status codes defined by 
+the `crypto_aes_stat_t` enumeration:
+
+============================= ====== =============================================================
+Status Code                   Value  Description
+============================= ====== =============================================================
+`CRYPTO_AES_TAG_INVALID_ERR`  -5     A operation failed due to an invalid authentication tag
+`CRYPTO_AES_HW_ERR`           -4     A hardware accelerator error occurred during the operation
+`CRYPTO_AES_KEYWRITE_ERR`     -3     The key memory was not writeable during the key set operation
+`CRYPTO_AES_ALIGNMENT_ERR`    -2     Parameters were not properly aligned
+`CRYPTO_AES_PARAM_ERR`        -1     One or more parameters passed to the function were invalid
+`CRYPTO_AES_OK`               0      The operation completed successfully
+`CRYPTO_AES_OK_TAG_VALID`     1      The operation completed successfully and the tag is valid
+============================= ====== =============================================================
+
+********************************************************************************
+Key Types
+********************************************************************************
+
+The AES module supports different key types specified 
+by the `crypto_aes_keytype_t` enumeration:
+
+======================== ================================
+Key Type                 Description
+======================== ================================
+`CRYPTO_AES_KEYTYPE_128` 128-bit AES key (4 32-bit words)
+`CRYPTO_AES_KEYTYPE_256` 256-bit AES key (8 32-bit words)
+======================== ================================
+
+********************************************************************************
+Key Selection
+********************************************************************************
+
+The AES key slot to use is specified by the `crypto_aes_key_t` enumeration:
+
+============================== =============================================
+Key Selection                  Description
+============================== =============================================
+`CRYPTO_AES_KEYSEL_SESSION`    Use the AES session key (not from key store)
+`CRYPTO_AES_KEYSEL_SLOT0-3`    Key store slots 0-3 (currently unsupported)
+============================== =============================================
+
+********************************************************************************
+API Functions
+********************************************************************************
+
+The application programming interface (API) for AES is defined below.
+
+================================================================================
+Initialization / Deinitialization
+================================================================================
+
+.. code-block:: c
+
+    void Crypto_AES_init(void);
+
+Initializes the AES engine for subsequent encryption/decryption operations. 
+Must be called before any other AES operations.  This powers on the AES engine
+and resets it.
+
+.. code-block:: c
+
+    void Crypto_AES_denit(void);
+
+Initializes the AES engine for subsequent encryption/decryption operations. 
+Must be called before any other AES operations.  This powers off the AES engine
+and resets it.
+
+================================================================================
+Key Management
+================================================================================
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_setSessionKey(const uint32_t *key, 
+                                               crypto_aes_keytype_t keyType);
+
+Loads an AES session key to the AES engine.
+
+**Parameters:**
+
+* `key`: Pointer to the key value to load to the engine
+* `keyType`: Type of AES key (`CRYPTO_AES_KEYTYPE_128` or `CRYPTO_AES_KEYTYPE_256`)
+
+**Returns:** Status of the operation
+
+================================================================================
+Single Block Operations
+================================================================================
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_encrypt(const uint32_t *in, uint32_t *out, 
+                                         crypto_aes_key_t key);
+
+Performs AES encryption on a single 128-bit data block.
+
+**Parameters:**
+
+* `in`: Pointer to the input plaintext block (4 32-bit words)
+* `out`: Pointer to the output ciphertext block (4 32-bit words)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_decrypt(const uint32_t *in, uint32_t *out, 
+                                         crypto_aes_key_t key);
+
+Performs AES decryption on a single 128-bit data block.
+
+**Parameters:**
+
+* `in`: Pointer to the input ciphertext block (4 32-bit words)
+* `out`: Pointer to the output plaintext block (4 32-bit words)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+================================================================================
+CBC Mode Operations
+================================================================================
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CBC_encrypt(const uint32_t *in,
+                                        uint32_t *out,
+                                        uint32_t len,
+                                        const uint32_t *iv,
+                                        crypto_aes_key_t key);
+
+Performs AES cipher block chained (CBC) encryption on an input plaintext buffer.
+
+**Parameters:**
+
+* `in`: Pointer to the input plaintext buffer (32-bit word aligned)
+* `out`: Pointer to the output ciphertext buffer (32-bit word aligned)
+* `len`: Length of the input plaintext in bytes (must be a multiple of 16)
+* `iv`: Pointer to the initialization vector (32-bit word aligned)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CBC_decrypt(const uint32_t *in, uint32_t *out, 
+                                             uint32_t len, const uint32_t *iv, 
+                                             crypto_aes_key_t key);
+
+
+Performs AES cipher block chained (CBC) decryption on an input ciphertext buffer.
+
+**Parameters:**
+
+* `in`: Pointer to the input ciphertext buffer (32-bit word aligned)
+* `out`: Pointer to the output plaintext buffer (32-bit word aligned)
+* `len`: Length of the input ciphertext in bytes (must be a multiple of 16)
+* `iv`: Pointer to the initialization vector (32-bit word aligned)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+================================================================================
+CTR Mode Operations
+================================================================================
+
+The counter mode enables unauthenticated stream cipher encryption/decryption.
+Plaintext/ciphertext still must be padded to a multiple of the block size of 16
+bytes.  The CTR implementation always uses a 96-bit (12-byte) nonce and a 32-bit
+(4-byte) counter, both of which are application specified. 
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CTR_encrypt(const uint32_t *in, uint32_t *out,
+                                             uint32_t len,
+                                             const uint32_t *nonce,
+                                             uint32_t counter,
+                                             crypto_aes_key_t key);
+
+Performs AES counter (CTR) encryption on an input plaintext buffer.
+
+**Parameters:**
+
+* `in`: Pointer to the input plaintext buffer (32-bit word aligned)
+* `out`: Pointer to the output ciphertext buffer (32-bit word aligned)
+* `len`: Length of the input plaintext in bytes (must be a multiple of 16)
+* `nonce`: Pointer to the 96-bit nonce (32-bit word aligned)
+* `counter`: The starting 32-bit counter value (usually 0 or 1)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CTR_decrypt(const uint32_t *in, uint32_t *out,
+                                             uint32_t len,
+                                             const uint32_t *nonce,
+                                             uint32_t counter,
+                                             crypto_aes_key_t key);
+
+Performs AES counter (CTR) decryption on an input ciphertext buffer.
+
+**Parameters:**
+
+* `in`: Pointer to the input ciphertext buffer (32-bit word aligned)
+* `out`: Pointer to the output plaintext buffer (32-bit word aligned)
+* `len`: Length of the input ciphertext in bytes (must be a multiple of 16)
+* `nonce`: Pointer to the 96-bit nonce (32-bit word aligned)
+* `counter`: The starting 32-bit counter value (usually 0 or 1)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+================================================================================
+CMAC Operations
+================================================================================
+
+The cipher-based message authentication code (CMAC) mode provides message
+authentication using AES. CMAC is a more secure alternative to CBC-MAC as it
+addresses the security vulnerabilities of CBC-MAC, particularly for variable-
+length messages.
+
+CMAC can generate and verify message authentication codes for input messages
+of any byte length. Unlike CBC-MAC, the input message does not need to be
+pre-padded to a block size multiple (padding is handled internally).
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CMAC_genTag(const uint32_t *in,
+                                             uint8_t *out,
+                                             uint32_t mLen,
+                                             uint8_t tagLen,
+                                             crypto_aes_key_t key);
+
+Generates an AES CMAC authentication tag for an input message.
+
+**Parameters:**
+
+* `in`: Pointer to the input message buffer (32-bit word aligned)
+* `out`: Pointer to the output MAC tag buffer
+* `mLen`: Length of the input message in bytes (can be any length)
+* `tagLen`: Length of the output tag in bytes (1-16 bytes)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CMAC_verTag(const uint32_t *in,
+                                             const uint8_t *tag,
+                                             uint32_t mLen,
+                                             uint8_t tagLen,
+                                             crypto_aes_key_t key);
+
+Verifies an AES CMAC authentication tag for an input message.
+
+**Parameters:**
+
+* `in`: Pointer to the input message buffer (32-bit word aligned)
+* `tag`: Pointer to the expected MAC tag buffer
+* `mLen`: Length of the input message in bytes (can be any length)
+* `tagLen`: Length of the tag in bytes (1-16 bytes)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+    * `CRYPTO_AES_OK_TAG_VALID` if the tag is valid for the message and key
+    * `CRYPTO_AES_TAG_INVALID_ERR` if the tag is invalid
+
+================================================================================
+CCM AEAD Operations
+================================================================================
+
+The counter with CBC-MAC (CCM) mode provides authenticated encryption for a 
+payload with additional associated data authentication.  
+
+A nonce must be provided, and and the nonce must be unqiue for each combination
+of key and payload/AAD.
+
+The nonce length is configurable but must be between 7 and 13 bytes.
+
+The tag length is also configurable but must be between 4 and 16 and must be
+even (odd length authentication tags are not allowed for CCM mode).
+
+The nonce, associated data, plaintext/ciphertext, and tag buffers do not need
+to be word or block aligned.
+
+It is possible to have only authenticated data (no payload), or only payload
+(without authenticated data).  However, one of the two must be present (no
+empty messages).
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CCM_encryptAndGen(const uint8_t *nonce, \
+                                                   uint8_t nonceLen, \
+                                                   const uint8_t *aad, \
+                                                   uint32_t aadLen, \
+                                                   const uint8_t *in, \
+                                                   uint8_t *out, \
+                                                   uint32_t len, \
+                                                   uint8_t *tag, \
+                                                   uint8_t tagLen, \
+                                                   crypto_aes_key_t key);
+
+Performs AES CCM encryption and tag generation on an input payload and AAD.
+
+**Parameters:**
+
+* `nonce`: Pointer to the input nonce value
+* `nonceLen`: Length of the nonce in bytes (must be between 7 and 13)
+* `aad`: Pointer to the additional data to be authenticated
+* `aadLen`: Length of associated data in bytes
+* `in`: Pointer to the payload input plaintext buffer
+* `out`: Pointer to the payload output ciphertext buffer
+* `len`: Length of the payload in bytes
+* `tag`: Pointer to the authentication tag output buffer
+* `tagLen`: Length of the authentication tag in bytes
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CCM_decryptAndVer(const uint8_t *nonce, \
+                                                   uint8_t nonceLen, \
+                                                   const uint8_t *aad, \
+                                                   uint32_t aadLen, \
+                                                   const uint8_t *in, \
+                                                   uint8_t *out, \
+                                                   uint32_t len, \
+                                                   uint8_t *tag, \
+                                                   uint8_t tagLen, \
+                                                   crypto_aes_key_t key);
+
+Performs AES CCM decryption and tag verification on an encrypted payload and
+AAD.
+
+**Parameters:**
+
+* `nonce`: Pointer to the input nonce value
+* `nonceLen`: Length of the nonce in bytes (must be between 7 and 13)
+* `aad`: Pointer to the additional data to be authenticated
+* `aadLen`: Length of associated data in bytes
+* `in`: Pointer to the payload input ciphertext buffer
+* `out`: Pointer to the payload output plaintext buffer
+* `len`: Length of the payload in bytes
+* `tag`: Pointer to the authentication tag input buffer
+* `tagLen`: Length of the authentication tag in bytes
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+================================================================================
+Authentication
+================================================================================
+
+.. code-block:: c
+
+    crypto_aes_stat_t Crypto_AES_CBC_MAC(const uint32_t *in, uint32_t *out, 
+                                         uint32_t len, 
+                                         crypto_aes_key_t key);
+
+Performs AES cipher block chained (CBC) MAC on an input plaintext buffer.
+
+**Note:** CBC-MAC can be insecure in certain scenarios, particularly with 
+variable message lengths. CMAC is generally recommended over CBC-MAC for better 
+security. CBC-MAC is included primarily for DRBG random number generation.
+
+**Parameters:**
+
+* `in`: Pointer to the input plaintext buffer (32-bit word aligned)
+* `out`: Pointer to the output MAC tag buffer (32-bit word aligned)
+* `len`: Length of the input plaintext in bytes (must be a multiple of 16)
+* `key`: The AES engine key selection
+
+**Returns:** Status of the operation
+
+********************************************************************************
+Usage Examples
+********************************************************************************
+
+Examples for using the AES programming interface are given below.
+
+================================================================================
+Basic Encryption
+================================================================================
+
+The example below demonstrates basic encryption of a single block.
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    void example_aes_encrypt(void) {
+        uint32_t key[4] = {0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210};
+        uint32_t plaintext[4] = {0x00112233, 0x44556677, 0x8899AABB, 0xCCDDEEFF};
+        uint32_t ciphertext[4];
+        
+        // Initialize AES module
+        Crypto_AES_init();
+        
+        // Set the session key (128-bit)
+        crypto_aes_stat_t status = Crypto_AES_setSessionKey(key, CRYPTO_AES_KEYTYPE_128);
+        
+        if (status == CRYPTO_AES_OK) {
+            // Encrypt a single block
+            status = Crypto_AES_encrypt(plaintext, ciphertext, CRYPTO_AES_KEYSEL_SESSION);
+            
+            if (status == CRYPTO_AES_OK) {
+                // Successfully encrypted
+            }
+        }
+
+        // Deinitialize AES module
+        Crypto_AES_denit();
+    }
+
+
+================================================================================
+CBC Mode Encryption
+================================================================================
+
+The example below demonstrates encryption using CBC mode.
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    void example_aes_cbc_encrypt(void) {
+        uint32_t key[4] = {0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210};
+        uint32_t iv[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
+        uint32_t plaintext[8] = {
+            0x00112233, 0x44556677, 0x8899AABB, 0xCCDDEEFF,
+            0x00112233, 0x44556677, 0x8899AABB, 0xCCDDEEFF
+        };
+        uint32_t ciphertext[8];
+        
+        // Initialize AES module
+        Crypto_AES_init();
+        
+        // Set the session key (128-bit)
+        crypto_aes_stat_t status = Crypto_AES_setSessionKey(key, CRYPTO_AES_KEYTYPE_128);
+        
+        if (status == CRYPTO_AES_OK) {
+            // Encrypt two blocks in CBC mode (32 bytes)
+            status = Crypto_AES_CBC_encrypt(
+                plaintext, ciphertext, 32, iv, CRYPTO_AES_KEYSEL_SESSION
+            );
+            
+            if (status == CRYPTO_AES_OK) {
+                // Successfully encrypted
+            }
+        }
+
+        // Deinitialize AES module
+        Crypto_AES_denit();
+    }
+
+================================================================================
+CMAC Authentication
+================================================================================
+
+The example below demonstrates CMAC tag generation and verification.
+
+.. code-block:: c
+
+    #include "ti/crypto/include/msp-crypto-lib.h"
+
+    void example_aes_cmac(void) {
+        uint32_t key[8] = {
+            0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210,
+            0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210
+        };
+        uint32_t message[4] = {0x00112233, 0x44556677, 0x8899AABB, 0xCCDDEEFF};
+        uint8_t tag[16];
+
+        // Initialize AES module
+        Crypto_AES_init();
+
+        // Set the session key (256-bit)
+        crypto_aes_stat_t status = Crypto_AES_setSessionKey(key, CRYPTO_AES_KEYTYPE_256);
+
+        if (status == CRYPTO_AES_OK) {
+            // Generate CMAC tag (16 bytes) for message (16 bytes)
+            status = Crypto_AES_CMAC_genTag(
+                message, tag, 16, 16, CRYPTO_AES_KEYSEL_SESSION
+            );
+
+            if (status == CRYPTO_AES_OK) {
+                // Tag generated successfully
+
+                // Now verify the tag
+                status = Crypto_AES_CMAC_verTag(
+                    message, tag, 16, 16, CRYPTO_AES_KEYSEL_SESSION
+                );
+
+                if (status == CRYPTO_AES_OK_TAG_VALID) {
+                    // Tag is valid
+                } else if (status == CRYPTO_AES_TAG_INVALID_ERR) {
+                    // Tag is invalid
+                }
+            }
+        }
+
+        // Deinitialize AES module
+        Crypto_AES_deinit();
+    }
+
+********************************************************************************
+Important Notes
+********************************************************************************
+
+#. Except for CCM, All buffers should be 32-bit aligned for optimal performance 
+   and to avoid alignment errors.
+#. Except for CCM, input lengths for block cipher modes must always be a 
+   multiple of the block size (16 bytes).
+#. The AES module must be initialized with `Crypto_AES_init()` before any other 
+   operations.
+#. The AES module should be deinitialized with `Crypto_AES_deinit()` after
+   operations are completed.
+#. CBC-MAC should be used with caution and only for fixed-length messages.
+   CMAC is recommended over CBC-MAC for message authentication as it is more
+   secure and supports variable-length messages.
+#. CMAC input messages can be any byte length and do not require pre-padding.
+   The input buffer must still be 32-bit word aligned.
+#. CMAC tag length can be from 1 to 16 bytes. Common tag lengths are 8, 12,
+   or 16 bytes depending on security requirements.
+#. AEAD ciphers are recommended as they provide both encryption and
+   authentication.
+#. Take measures to avoid nonce re-use, as nonce control is left to the
+   application layer.

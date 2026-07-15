@@ -2,8 +2,8 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  */
-// @cliArgs --device "MSPM0G351X" --package "LQFP-100(PZ)" --part "Default"
-// @v2CliArgs --device "MSPM0G3519" --package "LQFP-100(PZ)"
+//@cliArgs --device "MSPM0G351X" --package "LQFP-100(PZ)" --part "Default"
+//@v2CliArgs --device "MSPM0G3519" --package "LQFP-100(PZ)"
 // @cliArgs --board /ti/boards/LP_MSPM0G3519 --rtos nortos
 
 /**
@@ -30,5 +30,3 @@ ProjectConfig.genLinker  = false;
 ProjectConfig.genStartup = false;
 ProjectConfig.genOpts    = false;
 ProjectConfig.genLibs    = false;
-
-

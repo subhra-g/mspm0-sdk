@@ -30,5 +30,4 @@ GPIO1.associatedPins[1].assignedPort        = "PORTA";
 GPIO1.associatedPins[1].assignedPin         = "15";
 GPIO1.associatedPins[1].initialValue        = "SET";
 
-
 SYSCTL.clockTreeEn = true;

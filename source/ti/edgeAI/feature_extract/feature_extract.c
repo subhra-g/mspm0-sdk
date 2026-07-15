@@ -170,8 +170,14 @@ void FE_Skip_Normalize(q15_t * inputBuffer, q15_t * outputBuffer, uint8_t varInd
     {
         q31_t inputVal_q31 = (q31_t) inputBuffer[i];
 
+#ifdef RECONSTRUCTION_ERROR_THRESHOLD
+        /* CPU Quantized models input normalization */
+        inputVal_q31 = ((int32_t)(inputVal_q31 * tvmgen_default_input_reciprocal_scale_data[varIndex]) + tvmgen_default_input_zero_point_data[varIndex]);
+#else
+        /* NPU Quantized models input normalization */
         inputVal_q31 = ((int32_t)((inputVal_q31 + tvmgen_default_bias_data[varIndex]) * tvmgen_default_scale_data[varIndex])) \
                 >> tvmgen_default_shift_data[varIndex];
+#endif
 
         if(inputVal_q31 > 127)
         {

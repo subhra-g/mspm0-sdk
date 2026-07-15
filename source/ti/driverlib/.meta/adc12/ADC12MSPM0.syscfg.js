@@ -122,7 +122,9 @@ function validatePinmux(inst, validation){
     }
     if(Common.isDeviceFamily_PARENT_MSPM0GX51X()
         || Common.isDeviceFamily_PARENT_MSPM0G352X()
-        || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()) {
+        || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()
+        || Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X()
+        || Common.isDeviceFamily_PARENT_MSPM0H821X()) {
         if(inst.peripheral.$solution.peripheralName == "ADC0"){
             if(isChannelSelected(inst,11) && !inst.disChan11){
                 validation.logError(
@@ -577,7 +579,9 @@ function pinmuxRequirements(inst)
                     }
                     else if((Common.isDeviceFamily_PARENT_MSPM0GX51X() ||
                                 Common.isDeviceFamily_PARENT_MSPM0G352X() ||
-                                Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()) &&
+                                Common.isDeviceFamily_PARENT_MSPM0GX218_GX207() ||
+                                Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X() ||
+                                Common.isDeviceFamily_PARENT_MSPM0H821X()) &&
                                 ind == 11 && inst.disChan11){
                         // do nothing
                     }
@@ -2785,7 +2789,9 @@ if(Common.isDeviceFamily_PARENT_MSPM0G1X0X_G3X0X()){
 }
 if(Common.isDeviceFamily_PARENT_MSPM0GX51X()
     || Common.isDeviceFamily_PARENT_MSPM0G352X()
-    || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()){
+    || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()
+    || Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X()
+    || Common.isDeviceFamily_PARENT_MSPM0H821X()){
     config = config.concat([
         {
             name        : "disChan11",
@@ -2839,7 +2845,9 @@ function moduleInstances(inst){
                     }
                     else if((Common.isDeviceFamily_PARENT_MSPM0GX51X()
                         || Common.isDeviceFamily_PARENT_MSPM0G352X()
-                        || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207())&& ind == 11 && inst.disChan11){
+                        || Common.isDeviceFamily_PARENT_MSPM0GX218_GX207()
+                        || Common.isDeviceFamily_PARENT_MSPM0GX70X_GX73X()
+                        || Common.isDeviceFamily_PARENT_MSPM0H821X())&& ind == 11 && inst.disChan11){
                         // do nothing
                     }
                     else {

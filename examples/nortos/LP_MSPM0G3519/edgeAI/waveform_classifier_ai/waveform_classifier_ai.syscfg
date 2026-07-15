@@ -29,7 +29,6 @@ ADC121.enabledDMATriggers         = ["DL_ADC12_DMA_MEM0_RESULT_LOADED"];
 ADC121.sampleTime0                = "198 us";
 ADC121.peripheral.$assign         = "ADC0";
 ADC121.peripheral.adcPin0.$assign = "PA27";
-ADC121.adcPin0Config.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
 
 GPIO1.$name                         = "LED";
 GPIO1.associatedPins.create(4);

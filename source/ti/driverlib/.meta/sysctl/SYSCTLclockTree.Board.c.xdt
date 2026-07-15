@@ -84,7 +84,7 @@
 % function printReset() { return; } // empty
 % function printPower() { return; } // empty
 % function printPreFunction() {
-%   if(Common.isDeviceM0G()) {
+%   if(ClockSignals.includes("SYSPLL")) {
 %     let genPLL = system.getTemplate("/ti/clockTree/templates/syspll.Board.c.xdt");
 `_.trimEnd(genPLL("Config"))`
 %   }
@@ -124,11 +124,11 @@
 %  funcStr += tempStr != ""?tempStr + "\n":"";
 %   }
 % /* SYSPLL Configuration */
-%   if(Common.isDeviceM0G()){
+%   if(ClockSignals.includes("SYSPLL")){
 %     let genPLL = system.getTemplate("/ti/clockTree/templates/syspll.Board.c.xdt");
 %  tempStr =_.trimEnd(genPLL("Call"));
 %  funcStr += tempStr != ""?tempStr + "\n":"";
-%   } // if is M0G
+%   } // if has SYSPLL
 % /* FCC Configuration */
 %     let genFCC = system.getTemplate("/ti/clockTree/templates/fccSource.Board.c.xdt");
 %  tempStr = _.trimEnd(genFCC());
